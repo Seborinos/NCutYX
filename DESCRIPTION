@@ -1,0 +1,15 @@
+Package: NCutYX
+Type: Package
+Title: Clusters variables in Y into K groups with the help of variables in X
+Version: 1.0
+Author: Sebastian J Teran Hidalgo
+Maintainer: Sebastian J Teran Hidalgo <sebastianteranhidalgo@gmail.com>
+Description: It clusters the columns of Y into K groups with the help of
+    variables in X
+License: GPL-3
+Imports:
+    Rcpp (>= 0.12.2),
+    RcppEigen (>= 0.3.2.5.1),
+    glmnet (>= 2.0-5)
+LinkingTo: Rcpp, RcppEigen, glmnet
+RoxygenNote: 5.0.1
