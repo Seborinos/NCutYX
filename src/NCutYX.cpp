@@ -3,6 +3,7 @@
 using namespace Rcpp;
 using namespace Eigen;
 
+//This function calculates the NCutYX objective function.
 
 // [[Rcpp::depends(RcppEigen)]]
 // [[Rcpp::export]]
@@ -69,7 +70,7 @@ double NCutLayer3V1(const NumericMatrix Cys, const NumericMatrix Wzs
   for(int i=0;i<K;i++){
     Cuty(i)=(Cy.col(i).transpose()*Wzyx*(V-Cy.col(i)))(0);
     a1=Cy.col(i).segment(0,q).transpose()*Wz*Cy.col(i).segment(0,q);//not sure this will work
-    a2=Cy.col(i).segment(q,p).transpose()*Wy*Cy.col(i).segment(q,p);
+    a2=Cy.col(i).segment(q,p).transpose()*Wy*Cy.col(i).segment(q,p);//not sure about this
     a3=Cy.col(i).segment(q+p,r).transpose()*Wx*Cy.col(i).segment(q+p,r);
     Volx(3,i)=pow(a1*a2*a3,1/3);
   }

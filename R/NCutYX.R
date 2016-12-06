@@ -23,8 +23,13 @@ NCutY2R1<-function(Y,X,B=3000,L=1000,alpha=0.5,nlambdas=100,ncv=5){
   p=dim(Y)[2]
   Wyy=as.matrix(dist(t(Y),diag=T,upper=T))+diag(p)
   Wyy=Wyy^(-1)
-  #This makes the any valeus divided by 0 into 1.
-  Wyy[which(Wyy==Inf)]=1
+  #This makes the any values divided by 0 into 1.
+  #This should not be like this.
+  #This is happening because the numbers become really small.
+  #Wyy[which(Wyy==Inf)]=1
+
+  #I changed the distance matrix to gaussian kernel
+  #Wyy=exp((-1)*sigma*as.matrix(dist(t(Y),diag=T,upper=T)))
 
   cv.m1=cv.glmnet(X, Y, family=c("mgaussian"),
                   alpha=alpha,nfolds=ncv,nlambda=nlambdas,intercept=FALSE)
@@ -35,7 +40,9 @@ NCutY2R1<-function(Y,X,B=3000,L=1000,alpha=0.5,nlambdas=100,ncv=5){
   Y2=scale(Y2[,,1])
   Wxx=as.matrix(dist(t(Y2),diag=T,upper=T))+diag(p)
   Wxx=Wxx^(-1)
-  Wxx[which(Wxx==Inf)]=1
+  #Wxx[which(Wxx==Inf)]=1
+  #I changed the distance matrix to gaussian kernel
+  #Wxx=exp((-1)*sigma*as.matrix(dist(t(Y2),diag=T,upper=T)))
   #This creates a random starting point in the split in the algorithm for K=2
   Ax=rbinom(p,1,0.5)
   Bx=rep(1,p)-Ax
@@ -189,7 +196,13 @@ NCutYR1<-function(Y,X,K=2,B=3000,L=1000,alpha=0.5,nlambdas=100,ncv=5){
   p=dim(Y)[2]
   Wyy=as.matrix(dist(t(Y),diag=T,upper=T))+diag(p)
   Wyy=Wyy^(-1)
-  Wyy[which(Wyy==Inf)]=1
+
+  #This should not be like this.
+  #This is happening because the numbers become really small.
+  #This needs to be changed.
+  #Wyy[which(Wyy==Inf)]=1
+  #I changed the distance matrix to gaussian kernel
+  #Wyy=exp((-1)*sigma*as.matrix(dist(t(Y),diag=T,upper=T)))
 
   #This standardizes the Wxy as to make it a probability transition
   #matrix
@@ -203,7 +216,10 @@ NCutYR1<-function(Y,X,K=2,B=3000,L=1000,alpha=0.5,nlambdas=100,ncv=5){
   Y2=scale(Y2[,,1])
   Wxx=as.matrix(dist(t(Y2),diag=T,upper=T))+diag(p)
   Wxx=Wxx^(-1)
-  Wxx[which(Wxx==Inf)]=1
+  #Wxx[which(Wxx==Inf)]=1
+  #I changed the distance matrix to gaussian kernel
+  #Wxx=exp((-1)*sigma*as.matrix(dist(t(Y2),diag=T,upper=T)))
+
   #This creates a random starting point in the split in the algorithm for K clusters
   Cx=matrix(0,p,K+1)
 
