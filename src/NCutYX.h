@@ -6,10 +6,10 @@
 using namespace Rcpp;
 using namespace Eigen;
 
-double NCutY3V1(const NumericMatrix C, const NumericMatrix Wy,
-                       const NumericMatrix Wx) ;
+double NCutY3V1(const NumericMatrix &C, const NumericMatrix &C2,
+                const NumericMatrix &Wy, const NumericMatrix &Wx) ;
 
-double NCutLayer3V1(const NumericMatrix C, const NumericMatrix Wz,
-                           const NumericMatrix Wy,const NumericMatrix Wx,
-                           const NumericMatrix Wzyx) ;
+double NCutLayer3V1(const NumericMatrix &C, const NumericMatrix &C2,
+                    const NumericMatrix &Wz, const NumericMatrix &Wy,
+                    const NumericMatrix &Wx, const NumericMatrix &Wzyx) ;
 #endif

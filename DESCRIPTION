@@ -13,5 +13,4 @@ Imports:
     glmnet (>= 2.0-5)
 LinkingTo: Rcpp, RcppEigen, glmnet
 RoxygenNote: 5.0.1
-URL: http://github.com/Seborinos/NCutYX
-BugReports: http://github.com/Seborinos/NCutYX/issues
+
