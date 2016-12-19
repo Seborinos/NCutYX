@@ -236,7 +236,7 @@ NCutYR1<-function(Y,X,K=2,B=3000,L=1000,alpha=0.5,nlambdas=100,ncv=5){
   C2x=matrix(0,p,K+1)
   C2x=Cx
 
-  J=NCutY3V1(Cx[,1:K],matrix(1,p,2)-Cx[,1:2],Wyy,Wxx)
+  J=NCutY3V1(Cx[,1:K],matrix(1,p,K)-Cx[,1:K],Wyy,Wxx)
 
   Test<- vector(mode="numeric", length=B)
 
@@ -259,7 +259,7 @@ NCutYR1<-function(Y,X,K=2,B=3000,L=1000,alpha=0.5,nlambdas=100,ncv=5){
     C2x[sx,s[K]]=1
 
     #Now Step 3 in the algorithm
-    J2=NCutY3V1(C2x[,1:K],matrix(1,p,2)-C2x[,1:2],Wyy,Wxx)
+    J2=NCutY3V1(C2x[,1:K],matrix(1,p,K)-C2x[,1:K],Wyy,Wxx)
 
     if (J2>J){
       #Prob[Count]=exp(-10000*log(k+1)*(J2-J))
