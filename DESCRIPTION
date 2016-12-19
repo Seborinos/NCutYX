@@ -4,7 +4,7 @@ Title: Clusters variables in Y into K groups with the help of variables in X
 Version: 1.0
 Author: Sebastian J Teran Hidalgo
 Maintainer: Sebastian J Teran Hidalgo <sebastianteranhidalgo@gmail.com>
-Description: It clusters the columns of Y into K groups with the help of
+Description: Clusters the columns of Y into K groups with the help of
     variables in X
 License: GPL-3
 Imports:
