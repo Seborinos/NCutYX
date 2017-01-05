@@ -187,15 +187,21 @@ NCutY2R1<-function(Y,X,B=3000,L=1000,alpha=0.5,nlambdas=100,ncv=5){
 #' #This is the true error of the clustering solution.
 #' errorL
 
-NCutYR1<-function(Y,X,K=2,B=3000,L=1000,alpha=0.5,nlambdas=100,ncv=5){
+NCutYR1<-function(Y,X,K=2,B=3000,L=1000,alpha=0.5,nlambdas=100,ncv=5,dist='gaussian'){
   #This creates the weight matrix W
   #W=abs(CorV1(n,p+q,cbind(X,Y)))
   #Wxy=W[1:p,(p+1):(p+q)]
   X=scale(X)
   Y=scale(Y)
   p=dim(Y)[2]
-  Wyy=as.matrix(dist(t(Y),diag=T,upper=T))+diag(p)
-  Wyy=Wyy^(-1)
+  if(dist=='euclidean'){
+    Wyy=as.matrix(dist(t(Y),diag=T,upper=T))+diag(p)
+    Wyy=Wyy^(-1)
+  }
+  if(dist=='gaussian'){
+    Wyy=exp((-1)*sigma*as.matrix(dist(t(Y),diag=T,upper=T)))
+  }
+
 
   #This should not be like this.
   #This is happening because the numbers become really small.
@@ -214,8 +220,14 @@ NCutYR1<-function(Y,X,K=2,B=3000,L=1000,alpha=0.5,nlambdas=100,ncv=5){
 
   Y2=predict(m1,newx=X)
   Y2=scale(Y2[,,1])
-  Wxx=as.matrix(dist(t(Y2),diag=T,upper=T))+diag(p)
-  Wxx=Wxx^(-1)
+  if(dist=='euclidean'){
+    Wxx=as.matrix(dist(t(Y2),diag=T,upper=T))+diag(p)
+    Wxx=Wxx^(-1)
+  }
+  if(dist=='gaussian'){
+    Wxx=exp((-1)*sigma*as.matrix(dist(t(Y2),diag=T,upper=T)))
+  }
+
   #Wxx[which(Wxx==Inf)]=1
   #I changed the distance matrix to gaussian kernel
   #Wxx=exp((-1)*sigma*as.matrix(dist(t(Y2),diag=T,upper=T)))
