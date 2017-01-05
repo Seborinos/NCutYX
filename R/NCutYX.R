@@ -199,7 +199,7 @@ NCutYR1<-function(Y,X,K=2,B=3000,L=1000,alpha=0.5,nlambdas=100,ncv=5,dist='gauss
     Wyy=Wyy^(-1)
   }
   if(dist=='gaussian'){
-    Wyy=exp((-1)*sigma*as.matrix(dist(t(Y),diag=T,upper=T)))
+    Wyy=exp((-1)*as.matrix(dist(t(Y),diag=T,upper=T)))
   }
 
 
@@ -225,7 +225,7 @@ NCutYR1<-function(Y,X,K=2,B=3000,L=1000,alpha=0.5,nlambdas=100,ncv=5,dist='gauss
     Wxx=Wxx^(-1)
   }
   if(dist=='gaussian'){
-    Wxx=exp((-1)*sigma*as.matrix(dist(t(Y2),diag=T,upper=T)))
+    Wxx=exp((-1)*as.matrix(dist(t(Y2),diag=T,upper=T)))
   }
 
   #Wxx[which(Wxx==Inf)]=1
