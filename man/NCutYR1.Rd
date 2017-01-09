@@ -5,7 +5,7 @@
 \title{Cluster the columns of Y into K groups with the help of external features in X.}
 \usage{
 NCutYR1(Y, X, K = 2, B = 3000, L = 1000, alpha = 0.5, nlambdas = 100,
-  ncv = 5)
+  ncv = 5, dist = "gaussian")
 }
 \arguments{
 \item{Y}{is a n x p matrix of p variables and n observations. The columns of
