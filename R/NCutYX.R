@@ -13,7 +13,7 @@
 #' The algorithm minimizes a modified version of NCut through simulated annealing.
 #' The clusers correspond to partitions that minimize this objective function.
 #' The external information of X is incorporated by using ridge regression to predict Y.
-
+#' This is a new comment.
 NCutY2R1<-function(Y,X,B=3000,L=1000,alpha=0.5,nlambdas=100,ncv=5){
   #This creates the weight matrix W
   #W=abs(CorV1(n,p+q,cbind(X,Y)))
