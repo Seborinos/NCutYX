@@ -323,14 +323,26 @@ NCutYLayer3R1<-function(Z,Y,X,K=2,B=3000,L=1000){
   p=dim(Y)[2]
   r=dim(X)[2]
   ZYX=cbind(Z,Y,X)
-  Wz=as.matrix(dist(t(Z),diag=T,upper=T))+diag(q)
-  Wz=Wz^(-1)
-  Wy=as.matrix(dist(t(Y),diag=T,upper=T))+diag(p)
-  Wy=Wy^(-1)
-  Wx=as.matrix(dist(t(X),diag=T,upper=T))+diag(r)
-  Wx=Wx^(-1)
   Wzyx=as.matrix(dist(t(ZYX),diag=T,upper=T))+diag(q+p+r)
   Wzyx=Wzyx^(-1)
+  #Elastic net to predict Y with X
+  cv.m1=cv.glmnet(X, Y, family=c("mgaussian"),
+                  alpha=alpha,nfolds=ncv,nlambda=nlambdas,intercept=FALSE)
+  m1=glmnet(X, Y, family=c("mgaussian"),
+            alpha=alpha,lambda=cv.m1$lambda.min,intercept=FALSE)
+  Y2=predict(m1,newx=X)
+  Y2=scale(Y2[,,1])
+  #Elastic net to predict Z with Y
+  cv.m2=cv.glmnet(Y, Z, family=c("mgaussian"),
+                  alpha=alpha,nfolds=ncv,nlambda=nlambdas,intercept=FALSE)
+  m2=glmnet(Y, Z, family=c("mgaussian"),
+            alpha=alpha,lambda=cv.m1$lambda.min,intercept=FALSE)
+  Z2=predict(m2,newx=Y)
+  Z2=scale(Z2[,,1])
+  #Distance matrix for the predicted variables
+  ZYX2=cbind(Z2,Y2,X)
+  Wzyx2=as.matrix(dist(t(ZYX2),diag=T,upper=T))+diag(q+p+r)
+  Wzyx2=Wzyx2^(-1)
   #This creates a random starting point in the split in the algorithm for K clusters
   Cx=matrix(0,q+p+r,K)
   #This is a matrix of only ones
@@ -357,7 +369,8 @@ NCutYLayer3R1<-function(Z,Y,X,K=2,B=3000,L=1000){
   #doing simulated annealing.
   C2x=matrix(0,p+q+r,K)
   C2x=Cx
-  J=NCutLayer3V1(Cx[,1:K],M1-Cx[,1:K],Wz,Wy,Wx,Wzyx)
+  J=NCutY3V1(Cx[,1:K],M1-Cx[,1:K],Wzyx2,Wzyx)
+  #J=NCutLayer3V1(Cx[,1:K],M1-Cx[,1:K],Wz,Wy,Wx,Wzyx)
 
   Test<- vector(mode="numeric", length=B)
 
@@ -380,7 +393,8 @@ NCutYLayer3R1<-function(Z,Y,X,K=2,B=3000,L=1000){
     C2x[sx,s[K]]=1
 
     #Now Step 3 in the algorithm
-    J2=NCutLayer3V1(C2x[,1:K],M1-C2x[,1:K],Wz,Wy,Wx,Wzyx)
+    J2=NCutY3V1(C2x[,1:K],M1-C2x[,1:K],Wzyx2,Wzyx)
+    #J2=NCutLayer3V1(C2x[,1:K],M1-C2x[,1:K],Wz,Wy,Wx,Wzyx)
 
     if (J2>J){
       #Prob[Count]=exp(-10000*log(k+1)*(J2-J))
