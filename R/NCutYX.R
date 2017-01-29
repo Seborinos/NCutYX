@@ -333,6 +333,8 @@ NCutYLayer3R1<-function(Z,Y,X,K=2,B=3000,L=1000){
   Wzyx=Wzyx^(-1)
   #This creates a random starting point in the split in the algorithm for K clusters
   Cx=matrix(0,q+p+r,K)
+  #This is a matrix of only ones
+  M1<-matrix(1,q+p+r,K)
   #Below: force the result to have one member per type of data and cluster.
   #The code below makes sure each cluster gets at least Min elements
   #per data type
@@ -355,7 +357,7 @@ NCutYLayer3R1<-function(Z,Y,X,K=2,B=3000,L=1000){
   #doing simulated annealing.
   C2x=matrix(0,p+q+r,K)
   C2x=Cx
-  J=NCutLayer3V1(Cx[,1:K], matrix(1,q+p+r,K)-Cx[,1:K],Wz,Wy,Wx,Wzyx)
+  J=NCutLayer3V1(Cx[,1:K],M1-Cx[,1:K],Wz,Wy,Wx,Wzyx)
 
   Test<- vector(mode="numeric", length=B)
 
@@ -378,7 +380,7 @@ NCutYLayer3R1<-function(Z,Y,X,K=2,B=3000,L=1000){
     C2x[sx,s[K]]=1
 
     #Now Step 3 in the algorithm
-    J2=NCutLayer3V1(C2x[,1:K], matrix(1,q+p+r,K)-C2x[,1:K],Wz,Wy,Wx,Wzyx)
+    J2=NCutLayer3V1(C2x[,1:K],M1-C2x[,1:K],Wz,Wy,Wx,Wzyx)
 
     if (J2>J){
       #Prob[Count]=exp(-10000*log(k+1)*(J2-J))
