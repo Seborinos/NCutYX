@@ -312,7 +312,7 @@ NCutYR1<-function(Y,X,K=2,B=3000,L=1000,alpha=0.5,nlambdas=100,ncv=5,dist='gauss
 #' The clusers correspond to partitions that minimize this objective function.
 #' The external information of X is incorporated by using ridge regression to predict Y.
 
-NCutYLayer3R1<-function(Z,Y,X,K=2,B=3000,L=1000){
+NCutYLayer3R1<-function(Z,Y,X,K=2,B=3000,L=1000,alpha=0.5,ncv=3,nlambdas=100){
   #This creates the weight matrix W
   #W=abs(CorV1(n,p+q,cbind(X,Y)))
   #Wxy=W[1:p,(p+1):(p+q)]
@@ -322,6 +322,7 @@ NCutYLayer3R1<-function(Z,Y,X,K=2,B=3000,L=1000){
   q=dim(Z)[2]
   p=dim(Y)[2]
   r=dim(X)[2]
+  #Joint distance matrix
   ZYX=cbind(Z,Y,X)
   Wzyx=as.matrix(dist(t(ZYX),diag=T,upper=T))+diag(q+p+r)
   Wzyx=Wzyx^(-1)
@@ -343,6 +344,15 @@ NCutYLayer3R1<-function(Z,Y,X,K=2,B=3000,L=1000){
   ZYX2=cbind(Z2,Y2,X)
   Wzyx2=as.matrix(dist(t(ZYX2),diag=T,upper=T))+diag(q+p+r)
   Wzyx2=Wzyx2^(-1)
+  #Z's distance matrix
+  Wz=as.matrix(dist(t(Z2),diag=T,upper=T))+diag(q)
+  Wz=Wz^(-1)
+  #Y's distance matrix
+  Wy=as.matrix(dist(t(Y2),diag=T,upper=T))+diag(p)
+  Wy=Wy^(-1)
+  #X's distance matrix
+  Wx=as.matrix(dist(t(X),diag=T,upper=T))+diag(r)
+  Wx=Wx^(-1)
   #This creates a random starting point in the split in the algorithm for K clusters
   Cx=matrix(0,q+p+r,K)
   #This is a matrix of only ones
@@ -369,8 +379,8 @@ NCutYLayer3R1<-function(Z,Y,X,K=2,B=3000,L=1000){
   #doing simulated annealing.
   C2x=matrix(0,p+q+r,K)
   C2x=Cx
-  J=NCutY3V1(Cx[,1:K],M1-Cx[,1:K],Wzyx2,Wzyx)
-  #J=NCutLayer3V1(Cx[,1:K],M1-Cx[,1:K],Wz,Wy,Wx,Wzyx)
+  #J=NCutY3V1(Cx[,1:K],M1-Cx[,1:K],Wzyx2,Wzyx)
+  J=NCutLayer3V1(Cx[,1:K],M1-Cx[,1:K],Wz,Wy,Wx,Wzyx)
 
   Test<- vector(mode="numeric", length=B)
 
@@ -381,7 +391,7 @@ NCutYLayer3R1<-function(Z,Y,X,K=2,B=3000,L=1000){
 
     N=sum(Nx)
     P=Nx/N
-    s=sample.int(K,K,replace=FALSE,prob=P)
+    s=sample.int(K,K,replace=FALSE)#No probability right now
 
     ###Select a vertex from cluster s[1] with unequal probability
     #Calculating Unequal probabilites
@@ -393,8 +403,8 @@ NCutYLayer3R1<-function(Z,Y,X,K=2,B=3000,L=1000){
     C2x[sx,s[K]]=1
 
     #Now Step 3 in the algorithm
-    J2=NCutY3V1(C2x[,1:K],M1-C2x[,1:K],Wzyx2,Wzyx)
-    #J2=NCutLayer3V1(C2x[,1:K],M1-C2x[,1:K],Wz,Wy,Wx,Wzyx)
+    #J2=NCutY3V1(C2x[,1:K],M1-C2x[,1:K],Wzyx2,Wzyx)
+    J2=NCutLayer3V1(C2x[,1:K],M1-C2x[,1:K],Wz,Wy,Wx,Wzyx)
 
     if (J2>J){
       #Prob[Count]=exp(-10000*log(k+1)*(J2-J))
