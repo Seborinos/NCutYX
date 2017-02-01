@@ -36,3 +36,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// OptimForward
+NumericMatrix OptimForward(const NumericMatrix& Wzs, const NumericMatrix& Wys, const NumericMatrix& Wxs, const NumericMatrix& Wzyxs, const int& m);
+RcppExport SEXP NCutYX_OptimForward(SEXP WzsSEXP, SEXP WysSEXP, SEXP WxsSEXP, SEXP WzyxsSEXP, SEXP mSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type Wzs(WzsSEXP);
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type Wys(WysSEXP);
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type Wxs(WxsSEXP);
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type Wzyxs(WzyxsSEXP);
+    Rcpp::traits::input_parameter< const int& >::type m(mSEXP);
+    rcpp_result_gen = Rcpp::wrap(OptimForward(Wzs, Wys, Wxs, Wzyxs, m));
+    return rcpp_result_gen;
+END_RCPP
+}
