@@ -67,9 +67,9 @@ double NCutLayer3V1(const NumericMatrix &Cys, const NumericMatrix &Cy2s,
   double a0,a1,a2,a3;
   for(int i=0;i<K;i++){
     a0=Cy.col(i).transpose()*Wzyx*Cy2.col(i);//This is new.
-    a1=Cy.col(i).segment(0,q).transpose()*Wz*Cy.col(i).segment(0,q);//not sure this will work
-    a2=Cy.col(i).segment(q,p).transpose()*Wy*Cy.col(i).segment(q,p);//not sure about this
-    a3=Cy.col(i).segment(q+p,r).transpose()*Wx*Cy.col(i).segment(q+p,r);
+    a1=std::max(double(Cy.col(i).segment(0,q).transpose()*Wz*Cy.col(i).segment(0,q)),double(1));
+    a2=std::max(double(Cy.col(i).segment(q,p).transpose()*Wy*Cy.col(i).segment(q,p)),double(1));
+    a3=std::max(double(Cy.col(i).segment(q+p,r).transpose()*Wx*Cy.col(i).segment(q+p,r)),double(1));
     Cuty(i)=a0/pow(a1*a2*a3,0.33333333333333333333333);//Why is this likes this?
   }
 
@@ -99,27 +99,31 @@ NumericMatrix OptimForward(const NumericMatrix &Wzs, const NumericMatrix &Wys,
   Eigen::Map<Eigen::MatrixXd> Wy = as<Eigen::Map<Eigen::MatrixXd> >(Wys);
   Eigen::Map<Eigen::MatrixXd> Wx = as<Eigen::Map<Eigen::MatrixXd> >(Wxs);
   Eigen::Map<Eigen::MatrixXd> Wzyx = as<Eigen::Map<Eigen::MatrixXd> >(Wzyxs);
-  //Move as sequence and calculate the best sequence of graph partitions going forward.
-  //Here I need to create a starting point where a first vertex is chosen.
+
+  //Cx will be used to keep track of the clusters
   MatrixXd Cx=MatrixXd::Zero(m,2);
   MatrixXd Cx2=MatrixXd::Zero(m,2);
   Cx2=Cx2.array()+1;//This should work for sure
   Cx.col(1)=Cx.col(1).array()+1;//Not sure if this makes sense
-  MatrixXd Res(m,2);
-  for (int j=0;j<m;j++){
+  //This matrix is the return object. It contains all the edges added to the partition
+  //and the value of the NCut 3 layer.
+  MatrixXd Res(m-1,2);
+  for (int j=0;j<m-1;j++){//Leave the last one alone.
     int count=0;
-    for (int i=0;i<m;i++){//This iterates through
-      if(Cx(i,0)==0){
+    VectorXd NCuts(m);
+    for (int i=0;i<m;i++){//Check all the vertices of the graph.
+      if(Cx(i,0)==0){//has this vertex been chosen previously?
         Cx(i,0)=1;
-        Res(i,0)=NCutLayer3V1(Cx,Cx2-Cx,Wz,Wy,Wx,Wzyx);//This calculates all of the cuts
+        NCuts(i)=NCutLayer3V1(Cx,Cx2-Cx,Wz,Wy,Wx,Wzyx);
         Cx(i,0)=0;
-      }
-      if(Res(i,0)<Res(count,0)){
-        count=i;
-        Res(i,1)=i;
+        if(NCuts(i)<=NCuts(count)){
+          count=i;
+        }
       }
     }
     Cx(count,0)=1;
+    Res(j,0)=NCuts(count);
+    Res(j,1)=count;
   }
   Rcpp::NumericMatrix Resx(wrap(Res));
   return wrap(Resx);
