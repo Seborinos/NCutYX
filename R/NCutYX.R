@@ -312,47 +312,85 @@ NCutYR1<-function(Y,X,K=2,B=3000,L=1000,alpha=0.5,nlambdas=100,ncv=5,dist='gauss
 #' The clusers correspond to partitions that minimize this objective function.
 #' The external information of X is incorporated by using ridge regression to predict Y.
 
-NCutYLayer3R1<-function(Z,Y,X,K=2,B=3000,L=1000,alpha=0.5,ncv=3,nlambdas=100){
+NCutYLayer3R1<-function(Z,Y,X,K=2,B=3000,L=1000,alpha=0.5,ncv=3,nlambdas=100,scale=T){
   #This creates the weight matrix W
   #W=abs(CorV1(n,p+q,cbind(X,Y)))
   #Wxy=W[1:p,(p+1):(p+q)]
-  Z=scale(Z)
-  Y=scale(Y)
-  X=scale(X)
-  q=dim(Z)[2]
-  p=dim(Y)[2]
-  r=dim(X)[2]
-  #Joint distance matrix
-  ZYX=cbind(Z,Y,X)
-  Wzyx=as.matrix(dist(t(ZYX),diag=T,upper=T))+diag(q+p+r)
-  Wzyx=Wzyx^(-1)
-  #Elastic net to predict Y with X
-  cv.m1=cv.glmnet(X, Y, family=c("mgaussian"),
-                  alpha=alpha,nfolds=ncv,nlambda=nlambdas,intercept=FALSE)
-  m1=glmnet(X, Y, family=c("mgaussian"),
-            alpha=alpha,lambda=cv.m1$lambda.min,intercept=FALSE)
-  Y2=predict(m1,newx=X)
-  Y2=scale(Y2[,,1])
-  #Elastic net to predict Z with Y
-  cv.m2=cv.glmnet(Y, Z, family=c("mgaussian"),
-                  alpha=alpha,nfolds=ncv,nlambda=nlambdas,intercept=FALSE)
-  m2=glmnet(Y, Z, family=c("mgaussian"),
-            alpha=alpha,lambda=cv.m1$lambda.min,intercept=FALSE)
-  Z2=predict(m2,newx=Y)
-  Z2=scale(Z2[,,1])
-  #Distance matrix for the predicted variables
-  ZYX2=cbind(Z2,Y2,X)
-  Wzyx2=as.matrix(dist(t(ZYX2),diag=T,upper=T))+diag(q+p+r)
-  Wzyx2=Wzyx2^(-1)
-  #Z's distance matrix
-  Wz=as.matrix(dist(t(Z2),diag=T,upper=T))+diag(q)
-  Wz=Wz^(-1)
-  #Y's distance matrix
-  Wy=as.matrix(dist(t(Y2),diag=T,upper=T))+diag(p)
-  Wy=Wy^(-1)
-  #X's distance matrix
-  Wx=as.matrix(dist(t(X),diag=T,upper=T))+diag(r)
-  Wx=Wx^(-1)
+  if (scale==T){
+    Z=scale(Z)
+    Y=scale(Y)
+    X=scale(X)
+    q=dim(Z)[2]
+    p=dim(Y)[2]
+    r=dim(X)[2]
+    #Joint distance matrix
+    ZYX=cbind(Z,Y,X)
+    Wzyx=as.matrix(dist(t(ZYX),diag=T,upper=T))+diag(q+p+r)
+    Wzyx=Wzyx^(-1)
+    #Elastic net to predict Y with X
+    cv.m1=cv.glmnet(X, Y, family=c("mgaussian"),
+                    alpha=alpha,nfolds=ncv,nlambda=nlambdas,intercept=FALSE)
+    m1=glmnet(X, Y, family=c("mgaussian"),
+              alpha=alpha,lambda=cv.m1$lambda.min,intercept=FALSE)
+    Y2=predict(m1,newx=X)
+    Y2=scale(Y2[,,1])
+    #Elastic net to predict Z with Y
+    cv.m2=cv.glmnet(Y, Z, family=c("mgaussian"),
+                    alpha=alpha,nfolds=ncv,nlambda=nlambdas,intercept=FALSE)
+    m2=glmnet(Y, Z, family=c("mgaussian"),
+              alpha=alpha,lambda=cv.m1$lambda.min,intercept=FALSE)
+    Z2=predict(m2,newx=Y)
+    Z2=scale(Z2[,,1])
+    #Distance matrix for the predicted variables
+    ZYX2=cbind(Z2,Y2,X)
+    Wzyx2=as.matrix(dist(t(ZYX2),diag=T,upper=T))+diag(q+p+r)
+    Wzyx2=Wzyx2^(-1)
+    #Z's distance matrix
+    Wz=as.matrix(dist(t(Z2),diag=T,upper=T))+diag(q)
+    Wz=Wz^(-1)
+    #Y's distance matrix
+    Wy=as.matrix(dist(t(Y2),diag=T,upper=T))+diag(p)
+    Wy=Wy^(-1)
+    #X's distance matrix
+    Wx=as.matrix(dist(t(X),diag=T,upper=T))+diag(r)
+    Wx=Wx^(-1)
+  }else{
+    q=dim(Z)[2]
+    p=dim(Y)[2]
+    r=dim(X)[2]
+    #Joint distance matrix
+    ZYX=cbind(Z,Y,X)
+    Wzyx=as.matrix(dist(t(ZYX),diag=T,upper=T))+diag(q+p+r)
+    Wzyx=Wzyx^(-1)
+    #Elastic net to predict Y with X
+    cv.m1=cv.glmnet(X, Y, family=c("mgaussian"),
+                    alpha=alpha,nfolds=ncv,nlambda=nlambdas,intercept=FALSE)
+    m1=glmnet(X, Y, family=c("mgaussian"),
+              alpha=alpha,lambda=cv.m1$lambda.min,intercept=FALSE)
+    Y2=predict(m1,newx=X)
+    Y2=Y2[,,1]
+    #Elastic net to predict Z with Y
+    cv.m2=cv.glmnet(Y, Z, family=c("mgaussian"),
+                    alpha=alpha,nfolds=ncv,nlambda=nlambdas,intercept=FALSE)
+    m2=glmnet(Y, Z, family=c("mgaussian"),
+              alpha=alpha,lambda=cv.m1$lambda.min,intercept=FALSE)
+    Z2=predict(m2,newx=Y)
+    Z2=Z2[,,1]
+    #Distance matrix for the predicted variables
+    ZYX2=cbind(Z2,Y2,X)
+    Wzyx2=as.matrix(dist(t(ZYX2),diag=T,upper=T))+diag(q+p+r)
+    Wzyx2=Wzyx2^(-1)
+    #Z's distance matrix
+    Wz=as.matrix(dist(t(Z2),diag=T,upper=T))+diag(q)
+    Wz=Wz^(-1)
+    #Y's distance matrix
+    Wy=as.matrix(dist(t(Y2),diag=T,upper=T))+diag(p)
+    Wy=Wy^(-1)
+    #X's distance matrix
+    Wx=as.matrix(dist(t(X),diag=T,upper=T))+diag(r)
+    Wx=Wx^(-1)
+  }
+
   #This creates a random starting point in the split in the algorithm for K clusters
   Cx=matrix(0,q+p+r,K)
   #This is a matrix of only ones
