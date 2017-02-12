@@ -14,7 +14,7 @@
 #' The clusers correspond to partitions that minimize this objective function.
 #' The external information of X is incorporated by using ridge regression to predict Y.
 #' This is a new comment.
-NCutY2R1<-function(Y,X,B=3000,L=1000,alpha=0.5,nlambdas=100,ncv=5){
+RegNCut2<-function(Y,X,B=3000,L=1000,alpha=0.5,nlambdas=100,ncv=5){
   #This creates the weight matrix W
   #W=abs(CorV1(n,p+q,cbind(X,Y)))
   #Wxy=W[1:p,(p+1):(p+q)]
@@ -187,7 +187,7 @@ NCutY2R1<-function(Y,X,B=3000,L=1000,alpha=0.5,nlambdas=100,ncv=5){
 #' #This is the true error of the clustering solution.
 #' errorL
 
-NCutYR1<-function(Y,X,K=2,B=3000,L=1000,alpha=0.5,nlambdas=100,ncv=5,dist='gaussian'){
+RegNCut<-function(Y,X,K=2,B=3000,L=1000,alpha=0.5,nlambdas=100,ncv=5,dist='gaussian'){
   #This creates the weight matrix W
   #W=abs(CorV1(n,p+q,cbind(X,Y)))
   #Wxy=W[1:p,(p+1):(p+q)]
@@ -312,7 +312,7 @@ NCutYR1<-function(Y,X,K=2,B=3000,L=1000,alpha=0.5,nlambdas=100,ncv=5,dist='gauss
 #' The clusers correspond to partitions that minimize this objective function.
 #' The external information of X is incorporated by using ridge regression to predict Y.
 
-NCutYLayer3R1<-function(Z,Y,X,K=2,B=3000,L=1000,alpha=0.5,ncv=3,nlambdas=100,scale=T){
+LayerNCut<-function(Z,Y,X,K=2,B=3000,L=1000,alpha=0.5,ncv=3,nlambdas=100,scale=T){
   #This creates the weight matrix W
   #W=abs(CorV1(n,p+q,cbind(X,Y)))
   #Wxy=W[1:p,(p+1):(p+q)]
