@@ -70,7 +70,7 @@ double NCutLayer3V1(const NumericMatrix &Cys, const NumericMatrix &Cy2s,
     a1=std::max(double(Cy.col(i).segment(0,q).transpose()*Wz*Cy.col(i).segment(0,q)),double(1));
     a2=std::max(double(Cy.col(i).segment(q,p).transpose()*Wy*Cy.col(i).segment(q,p)),double(1));
     a3=std::max(double(Cy.col(i).segment(q+p,r).transpose()*Wx*Cy.col(i).segment(q+p,r)),double(1));
-    Cuty(i)=a0/pow(a1*a2*a3,0.33333333333333333333333);//Why is this likes this?
+    Cuty(i)=a0/pow(a1*a2*a3,1);//Why is this likes this?
   }
 
   J=Cuty.sum();
@@ -149,7 +149,7 @@ double NCutLayer3V1(const Eigen::MatrixXd &Cy, const Eigen::MatrixXd &Cy2,
     a1=std::max(double(Cy.col(i).segment(0,q).transpose()*Wz*Cy.col(i).segment(0,q)),double(1));
     a2=std::max(double(Cy.col(i).segment(q,p).transpose()*Wy*Cy.col(i).segment(q,p)),double(1));
     a3=std::max(double(Cy.col(i).segment(q+p,r).transpose()*Wx*Cy.col(i).segment(q+p,r)),double(1));
-    Cuty(i)=a0/pow(a1*a2*a3,0.33333333333333333333333);//Why is this likes this?
+    Cuty(i)=a0/pow(a1*a2*a3,1);//Why is this likes this?
   }
 
   J=Cuty.sum();
