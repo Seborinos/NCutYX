@@ -469,4 +469,182 @@ LayerNCut<-function(Z,Y,X,K=2,B=3000,L=1000,alpha=0.5,ncv=3,nlambdas=100,scale=T
 }
 
 
+#' Cluster the columns of Z,Y and X into K channels.
+#'
+#' This function will output K channels of variables.
+#' @param Z is a n x p1 matrix of p1 variables and n observations.
+#' @param Y is a n x p2 matrix of p2 variables and n observations.
+#' @param X is a n x p3 matrix of p3 variables and n observations.
+#' @param B is the number of iterations in the simulated annealing algorithm.
+#' @param L is the temperature coefficient in the simulated annealing algorithm.
+#' @details
+#' The algorithm minimizes a modified version of NCut through simulated annealing.
+#' The clusers correspond to partitions that minimize this objective function.
+#' The external information of X is incorporated by using ridge regression to predict Y.
+
+LayerNCutV2<-function(Z,Y,X,K=2,B=3000,L=1000,alpha=0.5,ncv=3,nlambdas=100,scale=T){
+  #Beginning of the function
+  if (scale==T){
+    Z=scale(Z)
+    Y=scale(Y)
+    X=scale(X)
+    q=dim(Z)[2]
+    p=dim(Y)[2]
+    r=dim(X)[2]
+    #Joint distance matrix
+    ZYX=cbind(Z,Y,X)
+    Wzyx=as.matrix(dist(t(ZYX),diag=T,upper=T))+diag(q+p+r)
+    Wzyx=Wzyx^(-1)
+    #Elastic net to predict Y with X
+    cv.m1=cv.glmnet(X, Y, family=c("mgaussian"),
+                    alpha=alpha,nfolds=ncv,nlambda=nlambdas,intercept=FALSE)
+    m1=glmnet(X, Y, family=c("mgaussian"),
+              alpha=alpha,lambda=cv.m1$lambda.min,intercept=FALSE)
+    Y2=predict(m1,newx=X)
+    Y2=scale(Y2[,,1])
+    #Elastic net to predict Z with Y
+    cv.m2=cv.glmnet(Y, Z, family=c("mgaussian"),
+                    alpha=alpha,nfolds=ncv,nlambda=nlambdas,intercept=FALSE)
+    m2=glmnet(Y, Z, family=c("mgaussian"),
+              alpha=alpha,lambda=cv.m1$lambda.min,intercept=FALSE)
+    Z2=predict(m2,newx=Y)
+    Z2=scale(Z2[,,1])
+    #Distance matrix for the predicted variables
+    ZYX2=cbind(Z2,Y2,X)
+    Wzyx2=as.matrix(dist(t(ZYX2),diag=T,upper=T))+diag(q+p+r)
+    Wzyx2=Wzyx2^(-1)
+    #Z's distance matrix
+    Wz=as.matrix(dist(t(Z2),diag=T,upper=T))+diag(q)
+    Wz=Wz^(-1)
+    #Y's distance matrix
+    Wy=as.matrix(dist(t(Y2),diag=T,upper=T))+diag(p)
+    Wy=Wy^(-1)
+    #X's distance matrix
+    Wx=as.matrix(dist(t(X),diag=T,upper=T))+diag(r)
+    Wx=Wx^(-1)
+  }else{
+    q=dim(Z)[2]
+    p=dim(Y)[2]
+    r=dim(X)[2]
+    #Joint distance matrix
+    ZYX=cbind(Z,Y,X)
+    Wzyx=as.matrix(dist(t(ZYX),diag=T,upper=T))+diag(q+p+r)
+    Wzyx=Wzyx^(-1)
+    #Elastic net to predict Y with X
+    cv.m1=cv.glmnet(X, Y, family=c("mgaussian"),
+                    alpha=alpha,nfolds=ncv,nlambda=nlambdas,intercept=FALSE)
+    m1=glmnet(X, Y, family=c("mgaussian"),
+              alpha=alpha,lambda=cv.m1$lambda.min,intercept=FALSE)
+    Y2=predict(m1,newx=X)
+    Y2=Y2[,,1]
+    #Elastic net to predict Z with Y
+    cv.m2=cv.glmnet(Y, Z, family=c("mgaussian"),
+                    alpha=alpha,nfolds=ncv,nlambda=nlambdas,intercept=FALSE)
+    m2=glmnet(Y, Z, family=c("mgaussian"),
+              alpha=alpha,lambda=cv.m1$lambda.min,intercept=FALSE)
+    Z2=predict(m2,newx=Y)
+    Z2=Z2[,,1]
+    #Distance matrix for the predicted variables
+    ZYX2=cbind(Z2,Y2,X)
+    Wzyx2=as.matrix(dist(t(ZYX2),diag=T,upper=T))+diag(q+p+r)
+    Wzyx2=Wzyx2^(-1)
+    #Z's distance matrix
+    Wz=as.matrix(dist(t(Z2),diag=T,upper=T))+diag(q)
+    Wz=Wz^(-1)
+    #Y's distance matrix
+    Wy=as.matrix(dist(t(Y2),diag=T,upper=T))+diag(p)
+    Wy=Wy^(-1)
+    #X's distance matrix
+    Wx=as.matrix(dist(t(X),diag=T,upper=T))+diag(r)
+    Wx=Wx^(-1)
+  }
+
+  #This creates a random starting point in the split in the algorithm for K clusters
+  Cx=matrix(0,q+p+r,K)
+  #This is a matrix of only ones
+  M1<-matrix(1,q+p+r,K)
+  #Below: force the result to have one member per type of data and cluster.
+  #The code below makes sure each cluster gets at least Min elements
+  #per data type
+  Min=2
+  Check=matrix(0,3,K)
+  while(sum((Check<=Min))>0){
+    for (i in 1:(q+p+r)){
+      Cx[i,sample(K,1)]=1
+    }
+    Check[1,]=apply(Cx[1:q,1:K],2,sum)
+    Check[2,]=apply(Cx[(q+1):(q+p),1:K],2,sum)
+    Check[3,]=apply(Cx[(p+q+1):(q+p+r),1:K],2,sum)
+  }
+
+  #Now, calculate the number of indices in each group.
+  Nx=apply(Cx[,1:K],2,sum)
+  #Nx=Check
+
+  #These matrices will keep track of the elements of the clusters while
+  #doing simulated annealing.
+  C2x=matrix(0,p+q+r,K)
+  C2x=Cx
+  #J=NCutY3V1(Cx[,1:K],M1-Cx[,1:K],Wzyx2,Wzyx)
+  Izyx2=Wzyx2
+  Izyx2[1:q,1:q]=0
+  Izyx2[(1:p+q),(1:p+q)]=0
+  Izyx2[(1:r+p+q),(1:r+p+q)]=0
+  Dzyx2=Wzyx2
+  Dzyx2[1:q,(1:(p+r)+q)]=0
+  Dzyx2[(1:(p+r)+q),1:q]=0
+  Dzyx2[(1:p+q),(1:r+p+q)]=0
+  Dzyx2[(1:r+p+q),(1:p+q)]=0
+
+  J=NCutLayer3V1(Cx[,1:K],M1-Cx[,1:K],Wz,Wy,Wx,Izyx2)+
+    NCutY3V1(Cx[,1:K],M1-Cx[,1:K],Dzyx2,Izyx2)
+
+  Test<- vector(mode="numeric", length=B)
+
+  for (k in 1:B){
+    ###Draw k(-) and k(+)with unequal probabilites.
+    #This section needs to change dramatically for
+    #the general case
+
+    N=sum(Nx)
+    P=Nx/N
+    s=sample.int(K,K,replace=FALSE)#No probability right now
+
+    ###Select a vertex from cluster s[1] with unequal probability
+    #Calculating Unequal probabilites
+    #Draw a coin to see whether we choose X or Y
+    ax=which(Cx[,s[1]]==1)#which Xs belong to the cluster
+
+    sx=sample(ax,1)
+    C2x[sx,s[1]]=0
+    C2x[sx,s[K]]=1
+
+    #Now Step 3 in the algorithm
+    J2=NCutLayer3V1(C2x[,1:K],M1-C2x[,1:K],Wz,Wy,Wx,Izyx2)+
+      NCutY3V1(C2x[,1:K],M1-C2x[,1:K],Dzyx2,Izyx2)
+
+
+    if (J2>J){
+      #Prob[Count]=exp(-10000*log(k+1)*(J2-J))
+      des=rbinom(1,1,exp(-L*log(k+1)*(J2-J)))
+      if (des==1){
+        Cx=C2x#Set-up the new clusters
+        J=J2
+        Nx=apply(Cx[,1:K],2,sum)
+      }else{
+        C2x=Cx
+      }
+    } else{
+      Cx=C2x
+      J=J2
+      Nx=apply(Cx[,1:K],2,sum)
+    }
+    Test[k]=J
+
+  }
+  Res<-list()
+  Res[[1]]=Test
+  Res[[2]]=Cx
+  return(Res)
+}
 
