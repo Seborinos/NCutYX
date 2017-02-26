@@ -484,7 +484,7 @@ LayerNCut<-function(Z,Y,X,K=2,B=3000,L=1000,alpha=0.5,ncv=3,nlambdas=100,scale=T
 
 LayerNCutV2<-function(Z,Y,X,K=2,B=3000,L=1000,alpha=0.5,ncv=3,nlambdas=100,scale=F,model=F){
   #Beginning of the function
-  if (model=T){
+  if (model==T){
     if (scale==T){
       Z=scale(Z)
       Y=scale(Y)
