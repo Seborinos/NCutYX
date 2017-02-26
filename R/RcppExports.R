@@ -9,7 +9,3 @@ NCutLayer3V1 <- function(Cys, Cy2s, Wzs, Wys, Wxs, Wzyxs) {
     .Call('NCutYX_NCutLayer3V1', PACKAGE = 'NCutYX', Cys, Cy2s, Wzs, Wys, Wxs, Wzyxs)
 }
 
-OptimForward <- function(Wzs, Wys, Wxs, Wzyxs, m) {
-    .Call('NCutYX_OptimForward', PACKAGE = 'NCutYX', Wzs, Wys, Wxs, Wzyxs, m)
-}
-
