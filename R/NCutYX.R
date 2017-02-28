@@ -449,7 +449,7 @@ SpaWN<-function(X,K=2,B=3000,L=1000,scale=F,Beta_0=0.01){
   C2x=matrix(0,p,K+1)
   C2x=Cx
 
-  J=NCutY3V1(Cx[,1:K],matrix(1,p,K)-Cx[,1:K],Wxx,Wxx)
+  J=NCutY3V1(Cx[,1:K],matrix(1,p,K)-Cx[,1:K],Wx,Wx)
 
   Test<- vector(mode="numeric", length=B)
 
@@ -472,7 +472,7 @@ SpaWN<-function(X,K=2,B=3000,L=1000,scale=F,Beta_0=0.01){
     C2x[sx,s[K]]=C2x[sx,s[K]]+p_minus#this element will get something between 0 and the value of the other element
 
     #Now Step 3 in the algorithm
-    J2=NCutY3V1(C2x[,1:K],matrix(1,p,K)-C2x[,1:K],Wxx,Wxx)
+    J2=NCutY3V1(C2x[,1:K],matrix(1,p,K)-C2x[,1:K],Wx,Wx)
 
     if (J2>J){
       #Prob[Count]=exp(-10000*log(k+1)*(J2-J))
