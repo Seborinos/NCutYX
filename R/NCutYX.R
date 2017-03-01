@@ -442,14 +442,14 @@ SpaWN<-function(X,K=2,B=3000,L=1000,scale=F,Beta_0=0.01){
   Cx=Cx/Sums
 
   #Now, calculate the number of indices in each group.
-  Nx=apply(Cx[,1:K],2,sum)
-
+  Nx=apply(Cx,2,sum)
+  M1=matrix(1,p,K)
   #These matrices will keep track of the elements of the clusters while
   #doing simulated annealing.
-  C2x=matrix(0,p,K+1)
+  C2x=matrix(0,p,K)
   C2x=Cx
 
-  J=NCutY3V1(Cx[,1:K],matrix(1,p,K)-Cx[,1:K],Wx,Wx)
+  J=NCutY3V1(Cx,M1-Cx,Wx,Wx)
 
   Test<- vector(mode="numeric", length=B)
 
@@ -472,7 +472,7 @@ SpaWN<-function(X,K=2,B=3000,L=1000,scale=F,Beta_0=0.01){
     C2x[sx,s[K]]=C2x[sx,s[K]]+p_minus#this element will get something between 0 and the value of the other element
 
     #Now Step 3 in the algorithm
-    J2=NCutY3V1(C2x[,1:K],matrix(1,p,K)-C2x[,1:K],Wx,Wx)
+    J2=NCutY3V1(C2x,M1-C2x,Wx,Wx)
 
     if (J2>J){
       #Prob[Count]=exp(-10000*log(k+1)*(J2-J))
@@ -480,14 +480,14 @@ SpaWN<-function(X,K=2,B=3000,L=1000,scale=F,Beta_0=0.01){
       if (des==1){
         Cx=C2x#Set-up the new clusters
         J=J2
-        Nx=apply(Cx[,1:K],2,sum)
+        Nx=apply(Cx,2,sum)
       }else{
         C2x=Cx
       }
     } else{
       Cx=C2x
       J=J2
-      Nx=apply(Cx[,1:K],2,sum)
+      Nx=apply(Cx,2,sum)
     }
     Test[k]=J
 
