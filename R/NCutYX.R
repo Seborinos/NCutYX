@@ -416,7 +416,7 @@ LayerNCut<-function(Z,Y,X,K=2,B=3000,L=1000,alpha=0.5,ncv=3,nlambdas=100,scale=F
 #' The algorithm minimizes a modified version of NCut through simulated annealing.
 #' The clusers correspond to partitions that minimize this objective function.
 
-SpaWN<-function(X,K=2,B=3000,L=1000,scale=F,Beta_0=0.01){
+SpaWN<-function(X,K=2,B=3000,L=1000,scale=F,Beta_0=0.01,lambda=1){
   #Beginning of the function
     if (scale==T){
       X=scale(X)
@@ -449,7 +449,7 @@ SpaWN<-function(X,K=2,B=3000,L=1000,scale=F,Beta_0=0.01){
   C2x=matrix(0,p,K)
   C2x=Cx
 
-  J=NCutY3V1(Cx,M1-Cx,Wx,Wx)
+  J=NCutY3V1(Cx,M1-Cx,Wx,Wx)+lambda*sum(Cx)
 
   Test<- vector(mode="numeric", length=B)
 
@@ -472,7 +472,7 @@ SpaWN<-function(X,K=2,B=3000,L=1000,scale=F,Beta_0=0.01){
     C2x[sx,s[K]]=C2x[sx,s[K]]+p_minus#this element will get something between 0 and the value of the other element
 
     #Now Step 3 in the algorithm
-    J2=NCutY3V1(C2x,M1-C2x,Wx,Wx)
+    J2=NCutY3V1(C2x,M1-C2x,Wx,Wx)+lambda*sum(Cx)
 
     if (J2>J){
       #Prob[Count]=exp(-10000*log(k+1)*(J2-J))
