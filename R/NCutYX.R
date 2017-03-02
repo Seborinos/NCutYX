@@ -416,19 +416,19 @@ LayerNCut<-function(Z,Y,X,K=2,B=3000,L=1000,alpha=0.5,ncv=3,nlambdas=100,scale=F
 #' The algorithm minimizes a modified version of NCut through simulated annealing.
 #' The clusers correspond to partitions that minimize this objective function.
 
-SpaWN<-function(X,K=2,B=3000,L=1000,scale=F,Beta_0=0.01,lambda=1){
+SpaWN<-function(X,K=2,B=3000,L=1000,scale=F,mu_0=0.01,lambda=1){
   #Beginning of the function
-    if (scale==T){
-      X=scale(X)
-      p=dim(X)[2]
-      Wx=as.matrix(dist(t(X),diag=T,upper=T))+diag(p)
-      Wx=Wx^(-1)
-    }else{
-      p=dim(X)[2]
-      #X's distance matrix
-      Wx=as.matrix(dist(t(X),diag=T,upper=T))+diag(p)
-      Wx=Wx^(-1)
-    }
+  if (scale==T){
+    X=scale(X)
+    p=dim(X)[2]
+    Wx=as.matrix(dist(t(X),diag=T,upper=T))+diag(p)
+    Wx=Wx^(-1)
+  }else{
+    p=dim(X)[2]
+    #X's distance matrix
+    Wx=as.matrix(dist(t(X),diag=T,upper=T))+diag(p)
+    Wx=Wx^(-1)
+  }
 
   #This creates a random starting point in the split in the algorithm for K clusters
   Cx=matrix(0,p,K)
@@ -449,7 +449,7 @@ SpaWN<-function(X,K=2,B=3000,L=1000,scale=F,Beta_0=0.01,lambda=1){
   C2x=matrix(0,p,K)
   C2x=Cx
 
-  J=NCutY3V1(Cx,M1-Cx,Wx,Wx)+lambda*sum(abs(Cx-1/K))
+  J=NCutY3V1(Cx,M1-Cx,Wx,Wx)+lambda*sum(abs(Cx-1/K))/(K*p)
 
   Test<- vector(mode="numeric", length=B)
 
@@ -467,12 +467,20 @@ SpaWN<-function(X,K=2,B=3000,L=1000,scale=F,Beta_0=0.01,lambda=1){
 
     #New version
     sx=sample(ax,1)
-    p_minus=runif(1,min=0,max=C2x[sx,s[1]])
-    C2x[sx,s[1]]=C2x[sx,s[1]]-p_minus#This element will give somethin between 0 and its value
-    C2x[sx,s[K]]=C2x[sx,s[K]]+p_minus#this element will get something between 0 and the value of the other element
+    #make a draw to see if we assign it 1/K
+    sparse=rbinom(1,1,p=(mu_0+abs(C2x[sx,s[1]]-1/K)))
+    if (sparse==0){
+      p_minus=C2x[sx,s[1]]-1/K
+      C2x[sx,s[1]]=1/K
+      C2x[sx,s[2:K]]=((K-1)/K)*C2x[sx,s[2:K]]/sum(C2x[sx,s[2:K]])
+    }else{
+      p_minus=runif(1,min=0,max=C2x[sx,s[1]])
+      C2x[sx,s[1]]=C2x[sx,s[1]]-p_minus#This element will give somethin between 0 and its value
+      C2x[sx,s[K]]=C2x[sx,s[K]]+p_minus#This element will get something between 0 and the value of the other element
+    }
 
     #Now Step 3 in the algorithm
-    J2=NCutY3V1(C2x,M1-C2x,Wx,Wx)+lambda*sum(abs(C2x-1/K))
+    J2=NCutY3V1(C2x,M1-C2x,Wx,Wx)+lambda*sum(abs(C2x-1/K))/(K*p)
 
     if (J2>J){
       #Prob[Count]=exp(-10000*log(k+1)*(J2-J))
@@ -497,3 +505,4 @@ SpaWN<-function(X,K=2,B=3000,L=1000,scale=F,Beta_0=0.01,lambda=1){
   Res[[2]]=Cx
   return(Res)
 }
+
