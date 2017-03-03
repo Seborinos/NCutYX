@@ -9,3 +9,7 @@ NCutLayer3V1 <- function(Cys, Cy2s, Wzs, Wys, Wxs, Wzyxs) {
     .Call('NCutYX_NCutLayer3V1', PACKAGE = 'NCutYX', Cys, Cy2s, Wzs, Wys, Wxs, Wzyxs)
 }
 
+Penal <- function(Cys) {
+    .Call('NCutYX_Penal', PACKAGE = 'NCutYX', Cys)
+}
+

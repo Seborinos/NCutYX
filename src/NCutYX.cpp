@@ -83,3 +83,30 @@ double NCutLayer3V1(const NumericMatrix &Cys, const NumericMatrix &Cy2s,
   return J;
   //return J;
 }
+
+//This function calculates a max penalty
+
+// [[Rcpp::depends(RcppEigen)]]
+// [[Rcpp::export]]
+NumericMatrix Penal(const NumericMatrix &Cys){
+  //Changing it to a Eigen::MatrixXd
+  Eigen::Map<Eigen::MatrixXd> Cy = as<Eigen::Map<Eigen::MatrixXd> >(Cys);
+  const int K = Cy.cols();//number of groups
+  const int p = Cy.rows();//Number of genes
+  //Penalty matrix P of penalties
+  MatrixXd Pen(p,K);
+  //Finding the penalties
+  for (int i=0;i<p;i++){
+    Pen(i,0)=(1-Cy.block(i,1,1,K-1).maxCoeff())/(K-1);
+    Pen(i,K-1)=(1-Cy.block(i,0,1,K-1).maxCoeff())/(K-1);
+    if (K>2){
+      for (int j=1;j<K-1;j++){
+        Pen(i,j)=(1-std::max(double(Cy.block(i,0,1,j).maxCoeff()),double(Cy.block(i,j+1,1,K-1-j).maxCoeff())))/(K-1);
+      }
+    }
+  }
+
+  NumericMatrix Penx(wrap(Pen));
+  return Penx;
+}
+
