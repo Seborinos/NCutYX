@@ -65,7 +65,7 @@
 #' #This is the true error of the clustering solution.
 #' errorL
 
-RegNCut<-function(Y,X,K=2,B=3000,L=1000,alpha=0.5,nlambdas=100,ncv=5,dist='gaussian'){
+ANCut<-function(Y,X,K=2,B=3000,L=1000,alpha=0.5,nlambdas=100,ncv=5,dist='gaussian'){
   #This creates the weight matrix W
   #W=abs(CorV1(n,p+q,cbind(X,Y)))
   #Wxy=W[1:p,(p+1):(p+q)]
