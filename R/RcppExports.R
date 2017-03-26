@@ -13,3 +13,7 @@ Penal <- function(Cys) {
     .Call('NCutYX_Penal', PACKAGE = 'NCutYX', Cys)
 }
 
+SimuA <- function(C0, lambda, Wx) {
+    .Call('NCutYX_SimuA', PACKAGE = 'NCutYX', C0, lambda, Wx)
+}
+

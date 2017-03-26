@@ -47,3 +47,16 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// SimuA
+SEXP SimuA(NumericMatrix& C0, const double& lambda, const NumericMatrix& Wx);
+RcppExport SEXP NCutYX_SimuA(SEXP C0SEXP, SEXP lambdaSEXP, SEXP WxSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix& >::type C0(C0SEXP);
+    Rcpp::traits::input_parameter< const double& >::type lambda(lambdaSEXP);
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type Wx(WxSEXP);
+    rcpp_result_gen = Rcpp::wrap(SimuA(C0, lambda, Wx));
+    return rcpp_result_gen;
+END_RCPP
+}
