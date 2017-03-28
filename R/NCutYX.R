@@ -65,7 +65,7 @@
 #' #This is the true error of the clustering solution.
 #' errorL
 
-ANCut<-function(Y,X,K=2,B=3000,L=1000,alpha=0.5,nlambdas=100,ncv=5,dist='gaussian'){
+ANCut<-function(Y,X,K=2,B=3000,L=1000,alpha=0.5,nlambdas=100,ncv=5,dist='gaussian',sigma=1){
   #This creates the weight matrix W
   #W=abs(CorV1(n,p+q,cbind(X,Y)))
   #Wxy=W[1:p,(p+1):(p+q)]
@@ -77,7 +77,7 @@ ANCut<-function(Y,X,K=2,B=3000,L=1000,alpha=0.5,nlambdas=100,ncv=5,dist='gaussia
     Wyy=Wyy^(-1)
   }
   if(dist=='gaussian'){
-    Wyy=exp((-1)*as.matrix(dist(t(Y),diag=T,upper=T)))
+    Wyy=exp((-1)*as.matrix(dist(t(Y),diag=T,upper=T))/sigma)
   }
 
 
@@ -103,7 +103,7 @@ ANCut<-function(Y,X,K=2,B=3000,L=1000,alpha=0.5,nlambdas=100,ncv=5,dist='gaussia
     Wxx=Wxx^(-1)
   }
   if(dist=='gaussian'){
-    Wxx=exp((-1)*as.matrix(dist(t(Y2),diag=T,upper=T)))
+    Wxx=exp((-1)*as.matrix(dist(t(Y2),diag=T,upper=T))/sigma)
   }
 
   #Wxx[which(Wxx==Inf)]=1
@@ -189,7 +189,8 @@ ANCut<-function(Y,X,K=2,B=3000,L=1000,alpha=0.5,nlambdas=100,ncv=5,dist='gaussia
 #' The clusers correspond to partitions that minimize this objective function.
 #' The external information of X is incorporated by using ridge regression to predict Y.
 
-LayerNCut<-function(Z,Y,X,K=2,B=3000,L=1000,alpha=0.5,ncv=3,nlambdas=100,scale=F,model=F,gamma=0.5){
+LayerNCut<-function(Z,Y,X,K=2,B=3000,L=1000,alpha=0.5,ncv=3,nlambdas=100,
+                    scale=F,model=F,gamma=0.5,dist='gaussian',sigma=1){
   #Beginning of the function
   if (model==T){
     if (scale==T){
@@ -213,24 +214,44 @@ LayerNCut<-function(Z,Y,X,K=2,B=3000,L=1000,alpha=0.5,ncv=3,nlambdas=100,scale=F
                 alpha=alpha,lambda=cv.m1$lambda.min,intercept=FALSE)
       Z2=predict(m2,newx=Y)
       Z2=scale(Z2[,,1])
-      #Distance matrix for the predicted variables
-      ZYX2=cbind(Z2,Y2,X)
-      Wzyx2=as.matrix(dist(t(ZYX2),diag=T,upper=T))+diag(q+p+r)
-      Wzyx2=Wzyx2^(-1)
-      #Z's distance matrix
-      Wz=as.matrix(dist(t(Z),diag=T,upper=T))+diag(q)
-      Wz=Wz^(-1)
-      #Y's distance matrix
-      Wy=as.matrix(dist(t(Y),diag=T,upper=T))+diag(p)
-      Wy=Wy^(-1)
-      #X's distance matrix
-      Wx=as.matrix(dist(t(X),diag=T,upper=T))+diag(r)
-      Wx=Wx^(-1)
-      #Matrix without diagonal entries
-      Izyx2=Wzyx2
-      Izyx2[1:q,1:q]=0
-      Izyx2[(1:p+q),(1:p+q)]=0
-      Izyx2[(1:r+p+q),(1:r+p+q)]=0
+      if (dist=='euclidean'){
+        #Distance matrix for the predicted variables
+        ZYX2=cbind(Z2,Y2,X)
+        Wzyx2=as.matrix(dist(t(ZYX2),diag=T,upper=T))+diag(q+p+r)
+        Wzyx2=Wzyx2^(-1)
+        #Z's distance matrix
+        Wz=as.matrix(dist(t(Z),diag=T,upper=T))+diag(q)
+        Wz=Wz^(-1)
+        #Y's distance matrix
+        Wy=as.matrix(dist(t(Y),diag=T,upper=T))+diag(p)
+        Wy=Wy^(-1)
+        #X's distance matrix
+        Wx=as.matrix(dist(t(X),diag=T,upper=T))+diag(r)
+        Wx=Wx^(-1)
+        #Matrix without diagonal entries
+        Izyx2=Wzyx2
+        Izyx2[1:q,1:q]=0
+        Izyx2[(1:p+q),(1:p+q)]=0
+        Izyx2[(1:r+p+q),(1:r+p+q)]=0
+      }else if(dist='gaussian'){
+        #Distance matrix for the predicted variables
+        ZYX2=cbind(Z2,Y2,X)
+        Wzyx2=exp((-1)*as.matrix(dist(t(ZYX2),diag=T,upper=T))/sigma)
+        #Z's distance matrix
+        Wz=exp((-1)*as.matrix(dist(t(Z),diag=T,upper=T))/sigma)
+        #Y's distance matrix
+        Wy=exp((-1)*as.matrix(dist(t(Y),diag=T,upper=T))/sigma)
+        #X's distance matrix
+        Wx=exp((-1)*as.matrix(dist(t(X),diag=T,upper=T))/sigma)
+        #Matrix without diagonal entries
+        Izyx2=Wzyx2
+        Izyx2[1:q,1:q]=0
+        Izyx2[(1:p+q),(1:p+q)]=0
+        Izyx2[(1:r+p+q),(1:r+p+q)]=0
+      } else{
+        print('Distance Error')
+      }
+
 
     }else{
       q=dim(Z)[2]
@@ -250,24 +271,43 @@ LayerNCut<-function(Z,Y,X,K=2,B=3000,L=1000,alpha=0.5,ncv=3,nlambdas=100,scale=F
                 alpha=alpha,lambda=cv.m2$lambda.min,intercept=FALSE)
       Z2=predict(m2,newx=Y)
       Z2=Z2[,,1]
-      #Distance matrix for the predicted variables
-      ZYX2=cbind(Z2,Y2,X)
-      Wzyx2=as.matrix(dist(t(ZYX2),diag=T,upper=T))+diag(q+p+r)
-      Wzyx2=Wzyx2^(-1)
-      #Z's distance matrix
-      Wz=as.matrix(dist(t(Z2),diag=T,upper=T))+diag(q)
-      Wz=Wz^(-1)
-      #Y's distance matrix
-      Wy=as.matrix(dist(t(Y2),diag=T,upper=T))+diag(p)
-      Wy=Wy^(-1)
-      #X's distance matrix
-      Wx=as.matrix(dist(t(X),diag=T,upper=T))+diag(r)
-      Wx=Wx^(-1)
-      #Matrix without diagonal entries
-      Izyx2=Wzyx2
-      Izyx2[1:q,1:q]=0
-      Izyx2[(1:p+q),(1:p+q)]=0
-      Izyx2[(1:r+p+q),(1:r+p+q)]=0
+      if (dist=='euclidean'){
+        #Distance matrix for the predicted variables
+        ZYX2=cbind(Z2,Y2,X)
+        Wzyx2=as.matrix(dist(t(ZYX2),diag=T,upper=T))+diag(q+p+r)
+        Wzyx2=Wzyx2^(-1)
+        #Z's distance matrix
+        Wz=as.matrix(dist(t(Z),diag=T,upper=T))+diag(q)
+        Wz=Wz^(-1)
+        #Y's distance matrix
+        Wy=as.matrix(dist(t(Y),diag=T,upper=T))+diag(p)
+        Wy=Wy^(-1)
+        #X's distance matrix
+        Wx=as.matrix(dist(t(X),diag=T,upper=T))+diag(r)
+        Wx=Wx^(-1)
+        #Matrix without diagonal entries
+        Izyx2=Wzyx2
+        Izyx2[1:q,1:q]=0
+        Izyx2[(1:p+q),(1:p+q)]=0
+        Izyx2[(1:r+p+q),(1:r+p+q)]=0
+      }else if(dist='gaussian'){
+        #Distance matrix for the predicted variables
+        ZYX2=cbind(Z2,Y2,X)
+        Wzyx2=exp((-1)*as.matrix(dist(t(ZYX2),diag=T,upper=T))/sigma)
+        #Z's distance matrix
+        Wz=exp((-1)*as.matrix(dist(t(Z),diag=T,upper=T))/sigma)
+        #Y's distance matrix
+        Wy=exp((-1)*as.matrix(dist(t(Y),diag=T,upper=T))/sigma)
+        #X's distance matrix
+        Wx=exp((-1)*as.matrix(dist(t(X),diag=T,upper=T))/sigma)
+        #Matrix without diagonal entries
+        Izyx2=Wzyx2
+        Izyx2[1:q,1:q]=0
+        Izyx2[(1:p+q),(1:p+q)]=0
+        Izyx2[(1:r+p+q),(1:r+p+q)]=0
+      } else{
+        print('Distance Error')
+      }
 
     }
   }else{
@@ -278,47 +318,85 @@ LayerNCut<-function(Z,Y,X,K=2,B=3000,L=1000,alpha=0.5,ncv=3,nlambdas=100,scale=F
       q=dim(Z)[2]
       p=dim(Y)[2]
       r=dim(X)[2]
-      #Joint distance matrix
-      ZYX=cbind(Z,Y,X)
-      Wzyx=as.matrix(dist(t(ZYX),diag=T,upper=T))+diag(q+p+r)
-      Wzyx=Wzyx^(-1)
-      #Z's distance matrix
-      Wz=as.matrix(dist(t(Z),diag=T,upper=T))+diag(q)
-      Wz=Wz^(-1)
-      #Y's distance matrix
-      Wy=as.matrix(dist(t(Y),diag=T,upper=T))+diag(p)
-      Wy=Wy^(-1)
-      #X's distance matrix
-      Wx=as.matrix(dist(t(X),diag=T,upper=T))+diag(r)
-      Wx=Wx^(-1)
-      #Matrix without diagonal entries
-      Izyx2=Wzyx
-      Izyx2[1:q,1:q]=0
-      Izyx2[(1:p+q),(1:p+q)]=0
-      Izyx2[(1:r+p+q),(1:r+p+q)]=0
+      if (dist=='euclidean'){
+        #Distance matrix for the predicted variables
+        ZYX2=cbind(Z2,Y2,X)
+        Wzyx2=as.matrix(dist(t(ZYX2),diag=T,upper=T))+diag(q+p+r)
+        Wzyx2=Wzyx2^(-1)
+        #Z's distance matrix
+        Wz=as.matrix(dist(t(Z),diag=T,upper=T))+diag(q)
+        Wz=Wz^(-1)
+        #Y's distance matrix
+        Wy=as.matrix(dist(t(Y),diag=T,upper=T))+diag(p)
+        Wy=Wy^(-1)
+        #X's distance matrix
+        Wx=as.matrix(dist(t(X),diag=T,upper=T))+diag(r)
+        Wx=Wx^(-1)
+        #Matrix without diagonal entries
+        Izyx2=Wzyx2
+        Izyx2[1:q,1:q]=0
+        Izyx2[(1:p+q),(1:p+q)]=0
+        Izyx2[(1:r+p+q),(1:r+p+q)]=0
+      }else if(dist='gaussian'){
+        #Distance matrix for the predicted variables
+        ZYX2=cbind(Z2,Y2,X)
+        Wzyx2=exp((-1)*as.matrix(dist(t(ZYX2),diag=T,upper=T))/sigma)
+        #Z's distance matrix
+        Wz=exp((-1)*as.matrix(dist(t(Z),diag=T,upper=T))/sigma)
+        #Y's distance matrix
+        Wy=exp((-1)*as.matrix(dist(t(Y),diag=T,upper=T))/sigma)
+        #X's distance matrix
+        Wx=exp((-1)*as.matrix(dist(t(X),diag=T,upper=T))/sigma)
+        #Matrix without diagonal entries
+        Izyx2=Wzyx2
+        Izyx2[1:q,1:q]=0
+        Izyx2[(1:p+q),(1:p+q)]=0
+        Izyx2[(1:r+p+q),(1:r+p+q)]=0
+      } else{
+        print('Distance Error')
+      }
 
     }else{
       q=dim(Z)[2]
       p=dim(Y)[2]
       r=dim(X)[2]
-      #Joint distance matrix
-      ZYX=cbind(Z,Y,X)
-      Wzyx=as.matrix(dist(t(ZYX),diag=T,upper=T))+diag(q+p+r)
-      Wzyx=Wzyx^(-1)
-      #Z's distance matrix
-      Wz=as.matrix(dist(t(Z),diag=T,upper=T))+diag(q)
-      Wz=Wz^(-1)
-      #Y's distance matrix
-      Wy=as.matrix(dist(t(Y),diag=T,upper=T))+diag(p)
-      Wy=Wy^(-1)
-      #X's distance matrix
-      Wx=as.matrix(dist(t(X),diag=T,upper=T))+diag(r)
-      Wx=Wx^(-1)
-      #Matrix without diagonal entries
-      Izyx2=Wzyx
-      Izyx2[1:q,1:q]=0
-      Izyx2[(1:p+q),(1:p+q)]=0
-      Izyx2[(1:r+p+q),(1:r+p+q)]=0
+      if (dist=='euclidean'){
+        #Distance matrix for the predicted variables
+        ZYX2=cbind(Z2,Y2,X)
+        Wzyx2=as.matrix(dist(t(ZYX2),diag=T,upper=T))+diag(q+p+r)
+        Wzyx2=Wzyx2^(-1)
+        #Z's distance matrix
+        Wz=as.matrix(dist(t(Z),diag=T,upper=T))+diag(q)
+        Wz=Wz^(-1)
+        #Y's distance matrix
+        Wy=as.matrix(dist(t(Y),diag=T,upper=T))+diag(p)
+        Wy=Wy^(-1)
+        #X's distance matrix
+        Wx=as.matrix(dist(t(X),diag=T,upper=T))+diag(r)
+        Wx=Wx^(-1)
+        #Matrix without diagonal entries
+        Izyx2=Wzyx2
+        Izyx2[1:q,1:q]=0
+        Izyx2[(1:p+q),(1:p+q)]=0
+        Izyx2[(1:r+p+q),(1:r+p+q)]=0
+      }else if(dist='gaussian'){
+        #Distance matrix for the predicted variables
+        ZYX2=cbind(Z2,Y2,X)
+        Wzyx2=exp((-1)*as.matrix(dist(t(ZYX2),diag=T,upper=T))/sigma)
+        #Z's distance matrix
+        Wz=exp((-1)*as.matrix(dist(t(Z),diag=T,upper=T))/sigma)
+        #Y's distance matrix
+        Wy=exp((-1)*as.matrix(dist(t(Y),diag=T,upper=T))/sigma)
+        #X's distance matrix
+        Wx=exp((-1)*as.matrix(dist(t(X),diag=T,upper=T))/sigma)
+        #Matrix without diagonal entries
+        Izyx2=Wzyx2
+        Izyx2[1:q,1:q]=0
+        Izyx2[(1:p+q),(1:p+q)]=0
+        Izyx2[(1:r+p+q),(1:r+p+q)]=0
+      } else{
+        print('Distance Error')
+      }
 
     }
   }
@@ -416,18 +494,30 @@ LayerNCut<-function(Z,Y,X,K=2,B=3000,L=1000,alpha=0.5,ncv=3,nlambdas=100,scale=F
 #' The algorithm minimizes a modified version of NCut through simulated annealing.
 #' The clusers correspond to partitions that minimize this objective function.
 
-SpaWN<-function(X,K=2,B=3000,L=1000,scale=F,mu_0=0.01,lambda=1){
+SpaWN<-function(X,K=2,B=3000,L=1000,scale=F,mu_0=0.01,lambda=1,dist='gaussian',sigma=1){
   #Beginning of the function
   if (scale==T){
     X=scale(X)
     p=dim(X)[2]
-    Wx=as.matrix(dist(t(X),diag=T,upper=T))+diag(p)
-    Wx=Wx^(-1)
+    if (dist=='gaussian'){
+      Wx=exp((-1)*as.matrix(dist(t(X),diag=T,upper=T))/sigma)
+    }else if(dist='euclidean'){
+      Wx=as.matrix(dist(t(X),diag=T,upper=T))+diag(p)
+      Wx=Wx^(-1)
+    } else{
+      print('Distance Error')
+    }
+
   }else{
     p=dim(X)[2]
-    #X's distance matrix
-    Wx=as.matrix(dist(t(X),diag=T,upper=T))+diag(p)
-    Wx=Wx^(-1)
+    if (dist=='gaussian'){
+      Wx=exp((-1)*as.matrix(dist(t(X),diag=T,upper=T))/sigma)
+    }else if(dist='euclidean'){
+      Wx=as.matrix(dist(t(X),diag=T,upper=T))+diag(p)
+      Wx=Wx^(-1)
+    } else{
+      print('Distance Error')
+    }
   }
 
   #This creates a random starting point in the split in the algorithm for K clusters
