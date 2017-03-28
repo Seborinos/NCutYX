@@ -233,7 +233,7 @@ LayerNCut<-function(Z,Y,X,K=2,B=3000,L=1000,alpha=0.5,ncv=3,nlambdas=100,
         Izyx2[1:q,1:q]=0
         Izyx2[(1:p+q),(1:p+q)]=0
         Izyx2[(1:r+p+q),(1:r+p+q)]=0
-      }else if(dist='gaussian'){
+      }else if(dist=='gaussian'){
         #Distance matrix for the predicted variables
         ZYX2=cbind(Z2,Y2,X)
         Wzyx2=exp((-1)*as.matrix(dist(t(ZYX2),diag=T,upper=T))/sigma)
@@ -290,7 +290,7 @@ LayerNCut<-function(Z,Y,X,K=2,B=3000,L=1000,alpha=0.5,ncv=3,nlambdas=100,
         Izyx2[1:q,1:q]=0
         Izyx2[(1:p+q),(1:p+q)]=0
         Izyx2[(1:r+p+q),(1:r+p+q)]=0
-      }else if(dist='gaussian'){
+      }else if(dist=='gaussian'){
         #Distance matrix for the predicted variables
         ZYX2=cbind(Z2,Y2,X)
         Wzyx2=exp((-1)*as.matrix(dist(t(ZYX2),diag=T,upper=T))/sigma)
@@ -337,7 +337,7 @@ LayerNCut<-function(Z,Y,X,K=2,B=3000,L=1000,alpha=0.5,ncv=3,nlambdas=100,
         Izyx2[1:q,1:q]=0
         Izyx2[(1:p+q),(1:p+q)]=0
         Izyx2[(1:r+p+q),(1:r+p+q)]=0
-      }else if(dist='gaussian'){
+      }else if(dist=='gaussian'){
         #Distance matrix for the predicted variables
         ZYX2=cbind(Z2,Y2,X)
         Wzyx2=exp((-1)*as.matrix(dist(t(ZYX2),diag=T,upper=T))/sigma)
@@ -379,7 +379,7 @@ LayerNCut<-function(Z,Y,X,K=2,B=3000,L=1000,alpha=0.5,ncv=3,nlambdas=100,
         Izyx2[1:q,1:q]=0
         Izyx2[(1:p+q),(1:p+q)]=0
         Izyx2[(1:r+p+q),(1:r+p+q)]=0
-      }else if(dist='gaussian'){
+      }else if(dist=='gaussian'){
         #Distance matrix for the predicted variables
         ZYX2=cbind(Z2,Y2,X)
         Wzyx2=exp((-1)*as.matrix(dist(t(ZYX2),diag=T,upper=T))/sigma)
@@ -501,7 +501,7 @@ SpaWN<-function(X,K=2,B=3000,L=1000,scale=F,mu_0=0.01,lambda=1,dist='gaussian',s
     p=dim(X)[2]
     if (dist=='gaussian'){
       Wx=exp((-1)*as.matrix(dist(t(X),diag=T,upper=T))/sigma)
-    }else if(dist='euclidean'){
+    }else if(dist=='euclidean'){
       Wx=as.matrix(dist(t(X),diag=T,upper=T))+diag(p)
       Wx=Wx^(-1)
     } else{
@@ -512,7 +512,7 @@ SpaWN<-function(X,K=2,B=3000,L=1000,scale=F,mu_0=0.01,lambda=1,dist='gaussian',s
     p=dim(X)[2]
     if (dist=='gaussian'){
       Wx=exp((-1)*as.matrix(dist(t(X),diag=T,upper=T))/sigma)
-    }else if(dist='euclidean'){
+    }else if(dist=='euclidean'){
       Wx=as.matrix(dist(t(X),diag=T,upper=T))+diag(p)
       Wx=Wx^(-1)
     } else{
