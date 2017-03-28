@@ -320,7 +320,7 @@ LayerNCut<-function(Z,Y,X,K=2,B=3000,L=1000,alpha=0.5,ncv=3,nlambdas=100,
       r=dim(X)[2]
       if (dist=='euclidean'){
         #Distance matrix for the predicted variables
-        ZYX2=cbind(Z2,Y2,X)
+        ZYX2=cbind(Z,Y,X)
         Wzyx2=as.matrix(dist(t(ZYX2),diag=T,upper=T))+diag(q+p+r)
         Wzyx2=Wzyx2^(-1)
         #Z's distance matrix
@@ -339,7 +339,7 @@ LayerNCut<-function(Z,Y,X,K=2,B=3000,L=1000,alpha=0.5,ncv=3,nlambdas=100,
         Izyx2[(1:r+p+q),(1:r+p+q)]=0
       }else if(dist=='gaussian'){
         #Distance matrix for the predicted variables
-        ZYX2=cbind(Z2,Y2,X)
+        ZYX2=cbind(Z,Y,X)
         Wzyx2=exp((-1)*as.matrix(dist(t(ZYX2),diag=T,upper=T))/sigma)
         #Z's distance matrix
         Wz=exp((-1)*as.matrix(dist(t(Z),diag=T,upper=T))/sigma)
@@ -362,7 +362,7 @@ LayerNCut<-function(Z,Y,X,K=2,B=3000,L=1000,alpha=0.5,ncv=3,nlambdas=100,
       r=dim(X)[2]
       if (dist=='euclidean'){
         #Distance matrix for the predicted variables
-        ZYX2=cbind(Z2,Y2,X)
+        ZYX2=cbind(Z,Y,X)
         Wzyx2=as.matrix(dist(t(ZYX2),diag=T,upper=T))+diag(q+p+r)
         Wzyx2=Wzyx2^(-1)
         #Z's distance matrix
@@ -381,7 +381,7 @@ LayerNCut<-function(Z,Y,X,K=2,B=3000,L=1000,alpha=0.5,ncv=3,nlambdas=100,
         Izyx2[(1:r+p+q),(1:r+p+q)]=0
       }else if(dist=='gaussian'){
         #Distance matrix for the predicted variables
-        ZYX2=cbind(Z2,Y2,X)
+        ZYX2=cbind(Z,Y,X)
         Wzyx2=exp((-1)*as.matrix(dist(t(ZYX2),diag=T,upper=T))/sigma)
         #Z's distance matrix
         Wz=exp((-1)*as.matrix(dist(t(Z),diag=T,upper=T))/sigma)
