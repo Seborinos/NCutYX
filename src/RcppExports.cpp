@@ -47,3 +47,14 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// Ranking
+double Ranking(const NumericMatrix& C);
+RcppExport SEXP NCutYX_Ranking(SEXP CSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type C(CSEXP);
+    rcpp_result_gen = Rcpp::wrap(Ranking(C));
+    return rcpp_result_gen;
+END_RCPP
+}

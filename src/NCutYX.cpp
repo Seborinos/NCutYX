@@ -1,5 +1,5 @@
 #include <RcppEigen.h>
-#include <algorithm> //std::min
+#include <algorithm>  // std::sort std::min
 
 using namespace Rcpp;
 using namespace Eigen;
@@ -108,5 +108,27 @@ NumericMatrix Penal(const NumericMatrix &Cys){
 
   NumericMatrix Penx(wrap(Pen));
   return Penx;
+}
+
+//This function calculates a ranking penalty
+
+// [[Rcpp::depends(RcppEigen)]]
+// [[Rcpp::export]]
+double Ranking(const NumericMatrix &C){
+  //Getting the dimension of the matrix of clusters weights
+  const int K = C.ncol();//number of clusters
+  const int p = C.nrow();//Number of genes
+
+  double sum=0;
+  for (int i=0;i<p;i++){
+    NumericVector W = C(i,_);
+    std::sort (W.begin(), W.begin()+K);
+    sum=sum+W(0);
+    for (int k=1;k<K;k++){
+      sum=sum+pow((W(k)-W(k-1))*(W(k)-W(k-1)),1/2);
+    }
+  }
+
+  return sum;
 }
 

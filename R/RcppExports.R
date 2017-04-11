@@ -13,3 +13,7 @@ Penal <- function(Cys) {
     .Call('NCutYX_Penal', PACKAGE = 'NCutYX', Cys)
 }
 
+Ranking <- function(C) {
+    .Call('NCutYX_Ranking', PACKAGE = 'NCutYX', C)
+}
+

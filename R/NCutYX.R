@@ -539,7 +539,7 @@ SpaWN<-function(X,K=2,B=3000,L=1000,scale=F,mu_0=0.01,lambda=1,dist='gaussian',s
   C2x=matrix(0,p,K)
   C2x=Cx
 
-  J=NCutY3V1(Cx,M1-Cx,Wx,Wx)+lambda*sum(abs(Cx-Penal(Cx)))/(K*p^2)
+  J=NCutY3V1(Cx,M1-Cx,Wx,Wx)+lambda*Ranking(Cx)/(K*p^2)
 
   Test<- vector(mode="numeric", length=B)
 
@@ -570,7 +570,7 @@ SpaWN<-function(X,K=2,B=3000,L=1000,scale=F,mu_0=0.01,lambda=1,dist='gaussian',s
     }
 
     #Now Step 3 in the algorithm
-    J2=NCutY3V1(C2x,M1-C2x,Wx,Wx)+lambda*sum(abs(C2x-Penal(C2x)))/(K*p^2)
+    J2=NCutY3V1(C2x,M1-C2x,Wx,Wx)+lambda*Ranking(C2x)/(K*p^2)
 
     if (J2>J){
       #Prob[Count]=exp(-10000*log(k+1)*(J2-J))
