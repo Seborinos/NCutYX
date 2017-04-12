@@ -123,9 +123,9 @@ double Ranking(const NumericMatrix &C){
   for (int i=0;i<p;i++){
     NumericVector W = C(i,_);
     std::sort (W.begin(), W.begin()+K);
-    sum=sum+W(0);
+    //sum=sum+W(0);
     for (int k=1;k<K;k++){
-      sum=sum+pow((W(k)-W(k-1))*(W(k)-W(k-1)),1/2);
+      sum=sum+(W(k)-W(k-1));
     }
   }
 
