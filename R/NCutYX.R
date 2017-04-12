@@ -494,7 +494,7 @@ LayerNCut<-function(Z,Y,X,K=2,B=3000,L=1000,alpha=0.5,ncv=3,nlambdas=100,
 #' The algorithm minimizes a modified version of NCut through simulated annealing.
 #' The clusers correspond to partitions that minimize this objective function.
 
-SpaWN<-function(X,K=2,B=3000,L=1000,scale=F,mu_0=0.01,lambda=1,dist='gaussian',sigma=1){
+SpaWN<-function(X,K=2,B=3000,L=1000,scale=F,mu_0=0.01,lambda=1,dist='gaussian',sigma=1,MCMC=T){
   #Beginning of the function
   if (scale==T){
     X=scale(X)
@@ -574,7 +574,8 @@ SpaWN<-function(X,K=2,B=3000,L=1000,scale=F,mu_0=0.01,lambda=1,dist='gaussian',s
 
     if (J2>J){
       #Prob[Count]=exp(-10000*log(k+1)*(J2-J))
-      des=rbinom(1,1,exp(-L*log(k+1)*(J2-J)))
+      des=rbinom(1,1,exp(-L*log(k+1)*(J2-J)))*(1-MCMC)+rbinom(1,1,1-min(c(J2/J,1)))*MCMC
+
       if (des==1){
         Cx=C2x#Set-up the new clusters
         J=J2
