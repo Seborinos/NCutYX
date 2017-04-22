@@ -13,7 +13,8 @@ To install:
 
 # Example
 
-`#This sets up the initial parameters for the simulation.
+ ```{r}
+ #This sets up the initial parameters for the simulation.
  n=200 #Sample size
  B=5000 #Number of iterations in the simulated annealing algorithm.
  L=1000 #Temperature coefficient.
@@ -52,11 +53,12 @@ To install:
  Z=X%*%B2
  Y=Z+matrix(rnorm(n*p,0,2),n,p)
  #Our method
- Res=NCutY2R1(Y,X,B,L,alpha=0,ncv=5)
+ Res=ANCut(Y,X,B,L,alpha=0,ncv=5)
  Cx=Res[[2]]
  f11=matrix(Cx[,1],p,1)
  f12=matrix(Cx[,2],p,1)
 
  errorL=sum((f11%*%t(f11))*W0)/Denum+sum((f12%*%t(f12))*W0)/Denum
  #This is the true error of the clustering solution.
- errorL`
+ errorL
+ ```
