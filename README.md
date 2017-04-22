@@ -13,7 +13,7 @@ To install:
 
 # Example
 
-' #This sets up the initial parameters for the simulation.
+`#This sets up the initial parameters for the simulation.
  n=200 #Sample size
  B=5000 #Number of iterations in the simulated annealing algorithm.
  L=1000 #Temperature coefficient.
@@ -59,4 +59,4 @@ To install:
 
  errorL=sum((f11%*%t(f11))*W0)/Denum+sum((f12%*%t(f12))*W0)/Denum
  #This is the true error of the clustering solution.
- errorL'
+ errorL`
