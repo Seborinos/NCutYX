@@ -118,4 +118,4 @@ To install:
                    trial1[[2]][,4]%*%t(trial1[[2]][,4]))*W0)/(3*p)^2
   ```
 
-![](BrcaAnalysis1.png |height=120  width=120) 
+![](BrcaAnalysis1.png=120x120) 
