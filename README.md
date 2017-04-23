@@ -117,3 +117,5 @@ To install:
   errorK=sum((trial1[[2]][,1]%*%t(trial1[[2]][,1])+trial1[[2]][,2]%*%t(trial1[[2]][,2])+trial1[[2]][,3]%*%t(trial1[[2]][,3])+
                    trial1[[2]][,4]%*%t(trial1[[2]][,4]))*W0)/(3*p)^2
   ```
+
+![](BrcaAnalysis1.png)
