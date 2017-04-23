@@ -34,7 +34,6 @@ To install:
  W0=matrix(1,p,p)
  W0[1:(p/2),1:(p/2)]=0
  W0[(p/2+1):p,(p/2+1):p]=0
- Denum=sum(W0)
 
  B2=matrix(0,q,p)
  for (i in 1:(p/2)){
@@ -53,12 +52,12 @@ To install:
  Z=X%*%B2
  Y=Z+matrix(rnorm(n*p,0,2),n,p)
  #Our method
- Res=ANCut(Y,X,B,L,alpha=0,ncv=5)
+ Res=ANCut(Y,X,B,L,K=2,alpha=0,ncv=5)
  Cx=Res[[2]]
  f11=matrix(Cx[,1],p,1)
  f12=matrix(Cx[,2],p,1)
 
- errorL=sum((f11%*%t(f11))*W0)/Denum+sum((f12%*%t(f12))*W0)/Denum
+ errorL=sum((f11%*%t(f11))*W0)/Denum+sum((f12%*%t(f12))*W0)/p^2
  #This is the true error of the clustering solution.
  errorL
  ```
@@ -113,7 +112,7 @@ To install:
   Z=Y%*%B2+matrix(rnorm(n*p,0,0.5),n,p)
   Z2=Y%*%B2
   
-  #Computing our method
+  #Computing LayerNCut
   clust<-LayerNCut(Z,Y,X,K=4,B=10000,L=10000,alpha=0,ncv=3,nlambdas=30,scale=F,model=F,gamma=0.5)
   errorK=sum((trial1[[2]][,1]%*%t(trial1[[2]][,1])+trial1[[2]][,2]%*%t(trial1[[2]][,2])+trial1[[2]][,3]%*%t(trial1[[2]][,3])+
                    trial1[[2]][,4]%*%t(trial1[[2]][,4]))*W0)/(3*p)^2
