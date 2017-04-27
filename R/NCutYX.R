@@ -494,7 +494,7 @@ LayerNCut<-function(Z,Y,X,K=2,B=3000,L=1000,alpha=0.5,ncv=3,nlambdas=100,
 #' The algorithm minimizes a modified version of NCut through simulated annealing.
 #' The clusers correspond to partitions that minimize this objective function.
 
-SpaWN<-function(X,K=2,B=3000,L=1000,scale=F,mu_0=0.01,lambda=1,dist='gaussian',sigma=1){
+SpaWN<-function(X,K=2,B=3000,L=1000,scale=F,mu_0=0.01,lambda=1,dist='gaussian',sigma=1,MCMC=T){
   #Beginning of the function
   if (scale==T){
     X=scale(X)
@@ -539,7 +539,7 @@ SpaWN<-function(X,K=2,B=3000,L=1000,scale=F,mu_0=0.01,lambda=1,dist='gaussian',s
   C2x=matrix(0,p,K)
   C2x=Cx
 
-  J=NCutY3V1(Cx,M1-Cx,Wx,Wx)+lambda*sum(abs(Cx-Penal(Cx)))/(K*p^2)
+  J=NCutY3V1(Cx,M1-Cx,Wx,Wx)+lambda*Ranking(Cx)/(K*p)
 
   Test<- vector(mode="numeric", length=B)
 
@@ -558,23 +558,24 @@ SpaWN<-function(X,K=2,B=3000,L=1000,scale=F,mu_0=0.01,lambda=1,dist='gaussian',s
     #New version
     sx=sample(ax,1)
     #make a draw to see if we assign it 1/K
-    sparse=rbinom(1,1,p=min(c(mu_0+abs(C2x[sx,s[1]]-(1-max(C2x[sx,s[2:K]]))/(K-1))),1))
+    sparse=rbinom(1,1,p=min(c(mu_0+C2x[sx,s[1]],1)))
     if (sparse==0){
-      p_minus=C2x[sx,s[1]]-(1-max(C2x[sx,s[2:K]]))/(K-1)
-      C2x[sx,s[1]]=(1-max(C2x[sx,s[2:K]]))/(K-1)
-      C2x[sx,s[2:K]]=((K-1)/K)*C2x[sx,s[2:K]]/sum(C2x[sx,s[2:K]])
+      C2x[sx,s[1]]=0
+      C2x[sx,]=C2x[sx,]/sum(C2x[sx,])
     }else{
       p_minus=runif(1,min=0,max=C2x[sx,s[1]])
       C2x[sx,s[1]]=C2x[sx,s[1]]-p_minus#This element will give somethin between 0 and its value
       C2x[sx,s[K]]=C2x[sx,s[K]]+p_minus#This element will get something between 0 and the value of the other element
+      C2x[sx,]=C2x[sx,]/sum(C2x[sx,])
     }
 
     #Now Step 3 in the algorithm
-    J2=NCutY3V1(C2x,M1-C2x,Wx,Wx)+lambda*sum(abs(C2x-Penal(C2x)))/(K*p^2)
+    J2=NCutY3V1(C2x,M1-C2x,Wx,Wx)+lambda*Ranking(C2x)/(K*p)
 
     if (J2>J){
       #Prob[Count]=exp(-10000*log(k+1)*(J2-J))
-      des=rbinom(1,1,exp(-L*log(k+1)*(J2-J)))
+      des=rbinom(1,1,exp(-L*log(k+1)*(J2-J)))*(1-MCMC)+rbinom(1,1,1-min(c(J2/J,1)))*MCMC
+
       if (des==1){
         Cx=C2x#Set-up the new clusters
         J=J2
