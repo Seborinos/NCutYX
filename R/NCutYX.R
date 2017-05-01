@@ -602,7 +602,17 @@ SpaWN<-function(X,K=2,B=3000,L=1000,scale=F,mu_0=0.01,lambda=1,dist='gaussian',s
 #' The algorithm minimizes a modified version of NCut through simulated annealing.
 #' The clusers correspond to partitions that minimize this objective function.
 
-NeoNCut<-function(X,K=2,B=3000,L=1000,scale=F,mu_0=0.01,dist='gaussian',sigma=1,MCMC=T){
+neoncut<-function(X,
+                  K=2,
+                  B=3000,
+                  L=1000,
+                  scale=F,
+                  mu_0=0.01,
+                  alpha=0.5,
+                  beta=0.5,
+                  dist='gaussian',
+                  sigma=1,
+                  MCMC=T){
   #Beginning of the function
   if (scale==T){
     X=scale(X)
@@ -638,8 +648,8 @@ NeoNCut<-function(X,K=2,B=3000,L=1000,scale=F,mu_0=0.01,dist='gaussian',sigma=1,
   #doing simulated annealing.
   C2x=matrix(0,p,K)
   C2x=Cx
-
-  J=NCutY3V1(Cx,M1-Cx,Wx,Wx)
+  Penal2<-length(which(apply(Cx,1,sum)==0))
+  J=NCutY3V1(Cx,M1-Cx,Wx,Wx)+(1+alpha)*n*sum(diag(t(Cx)%*%Cx))+beta*n*Penal2
 
   Test<- vector(mode="numeric", length=B)
 
@@ -657,7 +667,131 @@ NeoNCut<-function(X,K=2,B=3000,L=1000,scale=F,mu_0=0.01,dist='gaussian',sigma=1,
     }
 
     #Now Step 3 in the algorithm
-    J2=NCutY3V1(C2x,M1-C2x,Wx,Wx)
+    Penal2<-length(which(apply(Cx,1,sum)==0))
+    J2=NCutY3V1(C2x,M1-C2x,Wx,Wx)+(1+alpha)*n*sum(diag(t(C2x)%*%C2x))+beta*n*Penal2
+
+    if (J2>J){
+      #Prob[Count]=exp(-10000*log(k+1)*(J2-J))
+      des=rbinom(1,1,exp(-L*log(k+1)*(J2-J)))*(1-MCMC)+rbinom(1,1,1-min(c(J2/J,1)))*MCMC
+
+      if (des==1){
+        Cx=C2x#Set-up the new clusters
+        J=J2
+        Nx=apply(Cx,2,sum)
+      }else{
+        C2x=Cx
+      }
+    } else{
+      Cx=C2x
+      J=J2
+      Nx=apply(Cx,2,sum)
+    }
+    Test[k]=J
+
+  }
+  Res<-list()
+  Res[[1]]=Test
+  Res[[2]]=Cx
+  return(Res)
+}
+
+#' Given a matrix U of K cluster membership and data X calculate the clusters' means.
+#'
+#' This function will output K clusters' means.
+#' @param X is a n x p matrix of p variables and n observations.
+#' @details
+#' Given a matrix U of K cluster membership calculated the clusters' means.
+
+meanx<-function(U,X){
+  n<-dim(U)[1]
+  K<-dim(U)[2]
+  p<-dim(X)[2]
+  M<-matrix(0,K,p)
+  for (i in 1:K){
+    s<-which(U[,i]==1)
+    M[i,]<-apply(X[s,],2,mean)
+  }
+  return(M)
+}
+
+#' Given a data matrix X and matrix M of centroids calculate the distance
+#' with respect to the centroids for each data matrix.
+#'
+#' This function will output a matrix K times p matrix of distances.
+#' @param X is a n x p matrix of p variables and n observations.
+#' @param M is a K x p matrix of cluster centroids.
+#' @details
+#' This is a function needed for the neokmeans algorithm.
+
+distm<-function(M,X){
+  K<-dim(M)[1]
+  p<-dim(X)[2]
+  D<-matrix(0,n,K)
+  for (i in 1:K){
+    Mx<-matrix(M[i,],n,p,byrow=T)
+    Dx<-(X-Mx)^2
+    D[,i]=appy(Dx,1,sum)
+  }
+  return(D)
+}
+
+#' Cluster the columns of X into K nonexhaustive overlapping clusters.
+#'
+#' This function will output K clusters of variables.
+#' @param X is a n x p matrix of p variables and n observations.
+#' @param B is the number of iterations in the simulated annealing algorithm.
+#' @param L is the temperature coefficient in the simulated annealing algorithm.
+#' @details
+#' The algorithm minimizes a modified version of NCut through simulated annealing.
+#' The clusers correspond to partitions that minimize this objective function.
+
+neokmeans<-function(X,
+                  K=2,
+                  B=3000,
+                  L=1000,
+                  mu_0=0.01,
+                  alpha=0.5,
+                  beta=0.5,
+                  MCMC=T){
+  #getting the dimensions
+  n<-dim(X)[1]
+  p<-dim(X)[2]
+
+  #This creates a random starting point in the split in the algorithm for K clusters
+  Cx=matrix(rbinom(p*K,1,1/K),p,K)
+
+  #Now, calculate the number of indices in each group.
+  Nx=apply(Cx,2,sum)
+
+  #These matrices will keep track of the elements of the clusters while
+  #doing simulated annealing.
+  C2x=matrix(0,p,K)
+  C2x=Cx
+  Penal2<-length(which(apply(Cx,1,sum)==0))
+  Mx<-meanx(Cx,X)
+  Dx<-distm(Mx,X)
+  J=sum(Dx*Cx)+(1+alpha)*n*sum(diag(t(Cx)%*%Cx))+beta*n*Penal2
+
+  Test<- vector(mode="numeric", length=B)
+
+  for (k in 1:B){
+
+    ###Draw k(-) and k(+)with unequal probabilites.
+    N=sum(Nx)
+    P=Nx/N
+    s=sample.int(K,K,replace=FALSE,prob=P)
+    sx=sample(p,1)
+    if (C2x[sx,s[1]]==1){
+      C2x[sx,s[1]]=0
+    }else{
+      C2x[sx,s[1]]=1
+    }
+
+    #Now Step 3 in the algorithm
+    Penal2<-length(which(apply(C2x,1,sum)==0))
+    M2x<-meanx(C2x,X)
+    D2x<-distm(M2x,X)
+    J2<-sum(D2x*C2x)+(1+alpha)*n*sum(diag(t(C2x)%*%C2x))+beta*n*Penal2
 
     if (J2>J){
       #Prob[Count]=exp(-10000*log(k+1)*(J2-J))
