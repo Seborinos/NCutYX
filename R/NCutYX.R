@@ -521,12 +521,6 @@ SpaWN<-function(X,K=2,B=3000,L=1000,scale=F,mu_0=0.01,lambda=1,dist='gaussian',s
   }
 
   #This creates a random starting point in the split in the algorithm for K clusters
-  Cx=matrix(0,p,K)
-  for (i in 1:p){
-    Cx[i,sample(K,1)]=1
-  }
-
-  #This creates a random starting point in the split in the algorithm for K clusters
   Cx=matrix(runif(p*K),p,K)
   Sums=apply(Cx,1,sum)
   Cx=Cx/Sums
@@ -596,3 +590,97 @@ SpaWN<-function(X,K=2,B=3000,L=1000,scale=F,mu_0=0.01,lambda=1,dist='gaussian',s
   Res[[2]]=Cx
   return(Res)
 }
+
+
+#' Cluster the columns of X into K nonexhaustive overlapping clusters.
+#'
+#' This function will output K clusters of variables.
+#' @param X is a n x p matrix of p variables and n observations.
+#' @param B is the number of iterations in the simulated annealing algorithm.
+#' @param L is the temperature coefficient in the simulated annealing algorithm.
+#' @details
+#' The algorithm minimizes a modified version of NCut through simulated annealing.
+#' The clusers correspond to partitions that minimize this objective function.
+
+NeoNCut<-function(X,K=2,B=3000,L=1000,scale=F,mu_0=0.01,dist='gaussian',sigma=1,MCMC=T){
+  #Beginning of the function
+  if (scale==T){
+    X=scale(X)
+    p=dim(X)[2]
+    if (dist=='gaussian'){
+      Wx=exp((-1)*as.matrix(dist(t(X),diag=T,upper=T))/sigma)
+    }else if(dist=='euclidean'){
+      Wx=as.matrix(dist(t(X),diag=T,upper=T))+diag(p)
+      Wx=Wx^(-1)
+    } else{
+      print('Distance Error')
+    }
+
+  }else{
+    p=dim(X)[2]
+    if (dist=='gaussian'){
+      Wx=exp((-1)*as.matrix(dist(t(X),diag=T,upper=T))/sigma)
+    }else if(dist=='euclidean'){
+      Wx=as.matrix(dist(t(X),diag=T,upper=T))+diag(p)
+      Wx=Wx^(-1)
+    } else{
+      print('Distance Error')
+    }
+  }
+
+  #This creates a random starting point in the split in the algorithm for K clusters
+  Cx=matrix(rbinom(p*K,1,1/K),p,K)
+
+  #Now, calculate the number of indices in each group.
+  Nx=apply(Cx,2,sum)
+  M1=matrix(1,p,K)
+  #These matrices will keep track of the elements of the clusters while
+  #doing simulated annealing.
+  C2x=matrix(0,p,K)
+  C2x=Cx
+
+  J=NCutY3V1(Cx,M1-Cx,Wx,Wx)
+
+  Test<- vector(mode="numeric", length=B)
+
+  for (k in 1:B){
+
+    ###Draw k(-) and k(+)with unequal probabilites.
+    N=sum(Nx)
+    P=Nx/N
+    s=sample.int(K,K,replace=FALSE,prob=P)
+    sx=sample(p,1)
+    if (C2x[sx,s[1]]==1){
+      C2x[sx,s[1]]=0
+    }else{
+      C2x[sx,s[1]]=1
+    }
+
+    #Now Step 3 in the algorithm
+    J2=NCutY3V1(C2x,M1-C2x,Wx,Wx)
+
+    if (J2>J){
+      #Prob[Count]=exp(-10000*log(k+1)*(J2-J))
+      des=rbinom(1,1,exp(-L*log(k+1)*(J2-J)))*(1-MCMC)+rbinom(1,1,1-min(c(J2/J,1)))*MCMC
+
+      if (des==1){
+        Cx=C2x#Set-up the new clusters
+        J=J2
+        Nx=apply(Cx,2,sum)
+      }else{
+        C2x=Cx
+      }
+    } else{
+      Cx=C2x
+      J=J2
+      Nx=apply(Cx,2,sum)
+    }
+    Test[k]=J
+
+  }
+  Res<-list()
+  Res[[1]]=Test
+  Res[[2]]=Cx
+  return(Res)
+}
+
