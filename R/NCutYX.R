@@ -494,32 +494,55 @@ LayerNCut<-function(Z,Y,X,K=2,B=3000,L=1000,alpha=0.5,ncv=3,nlambdas=100,
 #' The algorithm minimizes a modified version of NCut through simulated annealing.
 #' The clusers correspond to partitions that minimize this objective function.
 
-SpaWN<-function(X,K=2,B=3000,L=1000,scale=F,mu_0=0.01,lambda=1,dist='gaussian',sigma=1,MCMC=T){
+SpaWN<-function(X,
+                K=2,
+                B=3000,
+                L=1000,
+                scale=F,
+                mu_0=0.01,
+                lambda=1,
+                epsilon=0,
+                beta=1,
+                dist='gaussian',
+                sigma=1,
+                MCMC=T){
   #Beginning of the function
   if (scale==T){
     X=scale(X)
     p=dim(X)[2]
     if (dist=='gaussian'){
-      Wx=exp((-1)*as.matrix(dist(t(X),diag=T,upper=T))/sigma)
+      Wx=exp((-1)*as.matrix(dist(t(X),diag=T,upper=T))/(2*sigma^2))
+      Wx[which(Wx<epsilon)]=0
     }else if(dist=='euclidean'){
       Wx=as.matrix(dist(t(X),diag=T,upper=T))+diag(p)
       Wx=Wx^(-1)
-    } else{
+      Wx[which(Wx<epsilon)]=0
+    }else if(dist=='correlation'){
+      Wx<-abs(cor(X))^beta
+      Wx[which(Wx<epsilon)]=0
+    }else{
       print('Distance Error')
     }
 
   }else{
     p=dim(X)[2]
     if (dist=='gaussian'){
-      Wx=exp((-1)*as.matrix(dist(t(X),diag=T,upper=T))/sigma)
+      Wx=exp((-1)*as.matrix(dist(t(X),diag=T,upper=T))/(2*sigma^2))
+      Wx[which(Wx<epsilon)]=0
     }else if(dist=='euclidean'){
       Wx=as.matrix(dist(t(X),diag=T,upper=T))+diag(p)
       Wx=Wx^(-1)
-    } else{
+      Wx[which(Wx<epsilon)]=0
+    }else if(dist=='correlation'){
+      Wx<-abs(cor(X))^beta
+      Wx[which(Wx<epsilon)]=0
+    }else{
       print('Distance Error')
     }
   }
 
+  #L<-diag(apply(Wx,1,sum))-Wx
+  D<-matrix(apply(Wx,1,sum),p,1)
   #This creates a random starting point in the split in the algorithm for K clusters
   Cx=matrix(runif(p*K),p,K)
   Sums=apply(Cx,1,sum)
@@ -533,7 +556,8 @@ SpaWN<-function(X,K=2,B=3000,L=1000,scale=F,mu_0=0.01,lambda=1,dist='gaussian',s
   C2x=matrix(0,p,K)
   C2x=Cx
 
-  J=NCutY3V1(Cx,M1-Cx,Wx,Wx)+lambda*Ranking(Cx)/(K*p)
+
+  J=WNCut(Cx,M1-Cx,Wx-diag(p),Wx)+lambda*Ranking(Cx)/(K*p)
 
   Test<- vector(mode="numeric", length=B)
 
@@ -560,11 +584,11 @@ SpaWN<-function(X,K=2,B=3000,L=1000,scale=F,mu_0=0.01,lambda=1,dist='gaussian',s
       p_minus=runif(1,min=0,max=C2x[sx,s[1]])
       C2x[sx,s[1]]=C2x[sx,s[1]]-p_minus#This element will give somethin between 0 and its value
       C2x[sx,s[K]]=C2x[sx,s[K]]+p_minus#This element will get something between 0 and the value of the other element
-      C2x[sx,]=C2x[sx,]/sum(C2x[sx,])
+      #C2x[sx,]=C2x[sx,]/sum(C2x[sx,])
     }
 
     #Now Step 3 in the algorithm
-    J2=NCutY3V1(C2x,M1-C2x,Wx,Wx)+lambda*Ranking(C2x)/(K*p)
+    J2=WNCut(C2x,M1-C2x,Wx-diag(p),Wx)+lambda*Ranking(C2x)/(K*p)
 
     if (J2>J){
       #Prob[Count]=exp(-10000*log(k+1)*(J2-J))
