@@ -13,6 +13,7 @@
 #' The external information of X is incorporated by using ridge regression to predict Y.
 #' @examples
 #' #This sets up the initial parameters for the simulation.
+#' library(MASS)
 #' n=200 #Sample size
 #' B=5000 #Number of iterations in the simulated annealing algorithm.
 #' L=1000 #Temperature coefficient.
@@ -24,8 +25,6 @@
 #' S[1:(p/2),(p/2+1):p]=0
 #' S[(p/2+1):p,1:(p/2)]=0
 #' S=S-diag(diag(S))+diag(p)
-#' S=nearPD(S)
-#' S=S$mat
 #' mu=rep(0,p)
 #'
 #' W0=matrix(1,p,p)
@@ -35,7 +34,7 @@
 #'
 #' Y=mvrnorm(n, mu, S)
 #' #Our method
-#' Res=NCutY2R1(Y,B,L)
+#' Res=NCut(Y,B,L)
 #' Cx=Res[[2]]
 #' f11=matrix(Cx[,1],p,1)
 #' f12=matrix(Cx[,2],p,1)
