@@ -4,7 +4,9 @@
 \alias{LayerNCut}
 \title{Cluster the columns of Z,Y and X into K channels.}
 \usage{
-LayerNCut(Z, Y, X, K = 2, B = 3000, L = 1000)
+LayerNCut(Z, Y, X, K = 2, B = 3000, L = 1000, alpha = 0.5, ncv = 3,
+  nlambdas = 100, scale = F, model = F, gamma = 0.5,
+  dist = "gaussian", sigma = 1)
 }
 \arguments{
 \item{Z}{is a n x p1 matrix of p1 variables and n observations.}
@@ -25,4 +27,3 @@ The algorithm minimizes a modified version of NCut through simulated annealing.
 The clusers correspond to partitions that minimize this objective function.
 The external information of X is incorporated by using ridge regression to predict Y.
 }
-

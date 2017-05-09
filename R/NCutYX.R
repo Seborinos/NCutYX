@@ -1,3 +1,135 @@
+#' Cluster the columns of Y into K groups.
+#'
+#' This function will output K clusters of  the columns of Y.
+#' @param Y is a n x p matrix of p variables and n observations. The columns of
+#' Y will be clustered into K groups.
+#' @param B is the number of iterations in the simulated annealing algorithm.
+#' @param L is the temperature coefficient in the simulated annealing algorithm.
+#' @return A list with the final value of the objective function,
+#' the clusters and the lambda penalty chosen through cross-validation.
+#' @details
+#' The algorithm minimizes a modified version of NCut through simulated annealing.
+#' The clusters correspond to partitions that minimize this objective function.
+#' The external information of X is incorporated by using ridge regression to predict Y.
+#' @examples
+#' #This sets up the initial parameters for the simulation.
+#' n=200 #Sample size
+#' B=5000 #Number of iterations in the simulated annealing algorithm.
+#' L=1000 #Temperature coefficient.
+#' p=500 #Number of columns of Y.
+#' h1=0
+#' h2=0.15
+#'
+#' S=matrix(0.2,p,p)
+#' S[1:(p/2),(p/2+1):p]=0
+#' S[(p/2+1):p,1:(p/2)]=0
+#' S=S-diag(diag(S))+diag(p)
+#' S=nearPD(S)
+#' S=S$mat
+#' mu=rep(0,p)
+#'
+#' W0=matrix(1,p,p)
+#' W0[1:(p/2),1:(p/2)]=0
+#' W0[(p/2+1):p,(p/2+1):p]=0
+#' Denum=sum(W0)
+#'
+#' Y=mvrnorm(n, mu, S)
+#' #Our method
+#' Res=NCutY2R1(Y,B,L)
+#' Cx=Res[[2]]
+#' f11=matrix(Cx[,1],p,1)
+#' f12=matrix(Cx[,2],p,1)
+#'
+#' errorL=sum((f11%*%t(f11))*W0)/Denum+sum((f12%*%t(f12))*W0)/Denum
+#' #This is the true error of the clustering solution.
+#' errorL
+
+NCut<-function(Y,
+               K=2,
+               B=3000,
+               L=1000,
+               dist='gaussian',
+               sigma=1){
+  #This creates the weight matrix W
+  Y=scale(Y)
+  p=dim(Y)[2]
+  if(dist=='euclidean'){
+    Wyy=as.matrix(dist(t(Y),diag=T,upper=T))+diag(p)
+    Wyy=Wyy^(-1)
+  }
+  if(dist=='gaussian'){
+    Wyy=exp((-1)*as.matrix(dist(t(Y),diag=T,upper=T))/sigma)
+  }
+
+  #Wxx[which(Wxx==Inf)]=1
+  #I changed the distance matrix to gaussian kernel
+  #Wxx=exp((-1)*sigma*as.matrix(dist(t(Y2),diag=T,upper=T)))
+
+  #This creates a random starting point in the split in the algorithm for K clusters
+  Cx=matrix(0,p,K)
+
+  for (i in 1:p){
+    Cx[i,sample(K,1)]=1
+  }
+
+  #Now, calculate the number of indices in each group.
+  Nx=apply(Cx[,1:K],2,sum)
+
+
+  #These matrices will keep track of the elements of the clusters while
+  #doing simulated annealing.
+  C2x=matrix(0,p,K+1)
+  C2x=Cx
+
+  J=NCutY3V1(Cx[,1:K],matrix(1,p,K)-Cx[,1:K],Wyy,Wyy)
+
+  Test<- vector(mode="numeric", length=B)
+
+  for (k in 1:B){
+    ###Draw k(-) and k(+)with unequal probabilites.
+    #This section needs to change dramatically for
+    #the general case
+
+    N=sum(Nx)
+    P=Nx/N
+    s=sample.int(K,K,replace=FALSE,prob=P)
+
+    ###Select a vertex from cluster s[1] with unequal probability
+    #Calculating Unequal probabilites
+    #Draw a coin to see whether we choose X or Y
+    ax=which(Cx[,s[1]]==1)#which Xs belong to the cluster
+
+    sx=sample(ax,1)
+    C2x[sx,s[1]]=0
+    C2x[sx,s[K]]=1
+
+    #Now Step 3 in the algorithm
+    J2=NCutY3V1(C2x[,1:K],matrix(1,p,K)-C2x[,1:K],Wyy,Wyy)
+
+    if (J2>J){
+      #Prob[Count]=exp(-10000*log(k+1)*(J2-J))
+      des=rbinom(1,1,exp(-L*log(k+1)*(J2-J)))
+      if (des==1){
+        Cx=C2x#Set-up the new clusters
+        J=J2
+        Nx=apply(Cx[,1:K],2,sum)
+      }else{
+        C2x=Cx
+      }
+    } else{
+      Cx=C2x
+      J=J2
+      Nx=apply(Cx[,1:K],2,sum)
+    }
+    Test[k]=J
+
+  }
+  Res<-list()
+  Res[[1]]=Test
+  Res[[2]]=Cx
+  return(Res)
+}
+
 #' Cluster the columns of Y into K groups with the help of external features in X.
 #'
 #' This function will output K clusters of  the columns of Y, using the help of
