@@ -1,16 +1,15 @@
-#' Cluster the columns of Y into K groups.
+#' Cluster the columns of Y into K groups using the NCut graph measure.
 #'
-#' This function will output K clusters of  the columns of Y.
+#' This function will output K clusters of the columns of Y.
 #' @param Y is a n x p matrix of p variables and n observations. The columns of
-#' Y will be clustered into K groups.
+#' Y will be clustered into K groups using NCut.
 #' @param B is the number of iterations in the simulated annealing algorithm.
 #' @param L is the temperature coefficient in the simulated annealing algorithm.
-#' @return A list with the final value of the objective function,
-#' the clusters and the lambda penalty chosen through cross-validation.
+#' @return A list with the final value of the objective function and
+#' the clusters.
 #' @details
-#' The algorithm minimizes a modified version of NCut through simulated annealing.
+#' The algorithm minimizes the NCut through simulated annealing.
 #' The clusters correspond to partitions that minimize this objective function.
-#' The external information of X is incorporated by using ridge regression to predict Y.
 #' @examples
 #' #This sets up the initial parameters for the simulation.
 #' library(MASS)
@@ -34,7 +33,7 @@
 #'
 #' Y=mvrnorm(n, mu, S)
 #' #Our method
-#' Res=NCut(Y,B,L)
+#' Res=NCut(Y,B=3000,L=1000,K=2,dist='gaussian',sigma=1)
 #' Cx=Res[[2]]
 #' f11=matrix(Cx[,1],p,1)
 #' f12=matrix(Cx[,2],p,1)
@@ -187,7 +186,7 @@ NCut<-function(Y,
 #' Z=X%*%B2
 #' Y=Z+matrix(rnorm(n*p,0,2),n,p)
 #' #Our method
-#' Res=NCutY2R1(Y,X,B,L,alpha=0,ncv=5)
+#' Res=ANCut(Y,X,B,L,alpha=0,ncv=5)
 #' Cx=Res[[2]]
 #' f11=matrix(Cx[,1],p,1)
 #' f12=matrix(Cx[,2],p,1)

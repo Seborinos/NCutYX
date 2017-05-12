@@ -49,7 +49,7 @@ Denum=sum(W0)
 
 Y=mvrnorm(n, mu, S)
 #Our method
-Res=NCut(Y,B,L)
+Res=NCut(Y,B=3000,L=1000,K=2,dist='gaussian',sigma=1)
 Cx=Res[[2]]
 f11=matrix(Cx[,1],p,1)
 f12=matrix(Cx[,2],p,1)
