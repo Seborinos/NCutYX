@@ -1,4 +1,10 @@
+# The NCutYX package
+# Sebastian Jose Teran Hidalgo
+
 [Description](#Description)
+[ANCut](#ANCut)
+[MuNCut](#MuNCut)
+[SpaWN](#SpaWN)
 # Description
 
 The NCutYX package includes functions on clustering genomic data using graph theory. 
@@ -12,7 +18,7 @@ To install:
     1. install and load package devtools
     1. `install_github("Seborinos/NCutYX")`
 
-# Example: ANCut
+# ANCut
  This example shows how to use the ANCut function. ANCut clusters the columns of a data set Y into K groups with the help of an external data set X.First we define some of the simulation parameters below. 
  ```{r}
  n=200 #Sample size
@@ -66,7 +72,7 @@ We apply the function ANCut to Y which will cluster the columns into K=2 groups.
  errorL
  ```
 
-# Example: LayerNCut
+# MuNCut
 
   ```{r}
   #parameters#
@@ -123,3 +129,5 @@ We apply the function ANCut to Y which will cluster the columns into K=2 groups.
   ```
 
 ![](BrcaAnalysis1.png) 
+
+# SpaWN
