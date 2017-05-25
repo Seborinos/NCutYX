@@ -19,17 +19,19 @@ To install:
  L=1000 #Temperature coefficient.
  p=500 #Number of columns of Y.
  q=p #Number of columns of X.
- h1=0
- h2=0.15
+ h1=0 #Lower bound for the coefficiens in Y=X*Beta+e.
+ h2=0.15 #Upper bound for the coefficients in the model Y=X*Beta +e.
  ```
  
+ The data will be simulated as:
+\[
+Y=X\beta+\epsilon
+\] 
+
  ```{r}
  S=matrix(0.2,q,q)
  S[1:(q/2),(q/2+1):q]=0
  S[(q/2+1):q,1:(q/2)]=0
- S=S-diag(diag(S))+diag(q)
- S=nearPD(S)
- S=S$mat
  mu=rep(0,q)
 
  W0=matrix(1,p,p)
