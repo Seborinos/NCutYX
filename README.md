@@ -24,7 +24,7 @@ To install:
  ```
  
  The data will be simulated as:
-\]
+\[
 Y=X\beta+\epsilon
 \]
 
