@@ -24,9 +24,9 @@ To install:
  ```
  
  The data will be simulated as:
-\[
+\begin{align*}
 Y=X\beta+\epsilon
-\]
+\end{align*}
 
  ```{r}
  S=matrix(0.2,q,q)
