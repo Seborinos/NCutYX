@@ -24,7 +24,7 @@ To install:
  ```
  
  The data will be simulated as:
-$Y=X\beta+\epsilon$
+$$Y=X\beta+\epsilon$$
  ```{r}
  S=matrix(0.2,q,q)
  S[1:(q/2),(q/2+1):q]=0
