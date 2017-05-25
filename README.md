@@ -12,9 +12,8 @@ To install:
     1. `install_github("Seborinos/NCutYX")`
 
 # Example: ANCut
-
+ This example shows how to use the ANCut function. ANCut clusters the columns of a data set Y into K groups with the help of an external data set X.First we define some of the simulation parameters below. 
  ```{r}
- #This sets up the initial parameters for the simulation.
  n=200 #Sample size
  B=5000 #Number of iterations in the simulated annealing algorithm.
  L=1000 #Temperature coefficient.
@@ -22,7 +21,9 @@ To install:
  q=p #Number of columns of X.
  h1=0
  h2=0.15
-
+ ```
+ 
+ ```{r}
  S=matrix(0.2,q,q)
  S[1:(q/2),(q/2+1):q]=0
  S[(q/2+1):q,1:(q/2)]=0
