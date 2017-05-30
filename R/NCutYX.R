@@ -633,6 +633,7 @@ SpaWN<-function(X,
                 lambda=1,
                 epsilon=0,
                 beta=1,
+                start='kmeans',
                 dist='gaussian',
                 sigma=1,
                 MCMC=T){
@@ -674,9 +675,20 @@ SpaWN<-function(X,
   #L<-diag(apply(Wx,1,sum))-Wx
   D<-matrix(apply(Wx,1,sum),p,1)
   #This creates a random starting point in the split in the algorithm for K clusters
-  Cx=matrix(runif(p*K),p,K)
-  Sums=apply(Cx,1,sum)
-  Cx=Cx/Sums
+  if (start=='random'){
+    Cx=matrix(runif(p*K),p,K)
+    Sums=apply(Cx,1,sum)
+    Cx=Cx/Sums
+  } else if(start=='kmeans'){
+    results<-kmeans(t(X),centers=K)
+    Cx=matrix(0,p,K)
+    for (i in 1:p){
+      Cx[i,results[[1]][i]]=1
+    }
+  } else{
+    print('This is not a start option')
+  }
+
 
   #Now, calculate the number of indices in each group.
   Nx=apply(Cx,2,sum)
