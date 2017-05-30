@@ -629,7 +629,7 @@ SpaWN<-function(X,
                 B=3000,
                 L=1000,
                 scale=F,
-                mu_0=0.01,
+                p.sparse=0.2,
                 lambda=1,
                 epsilon=0,
                 beta=1,
@@ -692,28 +692,42 @@ SpaWN<-function(X,
   Test<- vector(mode="numeric", length=B)
 
   for (k in 1:B){
-
-    ###Draw k(-) and k(+)with unequal probabilites.
-    N=sum(Nx)
-    P=Nx/N
-    s=sample.int(K,K,replace=FALSE,prob=P)
-
-    ###Select a vertex from cluster s[1] with unequal probability
-    #Calculating Unequal probabilites
-    #Draw a coin to see whether we choose X or Y
-    ax=which(Cx[,s[1]]!=0)#which Xs belong to the cluster
-
-    #New version
-    sx=sample(ax,1)
-    #make a draw to see if we assign it 1/K
-    sparse=rbinom(1,1,p=min(c(mu_0+C2x[sx,s[1]],1)))
-    if (sparse==0){
-      C2x[sx,s[1]]=0
-      C2x[sx,]=C2x[sx,]/sum(C2x[sx,])
+    ###New sketchs of the beginning of the algorithm###
+    #1.- Draw the one of the genes randomly {i}#
+    s<-sample.int(p,1)
+    #2.- Rank the weights for the {i}-th gene and keep the rankings {j}#
+    s.order<-order(Cx[s,])
+    #3.- Draw a cluster at random#
+    cluster<-sample.int(K,1)
+    #4.- Decide whether make that sparse with respect to w_{i,(j-1)} or w_{i,(j+1)}#
+    if(s.order[cluster]==1){#if the weight is the smallest one
+      w.replace<-which(s.order==2)
+      min.dist<-abs(C2x[s,s.order[cluster]]-C2x[s,w.replace])
+    }else if (s.order[cluster]==K){#if the weight is the largest one
+      w.replace<-which(s.order==K-1)
+      min.dist<-abs(C2x[s,s.order[cluster]]-C2x[s,w.replace])
     }else{
-      p_minus=runif(1,min=0,max=C2x[sx,s[1]])
-      C2x[sx,s[1]]=C2x[sx,s[1]]-p_minus#This element will give somethin between 0 and its value
-      C2x[sx,s[K]]=C2x[sx,s[K]]+p_minus#This element will get something between 0 and the value of the other element
+      w1.replace<-which(s.order==(s.order[cluster]-1))
+      w2.replace<-which(s.order==(s.order[cluster]+1))
+      w.replace<-c(w1.replace,w2.replace)
+      diffs<-c(abs(C2x[s,s.order[cluster]]-C2x[s,w1.replace]),
+        abs(C2x[s,s.order[cluster]]-C2x[s,w2.replace]))
+      min.dist<-min(diffs)
+      a1<-which(diffs==min.dist)
+      w.replace<-w.replace[a1[1]]#what weight are we going to replace
+    }
+
+    #We draw a sparse criteria#
+    sparse=rbinom(1,1,p=min(c(p.sparse+abs(C2x[s,cluster]-C2x[s,w.replace]),1)))
+    if (sparse==0){
+      avg<-(C2x[s,w.replace]+C2x[s,cluster])/2
+      C2x[s,cluster]=avg
+      C2x[s,w.replace]=avg
+      C2x[s,]=C2x[s,]/sum(C2x[s,])
+    }else{
+      p_minus=runif(1,min=0,max=C2x[s,cluster])
+      C2x[s,cluster]=C2x[s,cluster]-p_minus#This element will give somethin between 0 and its value
+      C2x[s,w.replace]=C2x[s,w.replace]+p_minus#This element will get something between 0 and the value of the other element
       #C2x[sx,]=C2x[sx,]/sum(C2x[sx,])
     }
 
