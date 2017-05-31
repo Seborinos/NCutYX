@@ -639,7 +639,7 @@ SpaWN<-function(X,
                 MCMC=T){
   #Beginning of the function
   if (scale==T){
-    X=scale(X)
+    X=apply(X,2,function(e) {return(e/var(e)^0.5)})
     p=dim(X)[2]
     if (dist=='gaussian'){
       Wx=exp((-1)*as.matrix(dist(t(X),diag=T,upper=T))/(2*sigma^2))
