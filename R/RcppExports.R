@@ -5,8 +5,20 @@ NCutY3V1 <- function(Cys, Cy2s, Wys, Wxs) {
     .Call('NCutYX_NCutY3V1', PACKAGE = 'NCutYX', Cys, Cy2s, Wys, Wxs)
 }
 
-WNCut <- function(Cys, Cy2s, DWys, Wys) {
-    .Call('NCutYX_WNCut', PACKAGE = 'NCutYX', Cys, Cy2s, DWys, Wys)
+WNCut <- function(Cys, Cy2s, Wys) {
+    .Call('NCutYX_WNCut', PACKAGE = 'NCutYX', Cys, Cy2s, Wys)
+}
+
+WNCut2 <- function(Cys, Cy2s, Dys, Wys) {
+    .Call('NCutYX_WNCut2', PACKAGE = 'NCutYX', Cys, Cy2s, Dys, Wys)
+}
+
+WNCut3 <- function(Cys, Cy2s, Dys, Wys) {
+    .Call('NCutYX_WNCut3', PACKAGE = 'NCutYX', Cys, Cy2s, Dys, Wys)
+}
+
+WNCut4 <- function(Cys, Cy2s, Wys) {
+    .Call('NCutYX_WNCut4', PACKAGE = 'NCutYX', Cys, Cy2s, Wys)
 }
 
 NCutLayer3V1 <- function(Cys, Cy2s, Wzs, Wys, Wxs, Wzyxs) {

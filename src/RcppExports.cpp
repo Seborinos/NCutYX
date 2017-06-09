@@ -21,16 +21,56 @@ BEGIN_RCPP
 END_RCPP
 }
 // WNCut
-double WNCut(const NumericMatrix& Cys, const NumericMatrix& Cy2s, const NumericMatrix& DWys, const NumericMatrix& Wys);
-RcppExport SEXP NCutYX_WNCut(SEXP CysSEXP, SEXP Cy2sSEXP, SEXP DWysSEXP, SEXP WysSEXP) {
+double WNCut(const NumericMatrix& Cys, const NumericMatrix& Cy2s, const NumericMatrix& Wys);
+RcppExport SEXP NCutYX_WNCut(SEXP CysSEXP, SEXP Cy2sSEXP, SEXP WysSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const NumericMatrix& >::type Cys(CysSEXP);
     Rcpp::traits::input_parameter< const NumericMatrix& >::type Cy2s(Cy2sSEXP);
-    Rcpp::traits::input_parameter< const NumericMatrix& >::type DWys(DWysSEXP);
     Rcpp::traits::input_parameter< const NumericMatrix& >::type Wys(WysSEXP);
-    rcpp_result_gen = Rcpp::wrap(WNCut(Cys, Cy2s, DWys, Wys));
+    rcpp_result_gen = Rcpp::wrap(WNCut(Cys, Cy2s, Wys));
+    return rcpp_result_gen;
+END_RCPP
+}
+// WNCut2
+double WNCut2(const NumericMatrix& Cys, const NumericMatrix& Cy2s, const NumericMatrix& Dys, const NumericMatrix& Wys);
+RcppExport SEXP NCutYX_WNCut2(SEXP CysSEXP, SEXP Cy2sSEXP, SEXP DysSEXP, SEXP WysSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type Cys(CysSEXP);
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type Cy2s(Cy2sSEXP);
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type Dys(DysSEXP);
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type Wys(WysSEXP);
+    rcpp_result_gen = Rcpp::wrap(WNCut2(Cys, Cy2s, Dys, Wys));
+    return rcpp_result_gen;
+END_RCPP
+}
+// WNCut3
+double WNCut3(const NumericMatrix& Cys, const NumericMatrix& Cy2s, const NumericMatrix& Dys, const NumericMatrix& Wys);
+RcppExport SEXP NCutYX_WNCut3(SEXP CysSEXP, SEXP Cy2sSEXP, SEXP DysSEXP, SEXP WysSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type Cys(CysSEXP);
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type Cy2s(Cy2sSEXP);
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type Dys(DysSEXP);
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type Wys(WysSEXP);
+    rcpp_result_gen = Rcpp::wrap(WNCut3(Cys, Cy2s, Dys, Wys));
+    return rcpp_result_gen;
+END_RCPP
+}
+// WNCut4
+double WNCut4(const NumericMatrix& Cys, const NumericMatrix& Cy2s, const NumericMatrix& Wys);
+RcppExport SEXP NCutYX_WNCut4(SEXP CysSEXP, SEXP Cy2sSEXP, SEXP WysSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type Cys(CysSEXP);
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type Cy2s(Cy2sSEXP);
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type Wys(WysSEXP);
+    rcpp_result_gen = Rcpp::wrap(WNCut4(Cys, Cy2s, Wys));
     return rcpp_result_gen;
 END_RCPP
 }

@@ -42,13 +42,11 @@ double NCutY3V1(const NumericMatrix &Cys, const NumericMatrix &Cy2s,
 // [[Rcpp::depends(RcppEigen)]]
 // [[Rcpp::export]]
 double WNCut(const NumericMatrix &Cys,
-             const NumericMatrix &Cy2s,
-             const NumericMatrix &DWys,
-             const NumericMatrix &Wys){
+              const NumericMatrix &Cy2s,
+              const NumericMatrix &Wys){
 
   Eigen::Map<Eigen::MatrixXd> Cy = as<Eigen::Map<Eigen::MatrixXd> >(Cys);
   Eigen::Map<Eigen::MatrixXd> Cy2 = as<Eigen::Map<Eigen::MatrixXd> >(Cy2s);
-  Eigen::Map<Eigen::MatrixXd> DWy = as<Eigen::Map<Eigen::MatrixXd> >(DWys);
   Eigen::Map<Eigen::MatrixXd> Wy = as<Eigen::Map<Eigen::MatrixXd> >(Wys);
 
   const int K = Cy.cols();//number of groups
@@ -60,7 +58,81 @@ double WNCut(const NumericMatrix &Cys,
   double J;
   for(int i=0;i<K;i++){
     //Cuty(i)=(Cy.col(i).transpose()*Wy*Cy2.col(i)).sum();
-    Cuty(i)=(Cy.col(i).transpose()*DWy*Cy2.col(i)).sum();
+    Cuty(i)=(Cy.col(i).transpose()*Wy*Cy2.col(i)).sum();
+    Volx(i)=(Cy.col(i).transpose()*Wy*Cy.col(i));
+    //Volx(i)=(Cy.col(i).transpose()*Wy).sum();
+  }
+
+  VectorXd Res=Cuty.array()/Volx.array();
+  J=Res.sum();
+
+  //In the general case, there needs to be  vectors
+  //Volx and Voly of dimension K
+  //Vol1x=(D1*Wy*D1).sum();
+  //Vol2x=(D2*Wy*D2).sum();
+
+  return J;
+}
+
+// [[Rcpp::depends(RcppEigen)]]
+// [[Rcpp::export]]
+double WNCut2(const NumericMatrix &Cys,
+              const NumericMatrix &Cy2s,
+              const NumericMatrix &Dys,
+              const NumericMatrix &Wys){
+
+  Eigen::Map<Eigen::MatrixXd> Cy = as<Eigen::Map<Eigen::MatrixXd> >(Cys);
+  Eigen::Map<Eigen::MatrixXd> Cy2 = as<Eigen::Map<Eigen::MatrixXd> >(Cy2s);
+  Eigen::Map<Eigen::MatrixXd> Dy = as<Eigen::Map<Eigen::MatrixXd> >(Dys);
+  Eigen::Map<Eigen::MatrixXd> Wy = as<Eigen::Map<Eigen::MatrixXd> >(Wys);
+
+  const int K = Cy.cols();//number of groups
+  //These vectors wil contain the number of vertices in from X and Y
+  //For the K=2 case, cut1=cut2
+  VectorXd Cuty(K);//Numerator of NCut
+  VectorXd Volx(K);//Denoinator of NCut
+
+  double J;
+  for(int i=0;i<K;i++){
+    //Cuty(i)=(Cy.col(i).transpose()*Wy*Cy2.col(i)).sum();
+    Cuty(i)=(Cy.col(i).transpose()*Dy*Cy2.col(i)).sum();
+    Volx(i)=(Cy.col(i).transpose()*Wy*Cy.col(i));
+    //Volx(i)=(Cy.col(i).transpose()*Wy).sum();
+  }
+
+  VectorXd Res=Cuty.array()/Volx.array();
+  J=Res.sum();
+
+  //In the general case, there needs to be  vectors
+  //Volx and Voly of dimension K
+  //Vol1x=(D1*Wy*D1).sum();
+  //Vol2x=(D2*Wy*D2).sum();
+
+  return J;
+}
+
+// [[Rcpp::depends(RcppEigen)]]
+// [[Rcpp::export]]
+double WNCut3(const NumericMatrix &Cys,
+              const NumericMatrix &Cy2s,
+              const NumericMatrix &Dys,
+              const NumericMatrix &Wys){
+
+  Eigen::Map<Eigen::MatrixXd> Cy = as<Eigen::Map<Eigen::MatrixXd> >(Cys);
+  Eigen::Map<Eigen::MatrixXd> Cy2 = as<Eigen::Map<Eigen::MatrixXd> >(Cy2s);
+  Eigen::Map<Eigen::MatrixXd> Dy = as<Eigen::Map<Eigen::MatrixXd> >(Dys);
+  Eigen::Map<Eigen::MatrixXd> Wy = as<Eigen::Map<Eigen::MatrixXd> >(Wys);
+
+  const int K = Cy.cols();//number of groups
+  //These vectors wil contain the number of vertices in from X and Y
+  //For the K=2 case, cut1=cut2
+  VectorXd Cuty(K);//Numerator of NCut
+  VectorXd Volx(K);//Denoinator of NCut
+
+  double J;
+  for(int i=0;i<K;i++){
+    //Cuty(i)=(Cy.col(i).transpose()*Wy*Cy2.col(i)).sum();
+    Cuty(i)=(Cy.col(i).transpose()*Dy*Cy2.col(i)).sum();
     Volx(i)=(Cy.col(i).transpose()*Wy).sum();
     //Volx(i)=(Cy.col(i).transpose()*Wy).sum();
   }
@@ -76,6 +148,40 @@ double WNCut(const NumericMatrix &Cys,
   return J;
 }
 
+// [[Rcpp::depends(RcppEigen)]]
+// [[Rcpp::export]]
+double WNCut4(const NumericMatrix &Cys,
+              const NumericMatrix &Cy2s,
+              const NumericMatrix &Wys){
+
+  Eigen::Map<Eigen::MatrixXd> Cy = as<Eigen::Map<Eigen::MatrixXd> >(Cys);
+  Eigen::Map<Eigen::MatrixXd> Cy2 = as<Eigen::Map<Eigen::MatrixXd> >(Cy2s);
+  Eigen::Map<Eigen::MatrixXd> Wy = as<Eigen::Map<Eigen::MatrixXd> >(Wys);
+
+  const int K = Cy.cols();//number of groups
+  //These vectors wil contain the number of vertices in from X and Y
+  //For the K=2 case, cut1=cut2
+  VectorXd Cuty(K);//Numerator of NCut
+  VectorXd Volx(K);//Denoinator of NCut
+
+  double J;
+  for(int i=0;i<K;i++){
+    //Cuty(i)=(Cy.col(i).transpose()*Wy*Cy2.col(i)).sum();
+    Cuty(i)=(Cy.col(i).transpose()*Wy*Cy2.col(i)).sum();
+    Volx(i)=(Cy.col(i).transpose()*Wy).sum();
+    //Volx(i)=(Cy.col(i).transpose()*Wy).sum();
+  }
+
+  VectorXd Res=Cuty.array()/Volx.array();
+  J=Res.sum();
+
+  //In the general case, there needs to be  vectors
+  //Volx and Voly of dimension K
+  //Vol1x=(D1*Wy*D1).sum();
+  //Vol2x=(D2*Wy*D2).sum();
+
+  return J;
+}
 
 //This function calculates a NCut for a three layered graph.
 //It has as input the cluster membership, and the respective
