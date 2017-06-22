@@ -629,24 +629,22 @@ spawn<-function(X,
                 B=3000,
                 L=1000,
                 N=100,
-                gamma=10,
-                scale=F,
+                scale=T,
                 p.sparse=0.2,
                 lambda=1,
-                rate=0.5,
                 epsilon=0,
                 beta=1,
                 alpha=0.5,
+                nstarts=10,
                 start='kmeans',
                 dist='gaussian',
-                sigma=1,
-                method='recursive'){
+                sigma=1){
   #Beginning of the function
   if (scale==T){
     X=apply(X,2,function(e) {return(e/var(e)^0.5)})
     p=dim(X)[2]
     if (dist=='gaussian'){
-      Wx=exp((-1)*as.matrix(dist(t(X),diag=T,upper=T))/(2*sigma^2))
+      Wx=exp((-1)*as.matrix(dist(t(X),diag=T,upper=T))/(sigma^2))
       Wx[which(Wx<epsilon)]=0
     }else if(dist=='euclidean'){
       Wx=as.matrix(dist(t(X),diag=T,upper=T))+diag(p)
@@ -662,7 +660,7 @@ spawn<-function(X,
   }else{
     p=dim(X)[2]
     if (dist=='gaussian'){
-      Wx=exp((-1)*as.matrix(dist(t(X),diag=T,upper=T))/(2*sigma^2))
+      Wx=exp((-1)*as.matrix(dist(t(X),diag=T,upper=T))/(sigma^2))
       Wx[which(Wx<epsilon)]=0
     }else if(dist=='euclidean'){
       Wx=as.matrix(dist(t(X),diag=T,upper=T))+diag(p)
@@ -678,198 +676,110 @@ spawn<-function(X,
 
   #L<-diag(apply(Wx,1,sum))-Wx
   D<-matrix(apply(Wx,1,sum),p,1)
-  #This creates a random starting point in the split in the algorithm for K clusters
-  if (start=='random'){
-    Cx=matrix(runif(p*K),p,K)
-    Sums=apply(Cx,1,sum)
-    Cx=Cx/Sums
-  } else if(start=='kmeans'){
-    results<-kmeans(t(X),centers=K)
-    Cx=matrix(0,p,K)
-    for (i in 1:p){
-      Cx[i,results[[1]][i]]=1
+  Rfinal <- list()
+  for (j in 1:nstarts){
+    #This creates a random starting point in the split in the algorithm for K clusters
+    if(is.matrix(start)==T){
+      Cx=matrix(0,p,K)
+      Cx<-start
+    } else if (start=='random'){
+      Cx=matrix(runif(p*K),p,K)
+      Sums=apply(Cx,1,sum)
+      Cx=Cx/Sums
+    } else if(start=='kmeans'){
+      results<-kmeans(t(X),centers=K)
+      Cx=matrix(0,p,K)
+      for (i in 1:p){
+        Cx[i,results[[1]][i]]=1
+      }
+    } else{
+      print('This is not a start option')
     }
-  } else{
-    print('This is not a start option')
-  }
 
+    #Now, calculate the number of indices in each group.
+    Nx=apply(Cx,2,sum)
+    M1=matrix(1,p,K)
 
-  #Now, calculate the number of indices in each group.
-  Nx=apply(Cx,2,sum)
-  M1=matrix(1,p,K)
+    J=WNCut(Cx,M1-Cx,Wx)+lambda*Ranking(Cx)/(K*p)
+    #J=WNCut2(Cx,M1-Cx,Wx-diag(p),Wx)+lambda*Ranking(Cx)/(K*p)
+    Test<- vector(mode="numeric", length=B)
+      #These matrices will keep track of the elements of the clusters while
+      #doing simulated annealing.
+      C2x=matrix(0,p,K)
+      C2x=Cx
+      for (k in 1:B){
+        ###New sketchs of the beginning of the algorithm###
+        #1.- Draw the one of the genes randomly {i}#
+        s<-sample.int(p,1)
+        #2.- Rank the weights for the {i}-th gene and keep the rankings {j}#
+        s.order<-order(Cx[s,])
+        #3.- Draw a cluster at random#
+        cluster<-sample.int(K,1)
+        #4.- Decide whether make that sparse with respect to w_{i,(j-1)} or w_{i,(j+1)}#
+        if(s.order[cluster]==1){#if the weight is the smallest one
+          w.replace<-which(s.order==2)
+          min.dist<-abs(C2x[s,s.order[cluster]]-C2x[s,w.replace])
+        }else if (s.order[cluster]==K){#if the weight is the largest one
+          w.replace<-which(s.order==K-1)
+          min.dist<-abs(C2x[s,s.order[cluster]]-C2x[s,w.replace])
+        }else{
+          w1.replace<-which(s.order==(s.order[cluster]-1))
+          w2.replace<-which(s.order==(s.order[cluster]+1))
+          w.replace<-c(w1.replace,w2.replace)
+          diffs<-c(abs(C2x[s,s.order[cluster]]-C2x[s,w1.replace]),
+                   abs(C2x[s,s.order[cluster]]-C2x[s,w2.replace]))
+          min.dist<-min(diffs)
+          a1<-which(diffs==min.dist)
+          w.replace<-w.replace[a1[1]]#what weight are we going to replace
+        }
 
-  J=WNCut(Cx,M1-Cx,Wx)+lambda*Ranking(Cx)/(K*p)
+        #We draw a sparse criteria#
+        sparse=rbinom(1,1,p=min(c(p.sparse+abs(C2x[s,cluster]-C2x[s,w.replace]),1)))
+        if (sparse==0){
+          avg<-(C2x[s,w.replace]+C2x[s,cluster])/2
+          C2x[s,cluster]=avg
+          C2x[s,w.replace]=avg
+          C2x[s,]=C2x[s,]/sum(C2x[s,])
+        }else{
+          p_minus=runif(1,min=0,max=C2x[s,cluster])
+          C2x[s,cluster]=C2x[s,cluster]-p_minus#This element will give somethin between 0 and its value
+          C2x[s,w.replace]=C2x[s,w.replace]+p_minus#This element will get something between 0 and the value of the other element
+          #C2x[sx,]=C2x[sx,]/sum(C2x[sx,])
+        }
 
-  Test<- vector(mode="numeric", length=B)
-  if (method=='sa'){
-    #These matrices will keep track of the elements of the clusters while
-    #doing simulated annealing.
-    C2x=matrix(0,p,K)
-    C2x=Cx
-    for (k in 1:B){
-      ###New sketchs of the beginning of the algorithm###
-      #1.- Draw the one of the genes randomly {i}#
-      s<-sample.int(p,1)
-      #2.- Rank the weights for the {i}-th gene and keep the rankings {j}#
-      s.order<-order(Cx[s,])
-      #3.- Draw a cluster at random#
-      cluster<-sample.int(K,1)
-      #4.- Decide whether make that sparse with respect to w_{i,(j-1)} or w_{i,(j+1)}#
-      if(s.order[cluster]==1){#if the weight is the smallest one
-        w.replace<-which(s.order==2)
-        min.dist<-abs(C2x[s,s.order[cluster]]-C2x[s,w.replace])
-      }else if (s.order[cluster]==K){#if the weight is the largest one
-        w.replace<-which(s.order==K-1)
-        min.dist<-abs(C2x[s,s.order[cluster]]-C2x[s,w.replace])
-      }else{
-        w1.replace<-which(s.order==(s.order[cluster]-1))
-        w2.replace<-which(s.order==(s.order[cluster]+1))
-        w.replace<-c(w1.replace,w2.replace)
-        diffs<-c(abs(C2x[s,s.order[cluster]]-C2x[s,w1.replace]),
-                 abs(C2x[s,s.order[cluster]]-C2x[s,w2.replace]))
-        min.dist<-min(diffs)
-        a1<-which(diffs==min.dist)
-        w.replace<-w.replace[a1[1]]#what weight are we going to replace
-      }
+        #Now Step 3 in the algorithm
+        #J2=WNCut2(C2x,M1-C2x,Wx-diag(p),Wx)+lambda*Ranking(C2x)/(K*p)
+        J2=WNCut(C2x,M1-C2x,Wx)+lambda*Ranking(C2x)/(K*p)
 
-      #We draw a sparse criteria#
-      sparse=rbinom(1,1,p=min(c(p.sparse+abs(C2x[s,cluster]-C2x[s,w.replace]),1)))
-      if (sparse==0){
-        avg<-(C2x[s,w.replace]+C2x[s,cluster])/2
-        C2x[s,cluster]=avg
-        C2x[s,w.replace]=avg
-        C2x[s,]=C2x[s,]/sum(C2x[s,])
-      }else{
-        p_minus=runif(1,min=0,max=C2x[s,cluster])
-        C2x[s,cluster]=C2x[s,cluster]-p_minus#This element will give somethin between 0 and its value
-        C2x[s,w.replace]=C2x[s,w.replace]+p_minus#This element will get something between 0 and the value of the other element
-        #C2x[sx,]=C2x[sx,]/sum(C2x[sx,])
-      }
-
-      #Now Step 3 in the algorithm
-      J2=WNCut(C2x,M1-C2x,Wx)+lambda*Ranking(C2x)/(K*p)
-
-      if (J2>J){
-        #Prob[Count]=exp(-10000*log(k+1)*(J2-J))
-        des=rbinom(1,1,exp(-L*log(alpha*k+2)*(J2-J)))
-
-        if (des==1){
-          Cx=C2x#Set-up the new clusters
+        if (J2>J){
+          #Prob[Count]=exp(-10000*log(k+1)*(J2-J))
+          des=rbinom(1,1,exp(-L*log(alpha*k+2)*(J2-J)))
+          if (des==1){
+            Cx=C2x#Set-up the new clusters
+            J=J2
+            Nx=apply(Cx,2,sum)
+          }else{
+            C2x=Cx
+          }
+        } else{
+          Cx=C2x
           J=J2
           Nx=apply(Cx,2,sum)
-        }else{
-          C2x=Cx
         }
-      } else{
-        Cx=C2x
-        J=J2
-        Nx=apply(Cx,2,sum)
+        Test[k]=J
+
       }
-      Test[k]=J
-
-    }
-    Res<-list()
-    Res[[1]]=Test
-    Res[[2]]=Cx
-    return(Res)
-
-  } else if(method=='recursive'){
-
-    denumerator<-0
-    numerator<-matrix(0,p,K)
-    #These matrices will keep track of the elements of the clusters while
-    #doing simulated annealing.
-    C2x=matrix(0,p,K)
-    C2x=Cx
-    for (k in 1:B){
-
-      ###New sketchs of the beginning of the algorithm###
-      #1.- Draw the one of the genes randomly {i}#
-      s<-sample.int(p,1)
-      #2.- Rank the weights for the {i}-th gene and keep the rankings {j}#
-      s.order<-order(Cx[s,])
-      #3.- Draw a cluster at random#
-      cluster<-sample.int(K,1)
-      #4.- Decide whether make that sparse with respect to w_{i,(j-1)} or w_{i,(j+1)}#
-      if(s.order[cluster]==1){#if the weight is the smallest one
-        w.replace<-which(s.order==2)
-        min.dist<-abs(C2x[s,s.order[cluster]]-C2x[s,w.replace])
-      }else if (s.order[cluster]==K){#if the weight is the largest one
-        w.replace<-which(s.order==K-1)
-        min.dist<-abs(C2x[s,s.order[cluster]]-C2x[s,w.replace])
+      if(j==1){
+        Rfinal[[1]] <- Test
+        Rfinal[[2]] <- Cx
       }else{
-        w1.replace<-which(s.order==(s.order[cluster]-1))
-        w2.replace<-which(s.order==(s.order[cluster]+1))
-        w.replace<-c(w1.replace,w2.replace)
-        diffs<-c(abs(C2x[s,s.order[cluster]]-C2x[s,w1.replace]),
-                 abs(C2x[s,s.order[cluster]]-C2x[s,w2.replace]))
-        min.dist<-min(diffs)
-        a1<-which(diffs==min.dist)
-        w.replace<-w.replace[a1[1]]#what weight are we going to replace
+        if(Rfinal[[1]][B]>Test[B]){
+          Rfinal[[1]] <- Test
+          Rfinal[[2]] <- Cx
+        }
       }
-
-      #We draw a sparse criteria#
-      sparse=rbinom(1,1,p=min(c(p.sparse+abs(C2x[s,cluster]-C2x[s,w.replace]),1)))
-      if (sparse==0){
-        avg<-(C2x[s,w.replace]+C2x[s,cluster])/2
-        C2x[s,cluster]=avg
-        C2x[s,w.replace]=avg
-        C2x[s,]=C2x[s,]/sum(C2x[s,])
-      }else{
-        p_minus=runif(1,min=0,max=C2x[s,cluster])
-        C2x[s,cluster]=C2x[s,cluster]-p_minus#This element will give somethin between 0 and its value
-        C2x[s,w.replace]=C2x[s,w.replace]+p_minus#This element will get something between 0 and the value of the other element
-        #C2x[sx,]=C2x[sx,]/sum(C2x[sx,])
-      }
-
-      #Now Step 3 in the algorithm
-      J2=WNCut(C2x,M1-C2x,Wx)+lambda*Ranking(C2x)/(K*p)
-
-      Test[k]=J2
-
-      C2x<-matrix(runif(p*K),p,K)
-      C2x<-apply(C2x,1,function(e) return(e/sum(e)))
-      C2x<-t(C2x)#why do I need this?
-
-      h_x<-exp((-1)*gamma*(WNCut(C2x,M1-C2x,Wx)+
-         lambda*Ranking(C2x)/(K*p)))
-
-      numerator<-C2x*h_x+numerator
-      denumerator<-h_x+denumerator
-
-    }
-
-    Cx<-numerator/denumerator
-
-    Res<-list()
-    Res[[1]]=Test
-    Res[[2]]=Cx
-    return(Res)
-
-  } else if(method=='cem'){
-    #This matrix will keep the information on the latest weigths to draw from
-    Unifs<-matrix(0,p,K*2)
-    for (i in 1:p){
-      Unifs[i,1]<-runif(1)
-      for (j in 2:(2*K)){
-        Unifs[i,j]<-runif(1,min=Unifs[i,j-1],max=1)
-      }
-      #Permute
-      Unifs[i,]<-Unifs[i,sample.int(K,K,replace=F)]
-    }
-    #Step 1.- Draw N ranked uniforms
-    result <- vector("list", N)
-
-  }else{
-
-    if(!method%in%c('recursive','sa')){
-      print('Not a valid method.')
-      print('Choose sa for simulated annealing.')
-      print('Choose recursive for recursive integration.')
-    }
-
   }
-
+  return(Rfinal)
 }
 
 

@@ -111,16 +111,15 @@ double WNCut2(const NumericMatrix &Cys,
   return J;
 }
 
+
 // [[Rcpp::depends(RcppEigen)]]
 // [[Rcpp::export]]
 double WNCut3(const NumericMatrix &Cys,
               const NumericMatrix &Cy2s,
-              const NumericMatrix &Dys,
               const NumericMatrix &Wys){
 
   Eigen::Map<Eigen::MatrixXd> Cy = as<Eigen::Map<Eigen::MatrixXd> >(Cys);
   Eigen::Map<Eigen::MatrixXd> Cy2 = as<Eigen::Map<Eigen::MatrixXd> >(Cy2s);
-  Eigen::Map<Eigen::MatrixXd> Dy = as<Eigen::Map<Eigen::MatrixXd> >(Dys);
   Eigen::Map<Eigen::MatrixXd> Wy = as<Eigen::Map<Eigen::MatrixXd> >(Wys);
 
   const int K = Cy.cols();//number of groups
@@ -132,7 +131,7 @@ double WNCut3(const NumericMatrix &Cys,
   double J;
   for(int i=0;i<K;i++){
     //Cuty(i)=(Cy.col(i).transpose()*Wy*Cy2.col(i)).sum();
-    Cuty(i)=(Cy.col(i).transpose()*Dy*Cy2.col(i)).sum();
+    Cuty(i)=(Cy.col(i).transpose()*Wy*Cy2.col(i)).sum();
     Volx(i)=(Cy.col(i).transpose()*Wy).sum();
     //Volx(i)=(Cy.col(i).transpose()*Wy).sum();
   }
@@ -152,10 +151,12 @@ double WNCut3(const NumericMatrix &Cys,
 // [[Rcpp::export]]
 double WNCut4(const NumericMatrix &Cys,
               const NumericMatrix &Cy2s,
+              const NumericMatrix &Dys,
               const NumericMatrix &Wys){
 
   Eigen::Map<Eigen::MatrixXd> Cy = as<Eigen::Map<Eigen::MatrixXd> >(Cys);
   Eigen::Map<Eigen::MatrixXd> Cy2 = as<Eigen::Map<Eigen::MatrixXd> >(Cy2s);
+  Eigen::Map<Eigen::MatrixXd> Dy = as<Eigen::Map<Eigen::MatrixXd> >(Dys);
   Eigen::Map<Eigen::MatrixXd> Wy = as<Eigen::Map<Eigen::MatrixXd> >(Wys);
 
   const int K = Cy.cols();//number of groups
@@ -167,7 +168,7 @@ double WNCut4(const NumericMatrix &Cys,
   double J;
   for(int i=0;i<K;i++){
     //Cuty(i)=(Cy.col(i).transpose()*Wy*Cy2.col(i)).sum();
-    Cuty(i)=(Cy.col(i).transpose()*Wy*Cy2.col(i)).sum();
+    Cuty(i)=(Cy.col(i).transpose()*Dy*Cy2.col(i)).sum();
     Volx(i)=(Cy.col(i).transpose()*Wy).sum();
     //Volx(i)=(Cy.col(i).transpose()*Wy).sum();
   }

@@ -48,8 +48,21 @@ BEGIN_RCPP
 END_RCPP
 }
 // WNCut3
-double WNCut3(const NumericMatrix& Cys, const NumericMatrix& Cy2s, const NumericMatrix& Dys, const NumericMatrix& Wys);
-RcppExport SEXP NCutYX_WNCut3(SEXP CysSEXP, SEXP Cy2sSEXP, SEXP DysSEXP, SEXP WysSEXP) {
+double WNCut3(const NumericMatrix& Cys, const NumericMatrix& Cy2s, const NumericMatrix& Wys);
+RcppExport SEXP NCutYX_WNCut3(SEXP CysSEXP, SEXP Cy2sSEXP, SEXP WysSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type Cys(CysSEXP);
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type Cy2s(Cy2sSEXP);
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type Wys(WysSEXP);
+    rcpp_result_gen = Rcpp::wrap(WNCut3(Cys, Cy2s, Wys));
+    return rcpp_result_gen;
+END_RCPP
+}
+// WNCut4
+double WNCut4(const NumericMatrix& Cys, const NumericMatrix& Cy2s, const NumericMatrix& Dys, const NumericMatrix& Wys);
+RcppExport SEXP NCutYX_WNCut4(SEXP CysSEXP, SEXP Cy2sSEXP, SEXP DysSEXP, SEXP WysSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -57,20 +70,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const NumericMatrix& >::type Cy2s(Cy2sSEXP);
     Rcpp::traits::input_parameter< const NumericMatrix& >::type Dys(DysSEXP);
     Rcpp::traits::input_parameter< const NumericMatrix& >::type Wys(WysSEXP);
-    rcpp_result_gen = Rcpp::wrap(WNCut3(Cys, Cy2s, Dys, Wys));
-    return rcpp_result_gen;
-END_RCPP
-}
-// WNCut4
-double WNCut4(const NumericMatrix& Cys, const NumericMatrix& Cy2s, const NumericMatrix& Wys);
-RcppExport SEXP NCutYX_WNCut4(SEXP CysSEXP, SEXP Cy2sSEXP, SEXP WysSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const NumericMatrix& >::type Cys(CysSEXP);
-    Rcpp::traits::input_parameter< const NumericMatrix& >::type Cy2s(Cy2sSEXP);
-    Rcpp::traits::input_parameter< const NumericMatrix& >::type Wys(WysSEXP);
-    rcpp_result_gen = Rcpp::wrap(WNCut4(Cys, Cy2s, Wys));
+    rcpp_result_gen = Rcpp::wrap(WNCut4(Cys, Cy2s, Dys, Wys));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -111,4 +111,21 @@ BEGIN_RCPP
     rcpp_result_gen = Rcpp::wrap(Ranking(C));
     return rcpp_result_gen;
 END_RCPP
+}
+
+static const R_CallMethodDef CallEntries[] = {
+    {"NCutYX_NCutY3V1", (DL_FUNC) &NCutYX_NCutY3V1, 4},
+    {"NCutYX_WNCut", (DL_FUNC) &NCutYX_WNCut, 3},
+    {"NCutYX_WNCut2", (DL_FUNC) &NCutYX_WNCut2, 4},
+    {"NCutYX_WNCut3", (DL_FUNC) &NCutYX_WNCut3, 3},
+    {"NCutYX_WNCut4", (DL_FUNC) &NCutYX_WNCut4, 4},
+    {"NCutYX_NCutLayer3V1", (DL_FUNC) &NCutYX_NCutLayer3V1, 6},
+    {"NCutYX_Penal", (DL_FUNC) &NCutYX_Penal, 1},
+    {"NCutYX_Ranking", (DL_FUNC) &NCutYX_Ranking, 1},
+    {NULL, NULL, 0}
+};
+
+RcppExport void R_init_NCutYX(DllInfo *dll) {
+    R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
+    R_useDynamicSymbols(dll, FALSE);
 }

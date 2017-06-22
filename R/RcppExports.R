@@ -13,12 +13,12 @@ WNCut2 <- function(Cys, Cy2s, Dys, Wys) {
     .Call('NCutYX_WNCut2', PACKAGE = 'NCutYX', Cys, Cy2s, Dys, Wys)
 }
 
-WNCut3 <- function(Cys, Cy2s, Dys, Wys) {
-    .Call('NCutYX_WNCut3', PACKAGE = 'NCutYX', Cys, Cy2s, Dys, Wys)
+WNCut3 <- function(Cys, Cy2s, Wys) {
+    .Call('NCutYX_WNCut3', PACKAGE = 'NCutYX', Cys, Cy2s, Wys)
 }
 
-WNCut4 <- function(Cys, Cy2s, Wys) {
-    .Call('NCutYX_WNCut4', PACKAGE = 'NCutYX', Cys, Cy2s, Wys)
+WNCut4 <- function(Cys, Cy2s, Dys, Wys) {
+    .Call('NCutYX_WNCut4', PACKAGE = 'NCutYX', Cys, Cy2s, Dys, Wys)
 }
 
 NCutLayer3V1 <- function(Cys, Cy2s, Wzs, Wys, Wxs, Wzyxs) {
