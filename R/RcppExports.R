@@ -21,6 +21,10 @@ WNCut4 <- function(Cys, Cy2s, Dys, Wys) {
     .Call('NCutYX_WNCut4', PACKAGE = 'NCutYX', Cys, Cy2s, Dys, Wys)
 }
 
+WNCut5 <- function(Cys, Dys, Wys) {
+    .Call('NCutYX_WNCut5', PACKAGE = 'NCutYX', Cys, Dys, Wys)
+}
+
 NCutLayer3V1 <- function(Cys, Cy2s, Wzs, Wys, Wxs, Wzyxs) {
     .Call('NCutYX_NCutLayer3V1', PACKAGE = 'NCutYX', Cys, Cy2s, Wzs, Wys, Wxs, Wzyxs)
 }

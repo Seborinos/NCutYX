@@ -700,7 +700,7 @@ spawn<-function(X,
     Nx=apply(Cx,2,sum)
     M1=matrix(1,p,K)
 
-    J=WNCut(Cx,M1-Cx,Wx)+lambda*Ranking(Cx)/(K*p)
+    J=WNCut3(Cx,M1-Cx,Wx)+lambda*Ranking(Cx)/(K*p)
     #J=WNCut2(Cx,M1-Cx,Wx-diag(p),Wx)+lambda*Ranking(Cx)/(K*p)
     Test<- vector(mode="numeric", length=B)
       #These matrices will keep track of the elements of the clusters while
@@ -749,7 +749,7 @@ spawn<-function(X,
 
         #Now Step 3 in the algorithm
         #J2=WNCut2(C2x,M1-C2x,Wx-diag(p),Wx)+lambda*Ranking(C2x)/(K*p)
-        J2=WNCut(C2x,M1-C2x,Wx)+lambda*Ranking(C2x)/(K*p)
+        J2=WNCut3(C2x,M1-C2x,Wx)+lambda*Ranking(C2x)/(K*p)
 
         if (J2>J){
           #Prob[Count]=exp(-10000*log(k+1)*(J2-J))

@@ -74,6 +74,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// WNCut5
+double WNCut5(const NumericMatrix& Cys, const NumericMatrix& Dys, const NumericMatrix& Wys);
+RcppExport SEXP NCutYX_WNCut5(SEXP CysSEXP, SEXP DysSEXP, SEXP WysSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type Cys(CysSEXP);
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type Dys(DysSEXP);
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type Wys(WysSEXP);
+    rcpp_result_gen = Rcpp::wrap(WNCut5(Cys, Dys, Wys));
+    return rcpp_result_gen;
+END_RCPP
+}
 // NCutLayer3V1
 double NCutLayer3V1(const NumericMatrix& Cys, const NumericMatrix& Cy2s, const NumericMatrix& Wzs, const NumericMatrix& Wys, const NumericMatrix& Wxs, const NumericMatrix& Wzyxs);
 RcppExport SEXP NCutYX_NCutLayer3V1(SEXP CysSEXP, SEXP Cy2sSEXP, SEXP WzsSEXP, SEXP WysSEXP, SEXP WxsSEXP, SEXP WzyxsSEXP) {
@@ -119,6 +132,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"NCutYX_WNCut2", (DL_FUNC) &NCutYX_WNCut2, 4},
     {"NCutYX_WNCut3", (DL_FUNC) &NCutYX_WNCut3, 3},
     {"NCutYX_WNCut4", (DL_FUNC) &NCutYX_WNCut4, 4},
+    {"NCutYX_WNCut5", (DL_FUNC) &NCutYX_WNCut5, 3},
     {"NCutYX_NCutLayer3V1", (DL_FUNC) &NCutYX_NCutLayer3V1, 6},
     {"NCutYX_Penal", (DL_FUNC) &NCutYX_Penal, 1},
     {"NCutYX_Ranking", (DL_FUNC) &NCutYX_Ranking, 1},
