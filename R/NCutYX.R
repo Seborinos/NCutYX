@@ -4,7 +4,6 @@
 #' @param Y is a n x p matrix of p variables and n observations. The columns of
 #' Y will be clustered into K groups using NCut.
 #' @param B is the number of iterations in the simulated annealing algorithm.
-#' @param L is the temperature coefficient in the simulated annealing algorithm.
 #' @return A list with the final value of the objective function and
 #' the clusters.
 #' @details
@@ -42,14 +41,19 @@
 #' #This is the true error of the clustering solution.
 #' errorL
 
-NCut<-function(Y,
+ncut<-function(Y,
                K=2,
                B=3000,
-               L=1000,
+               N=100,
                dist='gaussian',
+               scale=T,
+               q=0.1,
                sigma=1){
   #This creates the weight matrix W
-  Y=scale(Y)
+  if(scale==T){
+    Y=scale(Y)
+  }
+
   p=dim(Y)[2]
   if(dist=='euclidean'){
     Wyy=as.matrix(dist(t(Y),diag=T,upper=T))+diag(p)
@@ -59,73 +63,37 @@ NCut<-function(Y,
     Wyy=exp((-1)*as.matrix(dist(t(Y),diag=T,upper=T))/sigma)
   }
 
-  #Wxx[which(Wxx==Inf)]=1
-  #I changed the distance matrix to gaussian kernel
-  #Wxx=exp((-1)*sigma*as.matrix(dist(t(Y2),diag=T,upper=T)))
+  #vector with probabilities of mus being 0 or not
+  Ps <- matrix(1/K,p,K)
+  #Clusters <- vector("list", N)
 
-  #This creates a random starting point in the split in the algorithm for K clusters
-  Cx=matrix(0,p,K)
-
-  for (i in 1:p){
-    Cx[i,sample(K,1)]=1
-  }
-
-  #Now, calculate the number of indices in each group.
-  Nx=apply(Cx[,1:K],2,sum)
-
-
-  #These matrices will keep track of the elements of the clusters while
-  #doing simulated annealing.
-  C2x=matrix(0,p,K+1)
-  C2x=Cx
-
-  J=NCutY3V1(Cx[,1:K],matrix(1,p,K)-Cx[,1:K],Wyy,Wyy)
-
-  Test<- vector(mode="numeric", length=B)
-
-  for (k in 1:B){
-    ###Draw k(-) and k(+)with unequal probabilites.
-    #This section needs to change dramatically for
-    #the general case
-
-    N=sum(Nx)
-    P=Nx/N
-    s=sample.int(K,K,replace=FALSE,prob=P)
-
-    ###Select a vertex from cluster s[1] with unequal probability
-    #Calculating Unequal probabilites
-    #Draw a coin to see whether we choose X or Y
-    ax=which(Cx[,s[1]]==1)#which Xs belong to the cluster
-
-    sx=sample(ax,1)
-    C2x[sx,s[1]]=0
-    C2x[sx,s[K]]=1
-
-    #Now Step 3 in the algorithm
-    J2=NCutY3V1(C2x[,1:K],matrix(1,p,K)-C2x[,1:K],Wyy,Wyy)
-
-    if (J2>J){
-      #Prob[Count]=exp(-10000*log(k+1)*(J2-J))
-      des=rbinom(1,1,exp(-L*log(k+1)*(J2-J)))
-      if (des==1){
-        Cx=C2x#Set-up the new clusters
-        J=J2
-        Nx=apply(Cx[,1:K],2,sum)
-      }else{
-        C2x=Cx
+  for (j in 1:B){
+    print(paste('jth Loop is ', j))
+    Clusters <- array(0,dim=c(p,K,N))
+    for (k in 1:N){
+      for (i in 1:p){
+        Clusters[i,sample(K,1,prob=Ps[i,]),k]=1
       }
-    } else{
-      Cx=C2x
-      J=J2
-      Nx=apply(Cx[,1:K],2,sum)
     }
-    Test[k]=J
+
+    #for the sampled betas, calculate the loss.
+    loss <- vector(mode="numeric", length=N)
+    M1 <- matrix(1,p,K)
+    for (i in 1:N){#Can I write a C++ function that calculates this as a 3D array?
+      loss[i] <- NCutY3V1(Clusters[,,i],M1-Clusters[,,i],Wyy,Wyy)
+    }
+
+    cutoff <- quantile(loss,q)
+    s1 <- which(loss<=cutoff)
+
+    sums <- matrix(0,p,K)
+    for (i in s1){
+      sums <- sums +Clusters[,,i]
+    }
+    Ps <- sums/length(s1)
 
   }
-  Res<-list()
-  Res[[1]]=Test
-  Res[[2]]=Cx
-  return(Res)
+  return(Ps)
 }
 
 #' Cluster the columns of Y into K groups with the help of external features in X.
@@ -195,7 +163,7 @@ NCut<-function(Y,
 #' #This is the true error of the clustering solution.
 #' errorL
 
-ANCut<-function(Y,X,K=2,B=3000,L=1000,alpha=0.5,nlambdas=100,ncv=5,dist='gaussian',sigma=1){
+ancut<-function(Y,X,K=2,B=3000,L=1000,alpha=0.5,nlambdas=100,ncv=5,dist='gaussian',sigma=1){
   #This creates the weight matrix W
   #W=abs(CorV1(n,p+q,cbind(X,Y)))
   #Wxy=W[1:p,(p+1):(p+q)]
@@ -319,7 +287,7 @@ ANCut<-function(Y,X,K=2,B=3000,L=1000,alpha=0.5,nlambdas=100,ncv=5,dist='gaussia
 #' The clusers correspond to partitions that minimize this objective function.
 #' The external information of X is incorporated by using ridge regression to predict Y.
 
-LayerNCut<-function(Z,Y,X,K=2,B=3000,L=1000,alpha=0.5,ncv=3,nlambdas=100,
+muncut<-function(Z,Y,X,K=2,B=3000,L=1000,alpha=0.5,ncv=3,nlambdas=100,
                     scale=F,model=F,gamma=0.5,dist='gaussian',sigma=1){
   #Beginning of the function
   if (model==T){
@@ -673,6 +641,9 @@ spawn<-function(X,
       print('Distance Error')
     }
   }
+
+  Probs <- matrix(apply(Wx,1,sum),p,p)
+  Wx <- Wx/Probs
 
   #L<-diag(apply(Wx,1,sum))-Wx
   D<-matrix(apply(Wx,1,sum),p,1)

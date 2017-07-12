@@ -25,6 +25,18 @@ WNCut5 <- function(Cys, Dys, Wys) {
     .Call('NCutYX_WNCut5', PACKAGE = 'NCutYX', Cys, Dys, Wys)
 }
 
+WNCut6 <- function(Cys, Cy2s, Wys) {
+    .Call('NCutYX_WNCut6', PACKAGE = 'NCutYX', Cys, Cy2s, Wys)
+}
+
+WNCut7 <- function(Cys, Cy2s, Dys) {
+    .Call('NCutYX_WNCut7', PACKAGE = 'NCutYX', Cys, Cy2s, Dys)
+}
+
+WNCut8 <- function(Cys, Cy2s, Wys) {
+    .Call('NCutYX_WNCut8', PACKAGE = 'NCutYX', Cys, Cy2s, Wys)
+}
+
 NCutLayer3V1 <- function(Cys, Cy2s, Wzs, Wys, Wxs, Wzyxs) {
     .Call('NCutYX_NCutLayer3V1', PACKAGE = 'NCutYX', Cys, Cy2s, Wzs, Wys, Wxs, Wzyxs)
 }
