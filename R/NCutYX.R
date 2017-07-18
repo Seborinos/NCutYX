@@ -1,23 +1,23 @@
 #' Cluster the columns of Y into K groups using the NCut graph measure.
 #'
 #' This function will output K clusters of the columns of Y.
-#' @param Y is a n x p matrix of p variables and n observations. The columns of
+#' @param Y is a n x p matrix of p variables and n observations. The p columns of
 #' Y will be clustered into K groups using NCut.
-#' @param B is the number of iterations in the simulated annealing algorithm.
+#' @param K is the number of clusters.
+#' @param B is the number of iterations.
+#' @param N is the number of samples per iterations.
+#' @param scale equals TRUE if data Y is to be scaled with mean 0 and variance 1.
 #' @return A list with the final value of the objective function and
 #' the clusters.
 #' @details
-#' The algorithm minimizes the NCut through simulated annealing.
+#' The algorithm minimizes the NCut through the cross entropy method.
 #' The clusters correspond to partitions that minimize this objective function.
 #' @examples
 #' #This sets up the initial parameters for the simulation.
 #' library(MASS)
 #' n=200 #Sample size
-#' B=5000 #Number of iterations in the simulated annealing algorithm.
-#' L=1000 #Temperature coefficient.
+#' B=30 #Number of iterations in the simulated annealing algorithm.
 #' p=500 #Number of columns of Y.
-#' h1=0
-#' h2=0.15
 #'
 #' S=matrix(0.2,p,p)
 #' S[1:(p/2),(p/2+1):p]=0
@@ -32,7 +32,7 @@
 #'
 #' Y=mvrnorm(n, mu, S)
 #' #Our method
-#' Res=NCut(Y,B=3000,L=1000,K=2,dist='gaussian',sigma=1)
+#' Res=NCut(Y,B=30,N=500,K=2,dist='gaussian',sigma=1)
 #' Cx=Res[[2]]
 #' f11=matrix(Cx[,1],p,1)
 #' f12=matrix(Cx[,2],p,1)
@@ -43,13 +43,15 @@
 
 ncut<-function(Y,
                K=2,
-               B=3000,
-               N=100,
+               B=30,
+               N=500,
                dist='gaussian',
                scale=T,
                q=0.1,
                sigma=1){
   #This creates the weight matrix W
+  Res <- list()
+  quantiles <- vector(mode="numeric", length=B)
   if(scale==T){
     Y=scale(Y)
   }
@@ -70,10 +72,14 @@ ncut<-function(Y,
   for (j in 1:B){
     print(paste('jth Loop is ', j))
     Clusters <- array(0,dim=c(p,K,N))
+    #for (k in 1:N){
+    #  for (i in 1:p){
+    #    Clusters[i,sample(K,1,prob=Ps[i,]),k]=1
+    #  }
+    #}
+
     for (k in 1:N){
-      for (i in 1:p){
-        Clusters[i,sample(K,1,prob=Ps[i,]),k]=1
-      }
+      Clusters[,,k] <- t(apply(Ps,1,sample.cluster))
     }
 
     #for the sampled betas, calculate the loss.
@@ -85,7 +91,7 @@ ncut<-function(Y,
 
     cutoff <- quantile(loss,q)
     s1 <- which(loss<=cutoff)
-
+    quantiles[j] <- s1
     sums <- matrix(0,p,K)
     for (i in s1){
       sums <- sums +Clusters[,,i]
@@ -93,7 +99,9 @@ ncut<-function(Y,
     Ps <- sums/length(s1)
 
   }
-  return(Ps)
+  Res[[1]] <- quantiles
+  Res[[2]] <- Ps
+  return(Res)
 }
 
 #' Cluster the columns of Y into K groups with the help of external features in X.
@@ -163,7 +171,16 @@ ncut<-function(Y,
 #' #This is the true error of the clustering solution.
 #' errorL
 
-ancut<-function(Y,X,K=2,B=3000,L=1000,alpha=0.5,nlambdas=100,ncv=5,dist='gaussian',sigma=1){
+ancut<-function(Y,
+                X,
+                K=2,
+                B=3000,
+                L=1000,
+                alpha=0.5,
+                nlambdas=100,
+                ncv=5,
+                dist='gaussian',
+                sigma=1){
   #This creates the weight matrix W
   #W=abs(CorV1(n,p+q,cbind(X,Y)))
   #Wxy=W[1:p,(p+1):(p+q)]
@@ -185,9 +202,6 @@ ancut<-function(Y,X,K=2,B=3000,L=1000,alpha=0.5,nlambdas=100,ncv=5,dist='gaussia
   #Wyy[which(Wyy==Inf)]=1
   #I changed the distance matrix to gaussian kernel
   #Wyy=exp((-1)*sigma*as.matrix(dist(t(Y),diag=T,upper=T)))
-
-  #This standardizes the Wxy as to make it a probability transition
-  #matrix
 
   cv.m1=cv.glmnet(X, Y, family=c("mgaussian"),
                   alpha=alpha,nfolds=ncv,nlambda=nlambdas,intercept=FALSE)
@@ -287,8 +301,20 @@ ancut<-function(Y,X,K=2,B=3000,L=1000,alpha=0.5,nlambdas=100,ncv=5,dist='gaussia
 #' The clusers correspond to partitions that minimize this objective function.
 #' The external information of X is incorporated by using ridge regression to predict Y.
 
-muncut<-function(Z,Y,X,K=2,B=3000,L=1000,alpha=0.5,ncv=3,nlambdas=100,
-                    scale=F,model=F,gamma=0.5,dist='gaussian',sigma=1){
+muncut<-function(Z,
+                 Y,
+                 X,
+                 K=2,
+                 B=3000,
+                 L=1000,
+                 alpha=0.5,
+                 ncv=3,
+                 nlambdas=100,
+                 scale=F,
+                 model=F,
+                 gamma=0.5,
+                 dist='gaussian',
+                 sigma=1){
   #Beginning of the function
   if (model==T){
     if (scale==T){
@@ -671,7 +697,7 @@ spawn<-function(X,
     Nx=apply(Cx,2,sum)
     M1=matrix(1,p,K)
     #J=WNCut3(Cx,M1-Cx,Wx)+lambda*Ranking(Cx)/(K*p)
-    J=WNCut2(Cx,M1-Cx,Wx-diag(p),Wx)+lambda*Ranking(Cx)/(K*p)
+    J=WNCut(Cx,M1-Cx,Wx)+lambda*Ranking(Cx)/(p*K)
     Test<- vector(mode="numeric", length=B)
       #These matrices will keep track of the elements of the clusters while
       #doing simulated annealing.
@@ -718,7 +744,7 @@ spawn<-function(X,
         }
 
         #Now Step 3 in the algorithm
-        J2=WNCut2(C2x,M1-C2x,Wx-diag(p),Wx)+lambda*Ranking(C2x)/(K*p)
+        J2=WNCut(C2x,M1-C2x,Wx)+lambda*Ranking(C2x)/(K*p)
         #J2=WNCut3(C2x,M1-C2x,Wx)+lambda*Ranking(C2x)/(K*p)
 
         if (J2>J){
