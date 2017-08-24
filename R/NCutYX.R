@@ -668,6 +668,8 @@ spawn<-function(X,
     if(is.matrix(start)==T){
       Cx=matrix(0,p,K)
       Cx<-start
+    } else if(start=='default'){
+      Cx <- matrix(1/K,p,K)
     } else if (start=='random'){
       Cx=matrix(runif(p*K),p,K)
       Sums=apply(Cx,1,sum)
@@ -828,7 +830,7 @@ spawn2<-function(Y,
   if(scale==T){
     Y=scale(Y)
   }
-  
+
   p=dim(Y)[2]
   if(dist=='euclidean'){
     Wyy=as.matrix(dist(t(Y),diag=T,upper=T))+diag(p)
@@ -840,7 +842,7 @@ spawn2<-function(Y,
   }else{
     print('Distance Error')
   }
-  
+
   #Pmin contains the minumum value of the uniform distribution for sample for the weights
   #Pmax contains the minumum value of the uniform distribution for sample for the weights
   Pmin <- matrix(0,p,K)
@@ -849,7 +851,7 @@ spawn2<-function(Y,
     print(paste('jth Loop is ', j))
     Clusters <- vector('list',N)
     loss <- vector(mode="numeric", length=N)
-    
+
     for (k in 1:N){
       Clusters[[k]]=RandomUnifMatrix(p,K,Pmin,Pmax)
       #Standardized Clusters[[k]] to sum 1 at each row
@@ -857,7 +859,7 @@ spawn2<-function(Y,
       Clusters[[k]] <- Clusters[[k]]/Probs
       loss[k] <- WNCut(Clusters[[k]],M1-Clusters[[k]],Wyy)+lambda*Ranking(Clusters[[k]])/(p*K)
     }
-    
+
     cutoff <- quantile(loss,q)
     s1 <- which(loss<=cutoff)
     quantiles[j] <- cutoff
@@ -956,7 +958,7 @@ spawn2<-function(Y,
 #     Izyx2[(1:r+p+q),(1:r+p+q)]=0
 #   }else if(dist=='correlation'){
 #     ZYX2=cbind(Z,Y,X)
-#     Wzyx2 <- abs(cor(ZYX2)) 
+#     Wzyx2 <- abs(cor(ZYX2))
 #     #Matrix without diagonal entries
 #     Izyx2=Wzyx2
 #     Izyx2[1:q,1:q]=0
@@ -965,7 +967,7 @@ spawn2<-function(Y,
 #   }else{
 #     print('Distance Error')
 #   }
-#       
+#
 #   #vector with the probabilites for clustering samples and columns
 #   Ps <- matrix(1/R,n,R)
 #   Pc <- matrix(1/K,m,K)
@@ -988,12 +990,12 @@ spawn2<-function(Y,
 #         loss[k] <- loss[k]+NCut(Clustc[[k]],Dclust[[i]])
 #       }
 #     }
-#     
+#
 #     cutoff <- quantile(loss,q)
 #     s1 <- which(loss<=cutoff)
 #     sumc <- Reduce('+',Clustc[s1])
 #     Pc <- sumc/length(s1)
-#     
+#
 #     #CONTINUE HERE
 #     #CONTINUE HERE
 #     #CONTINUE HERE
@@ -1009,15 +1011,15 @@ spawn2<-function(Y,
 #         loss[k] <- loss[k]+WNCut(Pc,Dclust[[i]])
 #       }
 #     }
-#   
+#
 #     cutoff <- quantile(loss,q)
 #     s1 <- which(loss<=cutoff)
 #     quantiles[j] <- cutoff
 #     sums <- Reduce('+',Clusts[s1])
 #     Ps <- sums/length(s1)
-#     
+#
 #   }#End of cross entropy optimization
-#   
+#
 #   Res[[1]] <- quantiles
 #   Res[[2]] <- Ps
 #   Res[[3]] <- Pc
