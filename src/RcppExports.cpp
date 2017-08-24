@@ -20,6 +20,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// NCut
+double NCut(const NumericMatrix& Cys, const NumericMatrix& Wys);
+RcppExport SEXP NCutYX_NCut(SEXP CysSEXP, SEXP WysSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type Cys(CysSEXP);
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type Wys(WysSEXP);
+    rcpp_result_gen = Rcpp::wrap(NCut(Cys, Wys));
+    return rcpp_result_gen;
+END_RCPP
+}
 // WNCut
 double WNCut(const NumericMatrix& Cys, const NumericMatrix& Cy2s, const NumericMatrix& Wys);
 RcppExport SEXP NCutYX_WNCut(SEXP CysSEXP, SEXP Cy2sSEXP, SEXP WysSEXP) {
@@ -164,9 +176,126 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// Ranking2
+double Ranking2(const NumericMatrix& C);
+RcppExport SEXP NCutYX_Ranking2(SEXP CSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type C(CSEXP);
+    rcpp_result_gen = Rcpp::wrap(Ranking2(C));
+    return rcpp_result_gen;
+END_RCPP
+}
+// Ranking3
+double Ranking3(const NumericMatrix& C);
+RcppExport SEXP NCutYX_Ranking3(SEXP CSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type C(CSEXP);
+    rcpp_result_gen = Rcpp::wrap(Ranking3(C));
+    return rcpp_result_gen;
+END_RCPP
+}
+// Ranking4
+double Ranking4(const NumericMatrix& C);
+RcppExport SEXP NCutYX_Ranking4(SEXP CSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type C(CSEXP);
+    rcpp_result_gen = Rcpp::wrap(Ranking4(C));
+    return rcpp_result_gen;
+END_RCPP
+}
+// Ranking5
+double Ranking5(const NumericMatrix& C);
+RcppExport SEXP NCutYX_Ranking5(SEXP CSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type C(CSEXP);
+    rcpp_result_gen = Rcpp::wrap(Ranking5(C));
+    return rcpp_result_gen;
+END_RCPP
+}
+// Ranking6
+double Ranking6(const NumericMatrix& C, const double alpha);
+RcppExport SEXP NCutYX_Ranking6(SEXP CSEXP, SEXP alphaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type C(CSEXP);
+    Rcpp::traits::input_parameter< const double >::type alpha(alphaSEXP);
+    rcpp_result_gen = Rcpp::wrap(Ranking6(C, alpha));
+    return rcpp_result_gen;
+END_RCPP
+}
+// oneMultinomCalt
+IntegerVector oneMultinomCalt(NumericVector probs);
+RcppExport SEXP NCutYX_oneMultinomCalt(SEXP probsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type probs(probsSEXP);
+    rcpp_result_gen = Rcpp::wrap(oneMultinomCalt(probs));
+    return rcpp_result_gen;
+END_RCPP
+}
+// RandomMatrix
+IntegerMatrix RandomMatrix(const int& p, const int& K, const NumericMatrix& P);
+RcppExport SEXP NCutYX_RandomMatrix(SEXP pSEXP, SEXP KSEXP, SEXP PSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int& >::type p(pSEXP);
+    Rcpp::traits::input_parameter< const int& >::type K(KSEXP);
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type P(PSEXP);
+    rcpp_result_gen = Rcpp::wrap(RandomMatrix(p, K, P));
+    return rcpp_result_gen;
+END_RCPP
+}
+// RandomUnifMatrix
+NumericMatrix RandomUnifMatrix(const int& p, const int& K, const NumericMatrix& Pmin, const NumericMatrix& Pmax);
+RcppExport SEXP NCutYX_RandomUnifMatrix(SEXP pSEXP, SEXP KSEXP, SEXP PminSEXP, SEXP PmaxSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int& >::type p(pSEXP);
+    Rcpp::traits::input_parameter< const int& >::type K(KSEXP);
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type Pmin(PminSEXP);
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type Pmax(PmaxSEXP);
+    rcpp_result_gen = Rcpp::wrap(RandomUnifMatrix(p, K, Pmin, Pmax));
+    return rcpp_result_gen;
+END_RCPP
+}
+// COR
+Eigen::MatrixXd COR(const Eigen::MatrixXd& X);
+RcppExport SEXP NCutYX_COR(SEXP XSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Eigen::MatrixXd& >::type X(XSEXP);
+    rcpp_result_gen = Rcpp::wrap(COR(X));
+    return rcpp_result_gen;
+END_RCPP
+}
+// COR2
+NumericMatrix COR2(const NumericMatrix& Xs);
+RcppExport SEXP NCutYX_COR2(SEXP XsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type Xs(XsSEXP);
+    rcpp_result_gen = Rcpp::wrap(COR2(Xs));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"NCutYX_NCutY3V1", (DL_FUNC) &NCutYX_NCutY3V1, 4},
+    {"NCutYX_NCut", (DL_FUNC) &NCutYX_NCut, 2},
     {"NCutYX_WNCut", (DL_FUNC) &NCutYX_WNCut, 3},
     {"NCutYX_WNCut2", (DL_FUNC) &NCutYX_WNCut2, 4},
     {"NCutYX_WNCut3", (DL_FUNC) &NCutYX_WNCut3, 3},
@@ -178,6 +307,16 @@ static const R_CallMethodDef CallEntries[] = {
     {"NCutYX_NCutLayer3V1", (DL_FUNC) &NCutYX_NCutLayer3V1, 6},
     {"NCutYX_Penal", (DL_FUNC) &NCutYX_Penal, 1},
     {"NCutYX_Ranking", (DL_FUNC) &NCutYX_Ranking, 1},
+    {"NCutYX_Ranking2", (DL_FUNC) &NCutYX_Ranking2, 1},
+    {"NCutYX_Ranking3", (DL_FUNC) &NCutYX_Ranking3, 1},
+    {"NCutYX_Ranking4", (DL_FUNC) &NCutYX_Ranking4, 1},
+    {"NCutYX_Ranking5", (DL_FUNC) &NCutYX_Ranking5, 1},
+    {"NCutYX_Ranking6", (DL_FUNC) &NCutYX_Ranking6, 2},
+    {"NCutYX_oneMultinomCalt", (DL_FUNC) &NCutYX_oneMultinomCalt, 1},
+    {"NCutYX_RandomMatrix", (DL_FUNC) &NCutYX_RandomMatrix, 3},
+    {"NCutYX_RandomUnifMatrix", (DL_FUNC) &NCutYX_RandomUnifMatrix, 4},
+    {"NCutYX_COR", (DL_FUNC) &NCutYX_COR, 1},
+    {"NCutYX_COR2", (DL_FUNC) &NCutYX_COR2, 1},
     {NULL, NULL, 0}
 };
 

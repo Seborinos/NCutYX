@@ -5,6 +5,10 @@ NCutY3V1 <- function(Cys, Cy2s, Wys, Wxs) {
     .Call('NCutYX_NCutY3V1', PACKAGE = 'NCutYX', Cys, Cy2s, Wys, Wxs)
 }
 
+NCut <- function(Cys, Wys) {
+    .Call('NCutYX_NCut', PACKAGE = 'NCutYX', Cys, Wys)
+}
+
 WNCut <- function(Cys, Cy2s, Wys) {
     .Call('NCutYX_WNCut', PACKAGE = 'NCutYX', Cys, Cy2s, Wys)
 }
@@ -47,5 +51,45 @@ Penal <- function(Cys) {
 
 Ranking <- function(C) {
     .Call('NCutYX_Ranking', PACKAGE = 'NCutYX', C)
+}
+
+Ranking2 <- function(C) {
+    .Call('NCutYX_Ranking2', PACKAGE = 'NCutYX', C)
+}
+
+Ranking3 <- function(C) {
+    .Call('NCutYX_Ranking3', PACKAGE = 'NCutYX', C)
+}
+
+Ranking4 <- function(C) {
+    .Call('NCutYX_Ranking4', PACKAGE = 'NCutYX', C)
+}
+
+Ranking5 <- function(C) {
+    .Call('NCutYX_Ranking5', PACKAGE = 'NCutYX', C)
+}
+
+Ranking6 <- function(C, alpha) {
+    .Call('NCutYX_Ranking6', PACKAGE = 'NCutYX', C, alpha)
+}
+
+oneMultinomCalt <- function(probs) {
+    .Call('NCutYX_oneMultinomCalt', PACKAGE = 'NCutYX', probs)
+}
+
+RandomMatrix <- function(p, K, P) {
+    .Call('NCutYX_RandomMatrix', PACKAGE = 'NCutYX', p, K, P)
+}
+
+RandomUnifMatrix <- function(p, K, Pmin, Pmax) {
+    .Call('NCutYX_RandomUnifMatrix', PACKAGE = 'NCutYX', p, K, Pmin, Pmax)
+}
+
+COR <- function(X) {
+    .Call('NCutYX_COR', PACKAGE = 'NCutYX', X)
+}
+
+COR2 <- function(Xs) {
+    .Call('NCutYX_COR2', PACKAGE = 'NCutYX', Xs)
 }
 
