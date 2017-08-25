@@ -618,7 +618,7 @@ spawn<-function(X,
                 beta=1,
                 alpha=0.5,
                 nstarts=10,
-                start='kmeans',
+                start='default',
                 dist='gaussian',
                 sigma=1){
   #Beginning of the function
@@ -823,24 +823,46 @@ spawn2<-function(Y,
                dist='correlation',
                scale=T,
                q=0.1,
+               beta=1,
+               lambda=1,
+               epsilon=0,
                sigma=1){
   #This creates the weight matrix W
   Res <- list()
   quantiles <- vector(mode="numeric", length=B)
-  if(scale==T){
-    Y=scale(Y)
-  }
-
-  p=dim(Y)[2]
-  if(dist=='euclidean'){
-    Wyy=as.matrix(dist(t(Y),diag=T,upper=T))+diag(p)
-    Wyy=Wyy^(-1)
-  }else if(dist=='gaussian'){
-    Wyy=exp((-1)*as.matrix(dist(t(Y),diag=T,upper=T))/sigma)
-  }else if(dist=='correlation'){
-    Wyy<-abs(cor(Y))
+  #Beginning of the function
+  if (scale==T){
+    X=apply(X,2,function(e) {return(e/var(e)^0.5)})
+    p=dim(X)[2]
+    if (dist=='gaussian'){
+      Wx=exp((-1)*as.matrix(dist(t(X),diag=T,upper=T))/(sigma^2))
+      Wx[which(Wx<epsilon)]=0
+    }else if(dist=='euclidean'){
+      Wx=as.matrix(dist(t(X),diag=T,upper=T))+diag(p)
+      Wx=Wx^(-1)
+      Wx[which(Wx<epsilon)]=0
+    }else if(dist=='correlation'){
+      Wx<-abs(cor(X))^beta
+      Wx[which(Wx<epsilon)]=0
+    }else{
+      print('Distance Error')
+    }
+    
   }else{
-    print('Distance Error')
+    p=dim(X)[2]
+    if (dist=='gaussian'){
+      Wx=exp((-1)*as.matrix(dist(t(X),diag=T,upper=T))/(sigma^2))
+      Wx[which(Wx<epsilon)]=0
+    }else if(dist=='euclidean'){
+      Wx=as.matrix(dist(t(X),diag=T,upper=T))+diag(p)
+      Wx=Wx^(-1)
+      Wx[which(Wx<epsilon)]=0
+    }else if(dist=='correlation'){
+      Wx<-abs(cor(X))^beta
+      Wx[which(Wx<epsilon)]=0
+    }else{
+      print('Distance Error')
+    }
   }
 
   #Pmin contains the minumum value of the uniform distribution for sample for the weights
@@ -854,17 +876,16 @@ spawn2<-function(Y,
 
     for (k in 1:N){
       Clusters[[k]]=RandomUnifMatrix(p,K,Pmin,Pmax)
-      #Standardized Clusters[[k]] to sum 1 at each row
       Probs <- matrix(apply(Clusters[[k]],1,sum),p,K)
       Clusters[[k]] <- Clusters[[k]]/Probs
-      loss[k] <- WNCut(Clusters[[k]],M1-Clusters[[k]],Wyy)+lambda*Ranking(Clusters[[k]])/(p*K)
+      loss[k] <- WNCut(Clusters[[k]],M1-Clusters[[k]],Wx)+lambda*Ranking(Clusters[[k]])/(p*K)
     }
 
     cutoff <- quantile(loss,q)
     s1 <- which(loss<=cutoff)
     quantiles[j] <- cutoff
-    Pmin <- Reduce('min',Clusters[s1])#will this work?
-    Pmax <- Reduce('max',Clusters[s1])#will this work?
+    Pmin <- Reduce('min',Clusters[s1])
+    Pmax <- Reduce('max',Clusters[s1])
 
   }
   Res[[1]] <- quantiles
