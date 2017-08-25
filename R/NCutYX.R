@@ -612,11 +612,9 @@ spawn<-function(X,
                 L=1000,
                 N=100,
                 scale=T,
-                p.sparse=0.2,
                 lambda=1,
                 epsilon=0,
                 beta=1,
-                alpha=0.5,
                 nstarts=10,
                 start='default',
                 dist='gaussian',
@@ -722,20 +720,11 @@ spawn<-function(X,
           w.replace<-w.replace[a1[1]]#what weight are we going to replace
         }
 
-        #We draw a sparse criteria#
-        sparse=rbinom(1,1,p=min(c(p.sparse+abs(C2x[s,cluster]-C2x[s,w.replace]),1)))
-        if (sparse==0){
-          avg<-(C2x[s,w.replace]+C2x[s,cluster])/2
-          C2x[s,cluster]=avg
-          C2x[s,w.replace]=avg
-          C2x[s,]=C2x[s,]/sum(C2x[s,])
-        }else{
-          p_minus=runif(1,min=0,max=C2x[s,cluster])
-          C2x[s,cluster]=C2x[s,cluster]-p_minus#This element will give somethin between 0 and its value
-          C2x[s,w.replace]=C2x[s,w.replace]+p_minus#This element will get something between 0 and the value of the other element
-          #C2x[sx,]=C2x[sx,]/sum(C2x[sx,])
-        }
-
+        
+        p_minus=runif(1,min=0,max=C2x[s,cluster])
+        C2x[s,cluster]=C2x[s,cluster]-p_minus#This element will give somethin between 0 and its value
+        C2x[s,w.replace]=C2x[s,w.replace]+p_minus#This element will get something between 0 and the value of the other element
+      
         #Now Step 3 in the algorithm
         J2=WNCut(C2x,M1-C2x,Wx)+lambda*Ranking(C2x)/(K*p)
         #J2=WNCut(C2x,M1-C2x,Wx)+lambda*Ranking6(C2x,alpha)/(K*p)
