@@ -93,3 +93,11 @@ COR2 <- function(Xs) {
     .Call('NCutYX_COR2', PACKAGE = 'NCutYX', Xs)
 }
 
+matrixMAX <- function(A1, A2) {
+    .Call('NCutYX_matrixMAX', PACKAGE = 'NCutYX', A1, A2)
+}
+
+matrixMIN <- function(A1, A2) {
+    .Call('NCutYX_matrixMIN', PACKAGE = 'NCutYX', A1, A2)
+}
+

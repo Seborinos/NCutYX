@@ -292,6 +292,30 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// matrixMAX
+NumericMatrix matrixMAX(const NumericMatrix& A1, const NumericMatrix& A2);
+RcppExport SEXP NCutYX_matrixMAX(SEXP A1SEXP, SEXP A2SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type A1(A1SEXP);
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type A2(A2SEXP);
+    rcpp_result_gen = Rcpp::wrap(matrixMAX(A1, A2));
+    return rcpp_result_gen;
+END_RCPP
+}
+// matrixMIN
+NumericMatrix matrixMIN(const NumericMatrix& A1, const NumericMatrix& A2);
+RcppExport SEXP NCutYX_matrixMIN(SEXP A1SEXP, SEXP A2SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type A1(A1SEXP);
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type A2(A2SEXP);
+    rcpp_result_gen = Rcpp::wrap(matrixMIN(A1, A2));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"NCutYX_NCutY3V1", (DL_FUNC) &NCutYX_NCutY3V1, 4},
@@ -317,6 +341,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"NCutYX_RandomUnifMatrix", (DL_FUNC) &NCutYX_RandomUnifMatrix, 4},
     {"NCutYX_COR", (DL_FUNC) &NCutYX_COR, 1},
     {"NCutYX_COR2", (DL_FUNC) &NCutYX_COR2, 1},
+    {"NCutYX_matrixMAX", (DL_FUNC) &NCutYX_matrixMAX, 2},
+    {"NCutYX_matrixMIN", (DL_FUNC) &NCutYX_matrixMIN, 2},
     {NULL, NULL, 0}
 };
 

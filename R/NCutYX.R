@@ -720,11 +720,11 @@ spawn<-function(X,
           w.replace<-w.replace[a1[1]]#what weight are we going to replace
         }
 
-        
+
         p_minus=runif(1,min=0,max=C2x[s,cluster])
         C2x[s,cluster]=C2x[s,cluster]-p_minus#This element will give somethin between 0 and its value
         C2x[s,w.replace]=C2x[s,w.replace]+p_minus#This element will get something between 0 and the value of the other element
-      
+
         #Now Step 3 in the algorithm
         J2=WNCut(C2x,M1-C2x,Wx)+lambda*Ranking(C2x)/(K*p)
         #J2=WNCut(C2x,M1-C2x,Wx)+lambda*Ranking6(C2x,alpha)/(K*p)
@@ -733,7 +733,7 @@ spawn<-function(X,
 
         if (J2>J){
           #Prob[Count]=exp(-10000*log(k+1)*(J2-J))
-          des=rbinom(1,1,exp(-L*log(alpha*k+2)*(J2-J)))
+          des=rbinom(1,1,exp(-L*log(k+1)*(J2-J)))
           if (des==1){
             Cx=C2x#Set-up the new clusters
             J=J2
@@ -805,7 +805,7 @@ spawn<-function(X,
 #' #This is the true error of the clustering solution.
 #' errorL
 
-spawn2<-function(Y,
+spawn2<-function(X,
                K=2,
                B=30,
                N=500,
@@ -836,7 +836,7 @@ spawn2<-function(Y,
     }else{
       print('Distance Error')
     }
-    
+
   }else{
     p=dim(X)[2]
     if (dist=='gaussian'){
@@ -854,12 +854,12 @@ spawn2<-function(Y,
     }
   }
 
+  M1=matrix(1,p,K)
   #Pmin contains the minumum value of the uniform distribution for sample for the weights
   #Pmax contains the minumum value of the uniform distribution for sample for the weights
   Pmin <- matrix(0,p,K)
   Pmax <- matrix(1/K,p,K)
   for (j in 1:B){
-    print(paste('jth Loop is ', j))
     Clusters <- vector('list',N)
     loss <- vector(mode="numeric", length=N)
 
@@ -873,13 +873,14 @@ spawn2<-function(Y,
     cutoff <- quantile(loss,q)
     s1 <- which(loss<=cutoff)
     quantiles[j] <- cutoff
-    Pmin <- Reduce('min',Clusters[s1])
-    Pmax <- Reduce('max',Clusters[s1])
+    Pmin <- Reduce('matrixMIN',Clusters[s1])
+    Pmax <- Reduce('matrixMAX',Clusters[s1])
 
   }
   Res[[1]] <- quantiles
-  Res[[2]] <- Pmin
-  Res[[2]] <- Pmax
+  P <- (Pmin+Pmax)/2
+  Probs <- matrix(apply(P,1,sum),p,K)
+  Res[[2]] <- P/Probs
   return(Res)
 }
 

@@ -629,3 +629,36 @@ NumericMatrix COR2(const NumericMatrix &Xs){
   return wrap(Cor);
 }
 
+// [[Rcpp::export]]
+NumericMatrix matrixMAX(const NumericMatrix &A1,
+                        const NumericMatrix &A2){
+
+  const int p = A1.ncol();
+  const int n = A1.nrow();
+
+  NumericMatrix A(n,p);
+  for (int i=0;i<n;i++){
+    for(int j=0;j<p;j++){
+      A(i,j)=max(NumericVector::create(A1(i,j),A2(i,j)));
+    }
+  }
+
+  return A;
+}
+
+// [[Rcpp::export]]
+NumericMatrix matrixMIN(const NumericMatrix &A1,
+                        const NumericMatrix &A2){
+
+  const int p = A1.ncol();
+  const int n = A1.nrow();
+
+  NumericMatrix A(n,p);
+  for (int i=0;i<n;i++){
+    for(int j=0;j<p;j++){
+      A(i,j)=min(NumericVector::create(A1(i,j),A2(i,j)));
+    }
+  }
+
+  return A;
+}
