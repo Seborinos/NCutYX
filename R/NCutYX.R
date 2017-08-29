@@ -1210,10 +1210,12 @@ neoncut<-function(X,
 #'
 #' X=matrix(0,n,p)
 #' X[,1:20]=matrix(rnorm(n*20,0,0.5),n,20)+matrix(Z1,n,20,byrow=F)
-#' X[,21:40]=matrix(rnorm(n*20,0,0.5),n,20)+0.5*matrix(Z1,n,20,byrow=F)+0.5*matrix(Z2,n,20,byrow=F)
+#' X[,21:40]=matrix(rnorm(n*20,0,0.5),n,20)+
+#' 0.5*matrix(Z1,n,20,byrow=F)+0.5*matrix(Z2,n,20,byrow=F)
 #' X[,41:60]=matrix(rnorm(n*20,0,0.5),n,20)+matrix(Z2,n,20,byrow=F)
 #' X[,61:80]=matrix(rnorm(n*20,0,0.5),n,20)+matrix(Z3,n,20,byrow=F)
-#' X[,81:100]=matrix(rnorm(n*20,0,0.5),n,20)+0.5*matrix(Z3,n,20,byrow=F)+0.5*matrix(Z4,n,20,byrow=F)
+#' X[,81:100]=matrix(rnorm(n*20,0,0.5),n,20)+
+#' 0.5*matrix(Z3,n,20,byrow=F)+0.5*matrix(Z4,n,20,byrow=F)
 #' X[,101:120]=matrix(rnorm(n*20,0,0.5),n,20)+matrix(Z4,n,20,byrow=F)
 #'
 #' C0<-matrix(0,p,K)
@@ -1230,8 +1232,8 @@ neoncut<-function(X,
 #' A0 <- A0-diag(diag(A0))+diag(p)
 #'
 #' result <- neoncut(X,K=2,
-#'                     B=3000,
-#'                     L=1000,
+#'                     B=30,
+#'                     N=1000,
 #'                     scale=F,
 #'                     alpha=0.5,
 #'                     beta=0.5,
