@@ -1092,7 +1092,7 @@ neoncut<-function(X,
   C2x=matrix(0,p,K)
   C2x=Cx
   Penal2<-length(which(apply(Cx,1,sum)==0))
-  J=NCutY3V1(Cx,M1-Cx,Wx,Wx)+(1+alpha)*n*sum(diag(t(Cx)%*%Cx))+beta*n*Penal2
+  J=NCutY3V1(Cx,M1-Cx,Wx,Wx)+alpha*sum(diag(t(Cx)%*%Cx))+beta*Penal2
 
   Test<- vector(mode="numeric", length=B)
 
@@ -1111,7 +1111,7 @@ neoncut<-function(X,
 
     #Now Step 3 in the algorithm
     Penal2<-length(which(apply(Cx,1,sum)==0))
-    J2=NCutY3V1(C2x,M1-C2x,Wx,Wx)+(1+alpha)*n*sum(diag(t(C2x)%*%C2x))+beta*n*Penal2
+    J2=NCutY3V1(C2x,M1-C2x,Wx,Wx)+alpha*sum(diag(t(C2x)%*%C2x))+beta*Penal2
 
     if (J2>J){
       #Prob[Count]=exp(-10000*log(k+1)*(J2-J))
