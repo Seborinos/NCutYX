@@ -1191,8 +1191,10 @@ neoncut<-function(X,
 #'
 #' This function will output K weighted clusters of variables.
 #' @param X is a n x p matrix of p variables and n observations.
-#' @param B is the number of iterations in the simulated annealing algorithm.
-#' @param L is the temperature coefficient in the simulated annealing algorithm.
+#' @param B is the number of iterations in the cross entropy maximization algorithm.
+#' @param N is the number of samples at each iteration.
+#' @param q is the proportion of top results out of N used to recalculate the
+#' sampling probabilities at each iteration.
 #' @details
 #' The algorithm minimizes a modified version of NCut through simulated annealing.
 #' The clusers correspond to weighted partitions that minimize this objective function.
@@ -1231,7 +1233,7 @@ neoncut<-function(X,
 #'
 #' A0 <- A0-diag(diag(A0))+diag(p)
 #'
-#' result <- neoncut(X,K=2,
+#' result <- neoncut2(X,K=4,
 #'                     B=30,
 #'                     N=1000,
 #'                     scale=F,
@@ -1256,6 +1258,8 @@ neoncut2<-function(X,
                   scale=F,
                   alpha=0.5,
                   beta=0.5,
+                  epsilon=0,
+                  q=0.10,
                   dist='correlation',
                   sigma=1){
   #This creates the weight matrix W
