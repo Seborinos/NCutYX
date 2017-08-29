@@ -6,6 +6,11 @@ sample.cluster <- function(x){
   return(J)
 }
 
+neovector <- function(Probs){
+  K <- length(Probs)
+  return(rbinom(K,1,prob=Probs))
+}
+
 #rewrite the function below in C++
 #Also maybe you need to scale the weights so that they equal 1
 # w.gaussian <- function(Z,Y,X,sigma2=1,w=Ps){
