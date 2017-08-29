@@ -1254,7 +1254,7 @@ neoncut2<-function(X,
                   scale=F,
                   alpha=0.5,
                   beta=0.5,
-                  dist='gaussian',
+                  dist='correlation',
                   sigma=1){
   #This creates the weight matrix W
   Res <- list()
