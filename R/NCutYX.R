@@ -1039,20 +1039,72 @@ spawn2<-function(X,
 
 #' Cluster the columns of X into K nonexhaustive overlapping clusters.
 #'
-#' This function will output K clusters of variables.
+#' This function will output K weighted clusters of variables.
 #' @param X is a n x p matrix of p variables and n observations.
 #' @param B is the number of iterations in the simulated annealing algorithm.
 #' @param L is the temperature coefficient in the simulated annealing algorithm.
 #' @details
 #' The algorithm minimizes a modified version of NCut through simulated annealing.
-#' The clusers correspond to partitions that minimize this objective function.
+#' The clusers correspond to weighted partitions that minimize this objective function.
+#' @examples
+#' #This sets up the initial parameters for the simulation.
+#' library(NCutYX)
+#' K=4
+#' n=300
+#' p=120
+#'
+#' Z1<-rnorm(n,0,2)
+#' Z2<-rnorm(n,0,2)
+#' Z3<-rnorm(n,0,2)
+#' Z4<-rnorm(n,0,2)
+#'
+#' Y=matrix(0,n,p)
+#' Y[,1:20]=matrix(rnorm(n*20,0,0.5),n,20)+matrix(Z1,n,20,byrow=F)
+#' Y[,21:40]=matrix(rnorm(n*20,0,0.5),n,20)+0.5*matrix(Z1,n,20,byrow=F)+0.5*matrix(Z2,n,20,byrow=F)
+#' Y[,41:60]=matrix(rnorm(n*20,0,0.5),n,20)+matrix(Z2,n,20,byrow=F)
+#' Y[,61:80]=matrix(rnorm(n*20,0,0.5),n,20)+matrix(Z3,n,20,byrow=F)
+#' Y[,81:100]=matrix(rnorm(n*20,0,0.5),n,20)+0.5*matrix(Z3,n,20,byrow=F)+0.5*matrix(Z4,n,20,byrow=F)
+#' Y[,101:120]=matrix(rnorm(n*20,0,0.5),n,20)+matrix(Z4,n,20,byrow=F)
+#'
+#' C0<-matrix(0,p,K)
+#' C0[1:20,1]<-matrix(1,1:20,1)
+#' C0[21:40,1:2]<-matrix(0.5,1:20,1:2)
+#' C0[41:60,2]<-matrix(1,1:20,1)
+#' C0[61:80,3]<-matrix(1,1:20,1)
+#' C0[81:100,3:4]<-matrix(0.5,1:20,1:2)
+#' C0[101:120,4]<-matrix(1,1:20,1)
+#'
+#' A0 <- C0[,1]%*%t(C0[,1]) + C0[,2]%*%t(C0[,2]) +
+#'     C0[,3]%*%t(C0[,3]) + C0[,4]%*%t(C0[,4])
+#'
+#' A0 <- A0-diag(diag(A0))+diag(p)
+#'
+#' result <- neoncut(X,K=2,
+#'                     B=3000,
+#'                     L=1000,
+#'                     scale=F,
+#'                     alpha=0.5,
+#'                     beta=0.5,
+#'                     dist='gaussian',
+#'                     sigma=1)
+#'
+#'trial <- result[[2]]
+#'
+#' A <- trial[,1]%*%t(trial[,1]) + trial[,2]%*%t(trial[,2]) +
+#'        trial[,3]%*%t(trial[,3]) + trial[,4]%*%t(trial[,4])
+#'
+#' A <- A-diag(diag(A))+diag(p)
+#'
+#' sum(abs(A0-AK))/p^2
+#'
+
+
 
 neoncut<-function(X,
                   K=2,
                   B=3000,
                   L=1000,
                   scale=F,
-                  mu_0=0.01,
                   alpha=0.5,
                   beta=0.5,
                   dist='gaussian',
