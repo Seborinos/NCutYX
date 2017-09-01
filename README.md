@@ -19,7 +19,7 @@ To install:
     1. `install_github("Seborinos/NCutYX")`
 
 # Assisted clustering of gene expression data using ANCut
- This example shows how to use the ANCut function. ANCut clusters the columns of a data set Y into K groups with the help of an external data set X.First we define some of the simulation parameters below. \eqn{a + b}
+ This example shows how to use the ANCut function. ANCut clusters the columns of a data set Y into K groups with the help of an external data set X.First we define some of the simulation parameters below.$a$
  ```{r}
  n=200 #Sample size
  B=5000 #Number of iterations in the simulated annealing algorithm.

@@ -22,6 +22,11 @@ Y will be clustered into K groups.}
 \item{nlambdas}{is the number of tunning parameters in the elastic net.}
 
 \item{ncv}{is the number of cross-validations in the elastic net.}
+
+\item{dist}{is the distance matrix used.}
+
+\item{sigma}{is the parameter for the gaussian kernel distance which is ignored if 'gaussian' is
+not chosen as distance measure.}
 }
 \value{
 A list with the final value of the objective function,

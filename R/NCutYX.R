@@ -104,6 +104,9 @@ ncut<-function(Y,
 #' @param alpha is the coefficient of the elastic net penalty.
 #' @param nlambdas is the number of tunning parameters in the elastic net.
 #' @param ncv is the number of cross-validations in the elastic net.
+#' @param dist is the distance matrix used.
+#' @param sigma is the parameter for the gaussian kernel distance which is ignored if 'gaussian' is
+#' not chosen as distance measure.
 #' @return A list with the final value of the objective function,
 #' the clusters and the lambda penalty chosen through cross-validation.
 #' @details
