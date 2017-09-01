@@ -1,3 +1,8 @@
+<style>
+.mycenter {
+    text-align:center;
+}
+</style>
 # The NCutYX package
 # Sebastian Jose Teran Hidalgo
 
@@ -21,8 +26,9 @@ To install:
     2. `install_github("Seborinos/NCutYX")`
 
 # Assisted clustering of gene expression data using ANCut
- This example shows how to use the ANCut function. ANCut clusters the columns of a data set Y into K groups with the help of an external data set X.First we define some of the simulation parameters below.
- ```{r}
+
+This example shows how to use the ANCut function. ANCut clusters the columns of a data set Y into K groups with the help of an external data set X.First we define some of the simulation parameters below.
+```{r}
  n=200 #Sample size
  B=5000 #Number of iterations in the simulated annealing algorithm.
  L=10000 #Temperature coefficient.
@@ -30,10 +36,11 @@ To install:
  q=p #Number of columns of X.
  h1=0.05 #Lower bound for the coefficiens in Y=X*B+e.
  h2=0.15 #Upper bound for the coefficients in the model Y=X*B+e.
- ```
+```
  
  The data will be simulated as Y=X*B+e where X will be normal and a convariance matrix S with 2 blocks of correlated variables. This induces the correlation among the Y's as well. W0 is a matrix that will be used to calculate the error of the procedure.
- ```{r}
+
+```{r}
  S=matrix(0.2,q,q)
  S[1:(q/2),(q/2+1):q]=0
  S[(q/2+1):q,1:(q/2)]=0
@@ -61,10 +68,10 @@ To install:
  X=mvrnorm(n, mu, S)
  Z=X%*%B
  Y=Z+matrix(rnorm(n*p,0,2),n,p)
- ```
+```
 We apply the function ANCut to Y which will cluster the columns into K=2 groups. It uses the help of X. First, it creates a model of Y=XB+e using the elastic net. You can choose the number of cross-validations with ncv and the parameter alpha in the penalty of the elastic net. 
 
- ```{r}
+```{r}
  #Our method
  Res=anut(Y,X,B,L,K=2,alpha=0,ncv=5)
  Cx=Res[[2]]
@@ -74,20 +81,20 @@ We apply the function ANCut to Y which will cluster the columns into K=2 groups.
  errorL=sum((f11%*%t(f11))*W0)/Denum+sum((f12%*%t(f12))*W0)/p^2
  #This is the true error of the clustering solution.
  errorL
- ```
+```
  
  If you wish to plot the results you can do:
- ```{r}
+```{r}
  #Below is a plot of the simulated annealing path.
 plot(Res[[1]],type='l')
 #Cluster found by ANCut
 image.plot(Cx)
- ```
- On the left panel we see the path of the objective function as it is minimized through simulated annealing. On the right are represented the clusters. The perfect solution is a perfect checker board panel and the ANCut solution misses slightly. To improve the solution, the sample size n or h2 can be increased to makes consistency of the method in the simulation better.
- 
-![](ancut.png) 
- 
- ---
+```
+ On the left panel we see the path of the objective function as it is minimized through simulated annealing. On the right are represented the clusters. The perfect solution is a perfect checker board panel and the ANCut solution misses slightly. To improve the solution n or h2 can be increased to make the method work better in this simulated data.
+
+![](ancut.png#center)
+
+
 # References:
 
 * [Hidalgo, Sebastian J. Teran, Mengyun Wu, and Shuangge Ma. "Assisted clustering of gene expression data using ANCut." *BMC genomics* 18.1 (2017): 623.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5559859/)
@@ -96,7 +103,7 @@ image.plot(Cx)
 
 # MuNCut
 
-  ```{r}
+```{r}
   #parameters#
   n=200#number of samples
   p=400#number of variables
@@ -148,7 +155,7 @@ image.plot(Cx)
   clust<-LayerNCut(Z,Y,X,K=4,B=10000,L=10000,alpha=0,ncv=3,nlambdas=30,scale=F,model=F,gamma=0.5)
   errorK=sum((trial1[[2]][,1]%*%t(trial1[[2]][,1])+trial1[[2]][,2]%*%t(trial1[[2]][,2])+trial1[[2]][,3]%*%t(trial1[[2]][,3])+
                    trial1[[2]][,4]%*%t(trial1[[2]][,4]))*W0)/(3*p)^2
-  ```
+```
 
 ![](BrcaAnalysis1.png) 
 
