@@ -162,8 +162,10 @@ ncut<-function(Y,
 #' errorL=sum((f11%*%t(f11))*W0)/Denum+sum((f12%*%t(f12))*W0)/Denum
 #' #This is the true error of the clustering solution.
 #' errorL
+#'
+#' par(mfrow=c(2,2))
 #' #Below is a plot of the simulated annealing path.
-#' plot(Res[[1]],type='l')
+#' plot(Res[[1]],type='l',ylab='')
 #' #Cluster found by ANCut
 #' image.plot(Cx)
 
