@@ -2,9 +2,9 @@
 # Sebastian Jose Teran Hidalgo
 
 [Description](#Description)
-[ANCut](#ANCut)
-[MuNCut](#MuNCut)
-[SpaWN](#SpaWN)
+[ANCut](# ANCut)
+[MuNCut](# MuNCut)
+[SpaWN](# SpaWN)
 # Description
 
 The NCutYX package includes functions on clustering genomic data using graph theory. 
