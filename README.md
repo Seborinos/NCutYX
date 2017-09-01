@@ -84,7 +84,7 @@ image.plot(Cx)
  ```
  On the left panel we see the path of the objective function as it is minimized through simulated annealing. On the right are represented the clusters. The perfect solution is a perfect checker board panel and the ANCut solution misses slightly. To improve the solution, the sample size n or h2 can be increased to makes consistency of the method in the simulation better.
  
- ![](acnut.png) 
+![](acnut.png) 
  
  ---
 # References:
