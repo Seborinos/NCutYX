@@ -83,12 +83,11 @@ image.plot(Cx)
  ```
  
  ---
-references:
-- id: fenner2012a
-  title: One-click science marketing
+# References:
+- title: Assisted clustering of gene expression data using ANCut
   author:
-  - family: Fenner
-    given: Martin
+  - family: Teran Hidalgo
+    given: Sebastian J.
   container-title: Nature Materials
   volume: 11
   URL: 'http://dx.doi.org/10.1038/nmat3283'
