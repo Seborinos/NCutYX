@@ -4,15 +4,18 @@
 \alias{neoncut2}
 \title{Cluster the columns of X into K nonexhaustive overlapping clusters.}
 \usage{
-neoncut2(X, K = 2, B = 3000, L = 1000, scale = F, alpha = 0.5,
-  beta = 0.5, dist = "gaussian", sigma = 1)
+neoncut2(X, K = 2, B = 30, N = 1000, scale = F, alpha = 0.5,
+  beta = 0.5, epsilon = 0, q = 0.1, dist = "correlation", sigma = 1)
 }
 \arguments{
 \item{X}{is a n x p matrix of p variables and n observations.}
 
-\item{B}{is the number of iterations in the simulated annealing algorithm.}
+\item{B}{is the number of iterations in the cross entropy maximization algorithm.}
 
-\item{L}{is the temperature coefficient in the simulated annealing algorithm.}
+\item{N}{is the number of samples at each iteration.}
+
+\item{q}{is the proportion of top results out of N used to recalculate the
+sampling probabilities at each iteration.}
 }
 \description{
 This function will output K weighted clusters of variables.
@@ -35,10 +38,12 @@ Z4<-rnorm(n,0,2)
 
 X=matrix(0,n,p)
 X[,1:20]=matrix(rnorm(n*20,0,0.5),n,20)+matrix(Z1,n,20,byrow=F)
-X[,21:40]=matrix(rnorm(n*20,0,0.5),n,20)+0.5*matrix(Z1,n,20,byrow=F)+0.5*matrix(Z2,n,20,byrow=F)
+X[,21:40]=matrix(rnorm(n*20,0,0.5),n,20)+
+0.5*matrix(Z1,n,20,byrow=F)+0.5*matrix(Z2,n,20,byrow=F)
 X[,41:60]=matrix(rnorm(n*20,0,0.5),n,20)+matrix(Z2,n,20,byrow=F)
 X[,61:80]=matrix(rnorm(n*20,0,0.5),n,20)+matrix(Z3,n,20,byrow=F)
-X[,81:100]=matrix(rnorm(n*20,0,0.5),n,20)+0.5*matrix(Z3,n,20,byrow=F)+0.5*matrix(Z4,n,20,byrow=F)
+X[,81:100]=matrix(rnorm(n*20,0,0.5),n,20)+
+0.5*matrix(Z3,n,20,byrow=F)+0.5*matrix(Z4,n,20,byrow=F)
 X[,101:120]=matrix(rnorm(n*20,0,0.5),n,20)+matrix(Z4,n,20,byrow=F)
 
 C0<-matrix(0,p,K)
@@ -54,9 +59,9 @@ A0 <- C0[,1]\%*\%t(C0[,1]) + C0[,2]\%*\%t(C0[,2]) +
 
 A0 <- A0-diag(diag(A0))+diag(p)
 
-result <- neoncut(X,K=2,
-                    B=3000,
-                    L=1000,
+result <- neoncut2(X,K=4,
+                    B=30,
+                    N=1000,
                     scale=F,
                     alpha=0.5,
                     beta=0.5,

@@ -112,20 +112,21 @@ ncut<-function(Y,
 #' The external information of X is incorporated by using ridge regression to predict Y.
 #' @examples
 #' #This sets up the initial parameters for the simulation.
+#' library(MASS)#for mvrnorm
+#' library(fields)#for image.plot
 #' n=200 #Sample size
 #' B=5000 #Number of iterations in the simulated annealing algorithm.
-#' L=1000 #Temperature coefficient.
-#' p=500 #Number of columns of Y.
+#' L=10000 #Temperature coefficient.
+#' p=200 #Number of columns of Y.
 #' q=p #Number of columns of X.
-#' h1=0
+#' h1=0.05
 #' h2=0.15
 #'
 #' S=matrix(0.2,q,q)
 #' S[1:(q/2),(q/2+1):q]=0
 #' S[(q/2+1):q,1:(q/2)]=0
 #' S=S-diag(diag(S))+diag(q)
-#' S=nearPD(S)
-#' S=S$mat
+#'
 #' mu=rep(0,q)
 #'
 #' W0=matrix(1,p,p)
@@ -150,7 +151,7 @@ ncut<-function(Y,
 #' Z=X%*%B2
 #' Y=Z+matrix(rnorm(n*p,0,2),n,p)
 #' #Our method
-#' Res=ANCut(Y,X,B,L,alpha=0,ncv=5)
+#' Res=ancut(Y=Y,X=X,B=B,L=L,alpha=0,ncv=5)
 #' Cx=Res[[2]]
 #' f11=matrix(Cx[,1],p,1)
 #' f12=matrix(Cx[,2],p,1)
@@ -158,6 +159,10 @@ ncut<-function(Y,
 #' errorL=sum((f11%*%t(f11))*W0)/Denum+sum((f12%*%t(f12))*W0)/Denum
 #' #This is the true error of the clustering solution.
 #' errorL
+#' #Below is a plot of the simulated annealing path.
+#' plot(Res[[1]],type='l')
+#' #Cluster found by ANCut
+#' image.plot(Cx)
 
 ancut<-function(Y,
                 X,
@@ -166,31 +171,28 @@ ancut<-function(Y,
                 L=1000,
                 alpha=0.5,
                 nlambdas=100,
+                sampling='equal',
                 ncv=5,
-                dist='gaussian',
+                dist='correlation',
                 sigma=1){
   #This creates the weight matrix W
-  #W=abs(CorV1(n,p+q,cbind(X,Y)))
-  #Wxy=W[1:p,(p+1):(p+q)]
   X=scale(X)
   Y=scale(Y)
+  p=dim(Y)[2]
+
   p=dim(Y)[2]
   if(dist=='euclidean'){
     Wyy=as.matrix(dist(t(Y),diag=T,upper=T))+diag(p)
     Wyy=Wyy^(-1)
-  }
-  if(dist=='gaussian'){
+  }else if(dist=='gaussian'){
     Wyy=exp((-1)*as.matrix(dist(t(Y),diag=T,upper=T))/sigma)
+  }else if(dist=='correlation'){
+    Wyy<-abs(cor(Y))
+  }else{
+    print('Distance Error')
   }
 
-
-  #This should not be like this.
-  #This is happening because the numbers become really small.
-  #This needs to be changed.
-  #Wyy[which(Wyy==Inf)]=1
-  #I changed the distance matrix to gaussian kernel
-  #Wyy=exp((-1)*sigma*as.matrix(dist(t(Y),diag=T,upper=T)))
-
+  #modelling the relationship between Y and X
   cv.m1=cv.glmnet(X, Y, family=c("mgaussian"),
                   alpha=alpha,nfolds=ncv,nlambda=nlambdas,intercept=FALSE)
   m1=glmnet(X, Y, family=c("mgaussian"),
@@ -201,14 +203,13 @@ ancut<-function(Y,
   if(dist=='euclidean'){
     Wxx=as.matrix(dist(t(Y2),diag=T,upper=T))+diag(p)
     Wxx=Wxx^(-1)
-  }
-  if(dist=='gaussian'){
+  }else if(dist=='gaussian'){
     Wxx=exp((-1)*as.matrix(dist(t(Y2),diag=T,upper=T))/sigma)
+  }else if(dist=='correlation'){
+    Wxx<-abs(cor(Y2))
+  }else{
+    print('Distance Error')
   }
-
-  #Wxx[which(Wxx==Inf)]=1
-  #I changed the distance matrix to gaussian kernel
-  #Wxx=exp((-1)*sigma*as.matrix(dist(t(Y2),diag=T,upper=T)))
 
   #This creates a random starting point in the split in the algorithm for K clusters
   Cx=matrix(0,p,K)
@@ -219,7 +220,6 @@ ancut<-function(Y,
 
   #Now, calculate the number of indices in each group.
   Nx=apply(Cx[,1:K],2,sum)
-
 
   #These matrices will keep track of the elements of the clusters while
   #doing simulated annealing.
@@ -234,10 +234,14 @@ ancut<-function(Y,
     ###Draw k(-) and k(+)with unequal probabilites.
     #This section needs to change dramatically for
     #the general case
-
     N=sum(Nx)
     P=Nx/N
-    s=sample.int(K,K,replace=FALSE,prob=P)
+
+    if(sampling=='equal'){
+      s=sample.int(K,K,replace=FALSE)
+    }else if(sampling=='size'){
+      s=sample.int(K,K,replace=FALSE,prob=P)
+    }
 
     ###Select a vertex from cluster s[1] with unequal probability
     #Calculating Unequal probabilites

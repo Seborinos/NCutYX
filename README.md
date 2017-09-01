@@ -1,11 +1,11 @@
-#The NCutYX package
-#Sebastian Jose Teran Hidalgo
+# The NCutYX package
+# Sebastian Jose Teran Hidalgo
 
 [Description](#Description)
 [ANCut](#ANCut)
 [MuNCut](#MuNCut)
 [SpaWN](#SpaWN)
-#Description
+# Description
 
 The NCutYX package includes functions on clustering genomic data using graph theory. 
 
@@ -18,15 +18,15 @@ To install:
     1. install and load package devtools
     1. `install_github("Seborinos/NCutYX")`
 
-# ANCut
- This example shows how to use the ANCut function. ANCut clusters the columns of a data set Y into K groups with the help of an external data set X.First we define some of the simulation parameters below. 
+# Assisted clustering of gene expression data using ANCut
+ This example shows how to use the ANCut function. ANCut clusters the columns of a data set Y into K groups with the help of an external data set X.First we define some of the simulation parameters below. \eqn{a + b}
  ```{r}
  n=200 #Sample size
  B=5000 #Number of iterations in the simulated annealing algorithm.
- L=1000 #Temperature coefficient.
- p=500 #Number of columns of Y.
+ L=10000 #Temperature coefficient.
+ p=200 #Number of columns of Y.
  q=p #Number of columns of X.
- h1=0 #Lower bound for the coefficiens in Y=X*B+e.
+ h1=0.05 #Lower bound for the coefficiens in Y=X*B+e.
  h2=0.15 #Upper bound for the coefficients in the model Y=X*B+e.
  ```
  
@@ -35,6 +35,8 @@ To install:
  S=matrix(0.2,q,q)
  S[1:(q/2),(q/2+1):q]=0
  S[(q/2+1):q,1:(q/2)]=0
+ S=S-diag(diag(S))+diag(q)
+ 
  mu=rep(0,q)
 
  W0=matrix(1,p,p)
@@ -62,7 +64,7 @@ We apply the function ANCut to Y which will cluster the columns into K=2 groups.
 
  ```{r}
  #Our method
- Res=ANCut(Y,X,B,L,K=2,alpha=0,ncv=5)
+ Res=anut(Y,X,B,L,K=2,alpha=0,ncv=5)
  Cx=Res[[2]]
  f11=matrix(Cx[,1],p,1)
  f12=matrix(Cx[,2],p,1)
@@ -71,6 +73,15 @@ We apply the function ANCut to Y which will cluster the columns into K=2 groups.
  #This is the true error of the clustering solution.
  errorL
  ```
+ 
+ If you wish to plot the results you can do:
+ ```{r}
+ #Below is a plot of the simulated annealing path.
+plot(Res[[1]],type='l')
+#Cluster found by ANCut
+image.plot(Cx)
+ ```
+ 
 
 # MuNCut
 
