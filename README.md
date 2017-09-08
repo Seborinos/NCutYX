@@ -1,8 +1,3 @@
-<style>
-.mycenter {
-    text-align:center;
-}
-</style>
 # The NCutYX package
 # Sebastian Jose Teran Hidalgo
 
@@ -90,7 +85,7 @@ plot(Res[[1]],type='l')
 #Cluster found by ANCut
 image.plot(Cx)
 ```
- On the left panel we see the path of the objective function as it is minimized through simulated annealing. On the right are represented the clusters. The perfect solution is a perfect checker board panel and the ANCut solution misses slightly. To improve the solution n or h2 can be increased to make the method work better in this simulated data.
+ On the left panel we see the path of the objective function as it is minimized through simulated annealing. On the right are represented the clusters. The perfect solution is a perfect checker board panel and the ANCut solution misses slightly. As n or h2 are increased, the solution will get closer to the true cluster structure of the data.
 
 ![](ancut.png)
 
