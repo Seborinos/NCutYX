@@ -936,526 +936,112 @@ spawn2<-function(X,
 #' #This is the true error of the clustering solution.
 #' errorL
 
-# bilayer<-function(Z,Y,X
-#                   K=2,
-#                   R=2,
-#                   B=30,
-#                   N=500,
-#                   dist='correlation',
-#                   scale=T,
-#                   q=0.1,
-#                   sigma=1){
-#   #This creates the weight matrix W
-#   Res <- list()
-#   quantiles <- vector(mode="numeric", length=B)
-#   #Beginning of the function
-#   if (scale==T){
-#     Z=scale(Z)
-#     Y=scale(Y)
-#     X=scale(X)
-#   }
-#   q=dim(Z)[2]
-#   p=dim(Y)[2]
-#   r=dim(X)[2]
-#   m=q+p+r
-#   if (dist=='euclidean'){
-#     #Distance matrix for the predicted variables
-#     ZYX2=cbind(Z,Y,X)
-#     Wzyx2=as.matrix(dist(t(ZYX2),diag=T,upper=T))+diag(q+p+r)
-#     Wzyx2=Wzyx2^(-1)
-#     Izyx2=Wzyx2
-#     Izyx2[1:q,1:q]=0
-#     Izyx2[(1:p+q),(1:p+q)]=0
-#     Izyx2[(1:r+p+q),(1:r+p+q)]=0
-#   }else if(dist=='gaussian'){
-#     #Distance matrix for the predicted variables
-#     ZYX2=cbind(Z,Y,X)
-#     Wzyx2=exp((-1)*as.matrix(dist(t(ZYX2),diag=T,upper=T))/sigma)
-#     #Matrix without diagonal entries
-#     Izyx2=Wzyx2
-#     Izyx2[1:q,1:q]=0
-#     Izyx2[(1:p+q),(1:p+q)]=0
-#     Izyx2[(1:r+p+q),(1:r+p+q)]=0
-#   }else if(dist=='correlation'){
-#     ZYX2=cbind(Z,Y,X)
-#     Wzyx2 <- abs(cor(ZYX2))
-#     #Matrix without diagonal entries
-#     Izyx2=Wzyx2
-#     Izyx2[1:q,1:q]=0
-#     Izyx2[(1:p+q),(1:p+q)]=0
-#     Izyx2[(1:r+p+q),(1:r+p+q)]=0
-#   }else{
-#     print('Distance Error')
-#   }
-#
-#   #vector with the probabilites for clustering samples and columns
-#   Ps <- matrix(1/R,n,R)
-#   Pc <- matrix(1/K,m,K)
-#   Dclust <- vector('list',R)
-#   #Start of the Cross entropy optimization
-#   for (j in 1:B){
-#     print(paste('jth Loop is ', j))
-#     Clusts <- vector('list',N)
-#     Clustc <- vector('list',N)
-#     loss <- vector(mode="numeric", length=N)
-#     #1.-Cluster the columns
-#     for (i in 1:R){
-#       Dclust[[i]] <- w.gaussian(Z,Y,X,sigma2=1,w=Ps[,i])#maybe rescale the weigths to equal 1
-#     }
-#     #Sampling N new clusters and calculating the corresponding loss
-#     for (k in 1:N){
-#       Clustc[[k]]=RandomMatrix(m,K,Pc)
-#       loss[k]<-0
-#       for (i in 1:R){#for each of the sample groups(THIS IS A DOUBLE LOOP)
-#         loss[k] <- loss[k]+NCut(Clustc[[k]],Dclust[[i]])
-#       }
-#     }
-#
-#     cutoff <- quantile(loss,q)
-#     s1 <- which(loss<=cutoff)
-#     sumc <- Reduce('+',Clustc[s1])
-#     Pc <- sumc/length(s1)
-#
-#     #CONTINUE HERE
-#     #CONTINUE HERE
-#     #CONTINUE HERE
-#     #2.-Cluster the samples
-#     #Sampling N new clusters and calculating the corresponding loss
-#     for (k in 1:N){
-#       Clusts[[k]]=RandomMatrix(n,R,Ps)
-#       for (i in 1:R){
-#         Dclust[[i]] <- w.gaussian(Z,Y,X,sigma2=1,w=Clusts[[k]][,i])
-#       }
-#       loss[k]<-0
-#       for (i in 1:R){#for each of the sample groups
-#         loss[k] <- loss[k]+WNCut(Pc,Dclust[[i]])
-#       }
-#     }
-#
-#     cutoff <- quantile(loss,q)
-#     s1 <- which(loss<=cutoff)
-#     quantiles[j] <- cutoff
-#     sums <- Reduce('+',Clusts[s1])
-#     Ps <- sums/length(s1)
-#
-#   }#End of cross entropy optimization
-#
-#   Res[[1]] <- quantiles
-#   Res[[2]] <- Ps
-#   Res[[3]] <- Pc
-#   return(Res)
-# }
-
-#' Cluster the columns of X into K nonexhaustive overlapping clusters.
-#'
-#' This function will output K weighted clusters of variables.
-#' @param X is a n x p matrix of p variables and n observations.
-#' @param B is the number of iterations in the simulated annealing algorithm.
-#' @param L is the temperature coefficient in the simulated annealing algorithm.
-#' @details
-#' The algorithm minimizes a modified version of NCut through simulated annealing.
-#' The clusers correspond to weighted partitions that minimize this objective function.
-#' @examples
-#' #This sets up the initial parameters for the simulation.
-#' library(NCutYX)
-#' K=4
-#' n=300
-#' p=120
-#'
-#' Z1<-rnorm(n,0,2)
-#' Z2<-rnorm(n,0,2)
-#' Z3<-rnorm(n,0,2)
-#' Z4<-rnorm(n,0,2)
-#'
-#' X=matrix(0,n,p)
-#' X[,1:20]=matrix(rnorm(n*20,0,0.5),n,20)+matrix(Z1,n,20,byrow=F)
-#' X[,21:40]=matrix(rnorm(n*20,0,0.5),n,20)+0.5*matrix(Z1,n,20,byrow=F)+0.5*matrix(Z2,n,20,byrow=F)
-#' X[,41:60]=matrix(rnorm(n*20,0,0.5),n,20)+matrix(Z2,n,20,byrow=F)
-#' X[,61:80]=matrix(rnorm(n*20,0,0.5),n,20)+matrix(Z3,n,20,byrow=F)
-#' X[,81:100]=matrix(rnorm(n*20,0,0.5),n,20)+0.5*matrix(Z3,n,20,byrow=F)+0.5*matrix(Z4,n,20,byrow=F)
-#' X[,101:120]=matrix(rnorm(n*20,0,0.5),n,20)+matrix(Z4,n,20,byrow=F)
-#'
-#' C0<-matrix(0,p,K)
-#' C0[1:20,1]<-matrix(1,1:20,1)
-#' C0[21:40,1:2]<-matrix(0.5,1:20,1:2)
-#' C0[41:60,2]<-matrix(1,1:20,1)
-#' C0[61:80,3]<-matrix(1,1:20,1)
-#' C0[81:100,3:4]<-matrix(0.5,1:20,1:2)
-#' C0[101:120,4]<-matrix(1,1:20,1)
-#'
-#' A0 <- C0[,1]%*%t(C0[,1]) + C0[,2]%*%t(C0[,2]) +
-#'     C0[,3]%*%t(C0[,3]) + C0[,4]%*%t(C0[,4])
-#'
-#' A0 <- A0-diag(diag(A0))+diag(p)
-#'
-#' result <- neoncut(X,K=2,
-#'                     B=3000,
-#'                     L=1000,
-#'                     scale=F,
-#'                     alpha=0.5,
-#'                     beta=0.5,
-#'                     dist='gaussian',
-#'                     sigma=1)
-#'
-#'trial <- result[[2]]
-#'
-#' A <- trial[,1]%*%t(trial[,1]) + trial[,2]%*%t(trial[,2]) +
-#'        trial[,3]%*%t(trial[,3]) + trial[,4]%*%t(trial[,4])
-#'
-#' A <- A-diag(diag(A))+diag(p)
-#'
-#' sum(abs(A0-A))/p^2
-
-neoncut<-function(X,
+bilayer<-function(Z,Y,X
                   K=2,
-                  B=3000,
-                  L=1000,
-                  scale=F,
-                  alpha=0.5,
-                  beta=0.5,
-                  dist='gaussian',
-                  sigma=1){
-  #Beginning of the function
-  if (scale==T){
-    X=scale(X)
-    p=dim(X)[2]
-    if (dist=='gaussian'){
-      Wx=exp((-1)*as.matrix(dist(t(X),diag=T,upper=T))/sigma)
-    }else if(dist=='euclidean'){
-      Wx=as.matrix(dist(t(X),diag=T,upper=T))+diag(p)
-      Wx=Wx^(-1)
-    } else{
-      print('Distance Error')
-    }
-  }else{
-    p=dim(X)[2]
-    if (dist=='gaussian'){
-      Wx=exp((-1)*as.matrix(dist(t(X),diag=T,upper=T))/sigma)
-    }else if(dist=='euclidean'){
-      Wx=as.matrix(dist(t(X),diag=T,upper=T))+diag(p)
-      Wx=Wx^(-1)
-    } else{
-      print('Distance Error')
-    }
-  }
-
-  #This creates a random starting point in the split in the algorithm for K clusters
-  Cx=matrix(rbinom(p*K,1,1/K),p,K)
-
-  #Now, calculate the number of indices in each group.
-  Nx=apply(Cx,2,sum)
-  M1=matrix(1,p,K)
-  #These matrices will keep track of the elements of the clusters while
-  #doing simulated annealing.
-  C2x=matrix(0,p,K)
-  C2x=Cx
-  Penal2<-length(which(apply(Cx,1,sum)==0))
-  J=NCutY3V1(Cx,M1-Cx,Wx,Wx)+alpha*sum(diag(t(Cx)%*%Cx))+beta*Penal2
-
-  Test<- vector(mode="numeric", length=B)
-
-  for (k in 1:B){
-
-    ###Draw k(-) and k(+)with unequal probabilites.
-    N=sum(Nx)
-    P=Nx/N
-    s=sample.int(K,K,replace=FALSE,prob=P)
-    sx=sample(p,1)
-    if (C2x[sx,s[1]]==1){
-      C2x[sx,s[1]]=0
-    }else{
-      C2x[sx,s[1]]=1
-    }
-
-    #Now Step 3 in the algorithm
-    Penal2<-length(which(apply(Cx,1,sum)==0))
-    J2=NCutY3V1(C2x,M1-C2x,Wx,Wx)+alpha*sum(diag(t(C2x)%*%C2x))+beta*Penal2
-
-    if (J2>J){
-      #Prob[Count]=exp(-10000*log(k+1)*(J2-J))
-      des=rbinom(1,1,exp(-L*log(k+1)*(J2-J)))
-
-      if (des==1){
-        Cx=C2x#Set-up the new clusters
-        J=J2
-        Nx=apply(Cx,2,sum)
-      }else{
-        C2x=Cx
-      }
-    } else{
-      Cx=C2x
-      J=J2
-      Nx=apply(Cx,2,sum)
-    }
-    Test[k]=J
-
-  }
-  Res<-list()
-  Res[[1]]=Test
-  Res[[2]]=Cx
-  return(Res)
-}
-
-#' Cluster the columns of X into K nonexhaustive overlapping clusters.
-#'
-#' This function will output K weighted clusters of variables.
-#' @param X is a n x p matrix of p variables and n observations.
-#' @param B is the number of iterations in the cross entropy maximization algorithm.
-#' @param N is the number of samples at each iteration.
-#' @param q is the proportion of top results out of N used to recalculate the
-#' sampling probabilities at each iteration.
-#' @details
-#' The algorithm minimizes a modified version of NCut through simulated annealing.
-#' The clusers correspond to weighted partitions that minimize this objective function.
-#' @examples
-#' #This sets up the initial parameters for the simulation.
-#' library(NCutYX)
-#' K=4
-#' n=300
-#' p=120
-#'
-#' Z1<-rnorm(n,0,2)
-#' Z2<-rnorm(n,0,2)
-#' Z3<-rnorm(n,0,2)
-#' Z4<-rnorm(n,0,2)
-#'
-#' X=matrix(0,n,p)
-#' X[,1:20]=matrix(rnorm(n*20,0,0.5),n,20)+matrix(Z1,n,20,byrow=F)
-#' X[,21:40]=matrix(rnorm(n*20,0,0.5),n,20)+
-#' 0.5*matrix(Z1,n,20,byrow=F)+0.5*matrix(Z2,n,20,byrow=F)
-#' X[,41:60]=matrix(rnorm(n*20,0,0.5),n,20)+matrix(Z2,n,20,byrow=F)
-#' X[,61:80]=matrix(rnorm(n*20,0,0.5),n,20)+matrix(Z3,n,20,byrow=F)
-#' X[,81:100]=matrix(rnorm(n*20,0,0.5),n,20)+
-#' 0.5*matrix(Z3,n,20,byrow=F)+0.5*matrix(Z4,n,20,byrow=F)
-#' X[,101:120]=matrix(rnorm(n*20,0,0.5),n,20)+matrix(Z4,n,20,byrow=F)
-#'
-#' C0<-matrix(0,p,K)
-#' C0[1:20,1]<-matrix(1,1:20,1)
-#' C0[21:40,1:2]<-matrix(0.5,1:20,1:2)
-#' C0[41:60,2]<-matrix(1,1:20,1)
-#' C0[61:80,3]<-matrix(1,1:20,1)
-#' C0[81:100,3:4]<-matrix(0.5,1:20,1:2)
-#' C0[101:120,4]<-matrix(1,1:20,1)
-#'
-#' A0 <- C0[,1]%*%t(C0[,1]) + C0[,2]%*%t(C0[,2]) +
-#'     C0[,3]%*%t(C0[,3]) + C0[,4]%*%t(C0[,4])
-#'
-#' A0 <- A0-diag(diag(A0))+diag(p)
-#'
-#' result <- neoncut2(X,K=4,
-#'                     B=30,
-#'                     N=1000,
-#'                     scale=F,
-#'                     alpha=0.5,
-#'                     beta=0.5,
-#'                     dist='gaussian',
-#'                     sigma=1)
-#'
-#'trial <- result[[2]]
-#'
-#' A <- trial[,1]%*%t(trial[,1]) + trial[,2]%*%t(trial[,2]) +
-#'        trial[,3]%*%t(trial[,3]) + trial[,4]%*%t(trial[,4])
-#'
-#' A <- A-diag(diag(A))+diag(p)
-#'
-#' sum(abs(A0-A))/p^2
-
-neoncut2<-function(X,
-                  K=2,
+                  R=2,
                   B=30,
-                  N=1000,
-                  scale=F,
-                  alpha=0.5,
-                  beta=0.5,
-                  epsilon=0,
-                  q=0.10,
+                  N=500,
                   dist='correlation',
+                  scale=T,
+                  q=0.1,
                   sigma=1){
   #This creates the weight matrix W
   Res <- list()
   quantiles <- vector(mode="numeric", length=B)
   #Beginning of the function
   if (scale==T){
-    X=apply(X,2,function(e) {return(e/var(e)^0.5)})
-    p=dim(X)[2]
-    if (dist=='gaussian'){
-      Wx=exp((-1)*as.matrix(dist(t(X),diag=T,upper=T))/(sigma^2))
-      Wx[which(Wx<epsilon)]=0
-    }else if(dist=='euclidean'){
-      Wx=as.matrix(dist(t(X),diag=T,upper=T))+diag(p)
-      Wx=Wx^(-1)
-      Wx[which(Wx<epsilon)]=0
-    }else if(dist=='correlation'){
-      Wx<-abs(cor(X))^beta
-      Wx[which(Wx<epsilon)]=0
-    }else{
-      print('Distance Error')
-    }
+    Z=scale(Z)
+    Y=scale(Y)
+    X=scale(X)
+  }
+  q=dim(Z)[2]
+  p=dim(Y)[2]
+  r=dim(X)[2]
+  m=q+p+r
+  if (dist=='euclidean'){
+    #Distance matrix for the predicted variables
+    ZYX2=cbind(Z,Y,X)
+    Wzyx2=as.matrix(dist(t(ZYX2),diag=T,upper=T))+diag(q+p+r)
+    Wzyx2=Wzyx2^(-1)
+    Izyx2=Wzyx2
+    Izyx2[1:q,1:q]=0
+    Izyx2[(1:p+q),(1:p+q)]=0
+    Izyx2[(1:r+p+q),(1:r+p+q)]=0
+  }else if(dist=='gaussian'){
+    #Distance matrix for the predicted variables
+    ZYX2=cbind(Z,Y,X)
+    Wzyx2=exp((-1)*as.matrix(dist(t(ZYX2),diag=T,upper=T))/sigma)
+    #Matrix without diagonal entries
+    Izyx2=Wzyx2
+    Izyx2[1:q,1:q]=0
+    Izyx2[(1:p+q),(1:p+q)]=0
+    Izyx2[(1:r+p+q),(1:r+p+q)]=0
+  }else if(dist=='correlation'){
+    ZYX2=cbind(Z,Y,X)
+    Wzyx2 <- abs(cor(ZYX2))
+    #Matrix without diagonal entries
+    Izyx2=Wzyx2
+    Izyx2[1:q,1:q]=0
+    Izyx2[(1:p+q),(1:p+q)]=0
+    Izyx2[(1:r+p+q),(1:r+p+q)]=0
   }else{
-    p=dim(X)[2]
-    if (dist=='gaussian'){
-      Wx=exp((-1)*as.matrix(dist(t(X),diag=T,upper=T))/(sigma^2))
-      Wx[which(Wx<epsilon)]=0
-    }else if(dist=='euclidean'){
-      Wx=as.matrix(dist(t(X),diag=T,upper=T))+diag(p)
-      Wx=Wx^(-1)
-      Wx[which(Wx<epsilon)]=0
-    }else if(dist=='correlation'){
-      Wx<-abs(cor(X))^beta
-      Wx[which(Wx<epsilon)]=0
-    }else{
-      print('Distance Error')
-    }
+    print('Distance Error')
   }
 
-  M1=matrix(1,p,K)
-  #vector with probabilities of mus being 0 or not
-  Ps <- matrix(1/K,p,K)
+  #vector with the probabilites for clustering samples and columns
+  Ps <- matrix(1/R,n,R)
+  Pc <- matrix(1/K,m,K)
+  Dclust <- vector('list',R)
+  #Start of the Cross entropy optimization
   for (j in 1:B){
     print(paste('jth Loop is ', j))
-    Clusters <- vector('list',N)
+    Clusts <- vector('list',N)
+    Clustc <- vector('list',N)
     loss <- vector(mode="numeric", length=N)
-
+    #1.-Cluster the columns
+    for (i in 1:R){
+      Dclust[[i]] <- w.gaussian(Z,Y,X,sigma2=1,w=Ps[,i])#maybe rescale the weigths to equal 1
+    }
+    #Sampling N new clusters and calculating the corresponding loss
     for (k in 1:N){
-      Clusters[[k]]=t(apply(Ps,1,neovector))#Can I write a faster version in Rcpp?
-      Penal2<-length(which(apply(Clusters[[k]],1,sum)==0))
-      loss[k] <- NCutY3V1(Clusters[[k]],M1-Clusters[[k]],Wx,Wx)+
-                 alpha*sum(diag(t(Clusters[[k]])%*%Clusters[[k]]))+
-                 beta*Penal2
+      Clustc[[k]]=RandomMatrix(m,K,Pc)
+      loss[k]<-0
+      for (i in 1:R){#for each of the sample groups(THIS IS A DOUBLE LOOP)
+        loss[k] <- loss[k]+NCut(Clustc[[k]],Dclust[[i]])
+      }
+    }
+
+    cutoff <- quantile(loss,q)
+    s1 <- which(loss<=cutoff)
+    sumc <- Reduce('+',Clustc[s1])
+    Pc <- sumc/length(s1)
+
+    #CONTINUE HERE
+    #CONTINUE HERE
+    #CONTINUE HERE
+    #2.-Cluster the samples
+    #Sampling N new clusters and calculating the corresponding loss
+    for (k in 1:N){
+      Clusts[[k]]=RandomMatrix(n,R,Ps)
+      for (i in 1:R){
+        Dclust[[i]] <- w.gaussian(Z,Y,X,sigma2=1,w=Clusts[[k]][,i])
+      }
+      loss[k]<-0
+      for (i in 1:R){#for each of the sample groups
+        loss[k] <- loss[k]+WNCut(Pc,Dclust[[i]])
+      }
     }
 
     cutoff <- quantile(loss,q)
     s1 <- which(loss<=cutoff)
     quantiles[j] <- cutoff
-    sums <- Reduce('+',Clusters[s1])
+    sums <- Reduce('+',Clusts[s1])
     Ps <- sums/length(s1)
 
-  }
+  }#End of cross entropy optimization
+
   Res[[1]] <- quantiles
   Res[[2]] <- Ps
+  Res[[3]] <- Pc
   return(Res)
 }
-
-#' Given a matrix U of K cluster membership and data X calculate the clusters' means.
-#'
-#' This function will output K clusters' means.
-#' @param X is a n x p matrix of p variables and n observations.
-#' @details
-#' Given a matrix U of K cluster membership calculated the clusters' means.
-
-meanx<-function(U,X){
-  n<-dim(U)[1]
-  K<-dim(U)[2]
-  p<-dim(X)[2]
-  M<-matrix(0,K,p)
-  for (i in 1:K){
-    s<-which(U[,i]==1)
-    M[i,]<-apply(X[s,],2,mean)
-  }
-  return(M)
-}
-
-#' Given a data matrix X and matrix M of centroids calculate the distance
-#' with respect to the centroids for each data matrix.
-#'
-#' This function will output a matrix K times p matrix of distances.
-#' @param X is a n x p matrix of p variables and n observations.
-#' @param M is a K x p matrix of cluster centroids.
-#' @details
-#' This is a function needed for the neokmeans algorithm.
-
-distm<-function(M,X){
-  K<-dim(M)[1]
-  p<-dim(X)[2]
-  D<-matrix(0,n,K)
-  for (i in 1:K){
-    Mx<-matrix(M[i,],n,p,byrow=T)
-    Dx<-(X-Mx)^2
-    D[,i]=appy(Dx,1,sum)
-  }
-  return(D)
-}
-
-#' Cluster the columns of X into K nonexhaustive overlapping clusters.
-#'
-#' This function will output K clusters of variables.
-#' @param X is a n x p matrix of p variables and n observations.
-#' @param B is the number of iterations in the simulated annealing algorithm.
-#' @param L is the temperature coefficient in the simulated annealing algorithm.
-#' @details
-#' The algorithm minimizes a modified version of NCut through simulated annealing.
-#' The clusers correspond to partitions that minimize this objective function.
-
-neokmeans<-function(X,
-                  K=2,
-                  B=3000,
-                  L=1000,
-                  mu_0=0.01,
-                  alpha=0.5,
-                  beta=0.5,
-                  MCMC=T){
-  #getting the dimensions
-  n<-dim(X)[1]
-  p<-dim(X)[2]
-
-  #This creates a random starting point in the split in the algorithm for K clusters
-  Cx=matrix(rbinom(p*K,1,1/K),p,K)
-
-  #Now, calculate the number of indices in each group.
-  Nx=apply(Cx,2,sum)
-
-  #These matrices will keep track of the elements of the clusters while
-  #doing simulated annealing.
-  C2x=matrix(0,p,K)
-  C2x=Cx
-  Penal2<-length(which(apply(Cx,1,sum)==0))
-  Mx<-meanx(Cx,X)
-  Dx<-distm(Mx,X)
-  J=sum(Dx*Cx)+(1+alpha)*n*sum(diag(t(Cx)%*%Cx))+beta*n*Penal2
-
-  Test<- vector(mode="numeric", length=B)
-
-  for (k in 1:B){
-
-    ###Draw k(-) and k(+)with unequal probabilites.
-    N=sum(Nx)
-    P=Nx/N
-    s=sample.int(K,K,replace=FALSE,prob=P)
-    sx=sample(p,1)
-    if (C2x[sx,s[1]]==1){
-      C2x[sx,s[1]]=0
-    }else{
-      C2x[sx,s[1]]=1
-    }
-
-    #Now Step 3 in the algorithm
-    Penal2<-length(which(apply(C2x,1,sum)==0))
-    M2x<-meanx(C2x,X)
-    D2x<-distm(M2x,X)
-    J2<-sum(D2x*C2x)+(1+alpha)*n*sum(diag(t(C2x)%*%C2x))+beta*n*Penal2
-
-    if (J2>J){
-      #Prob[Count]=exp(-10000*log(k+1)*(J2-J))
-      des=rbinom(1,1,exp(-L*log(k+1)*(J2-J)))*(1-MCMC)+rbinom(1,1,1-min(c(J2/J,1)))*MCMC
-
-      if (des==1){
-        Cx=C2x#Set-up the new clusters
-        J=J2
-        Nx=apply(Cx,2,sum)
-      }else{
-        C2x=Cx
-      }
-    } else{
-      Cx=C2x
-      J=J2
-      Nx=apply(Cx,2,sum)
-    }
-    Test[k]=J
-
-  }
-  Res<-list()
-  Res[[1]]=Test
-  Res[[2]]=Cx
-  return(Res)
-}
-
