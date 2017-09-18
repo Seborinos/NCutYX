@@ -936,16 +936,18 @@ spawn2<-function(X,
 #' #This is the true error of the clustering solution.
 #' errorL
 
-bilayer<-function(Z,Y,X
-                  K=2,
-                  R=2,
-                  B=30,
-                  N=500,
-                  dist='correlation',
-                  scale=T,
-                  q=0.1,
-                  sigma=1){
-  #This creates the weight matrix W
+bml<-function(Z,
+                 Y,
+                 X,
+                 K=2,
+                 R=2,
+                 B=30,
+                 N=500,
+                 dist='gaussian',
+                 scale=T,
+                 q=0.1,
+                 sigma=1){
+  #The lsit of the final oject returned by the function
   Res <- list()
   quantiles <- vector(mode="numeric", length=B)
   #Beginning of the function
@@ -958,86 +960,42 @@ bilayer<-function(Z,Y,X
   p=dim(Y)[2]
   r=dim(X)[2]
   m=q+p+r
-  if (dist=='euclidean'){
-    #Distance matrix for the predicted variables
-    ZYX2=cbind(Z,Y,X)
-    Wzyx2=as.matrix(dist(t(ZYX2),diag=T,upper=T))+diag(q+p+r)
-    Wzyx2=Wzyx2^(-1)
-    Izyx2=Wzyx2
-    Izyx2[1:q,1:q]=0
-    Izyx2[(1:p+q),(1:p+q)]=0
-    Izyx2[(1:r+p+q),(1:r+p+q)]=0
-  }else if(dist=='gaussian'){
-    #Distance matrix for the predicted variables
-    ZYX2=cbind(Z,Y,X)
-    Wzyx2=exp((-1)*as.matrix(dist(t(ZYX2),diag=T,upper=T))/sigma)
-    #Matrix without diagonal entries
-    Izyx2=Wzyx2
-    Izyx2[1:q,1:q]=0
-    Izyx2[(1:p+q),(1:p+q)]=0
-    Izyx2[(1:r+p+q),(1:r+p+q)]=0
-  }else if(dist=='correlation'){
-    ZYX2=cbind(Z,Y,X)
-    Wzyx2 <- abs(cor(ZYX2))
-    #Matrix without diagonal entries
-    Izyx2=Wzyx2
-    Izyx2[1:q,1:q]=0
-    Izyx2[(1:p+q),(1:p+q)]=0
-    Izyx2[(1:r+p+q),(1:r+p+q)]=0
-  }else{
-    print('Distance Error')
-  }
-
   #vector with the probabilites for clustering samples and columns
+  #Initialize step in the algorithm
   Ps <- matrix(1/R,n,R)
   Pc <- matrix(1/K,m,K)
   Dclust <- vector('list',R)
   #Start of the Cross entropy optimization
+  #For j in {B}
   for (j in 1:B){
     print(paste('jth Loop is ', j))
     Clusts <- vector('list',N)
     Clustc <- vector('list',N)
+    W <-  vector('list',R)
     loss <- vector(mode="numeric", length=N)
-    #1.-Cluster the columns
-    for (i in 1:R){
-      Dclust[[i]] <- w.gaussian(Z,Y,X,sigma2=1,w=Ps[,i])#maybe rescale the weigths to equal 1
-    }
-    #Sampling N new clusters and calculating the corresponding loss
+    #For k in {N}
     for (k in 1:N){
+      #Sample the partitions V_b^{(t)} and S_b^{(t)} from P_v^{(t-1)} and P_s^{(t-1)}
       Clustc[[k]]=RandomMatrix(m,K,Pc)
-      loss[k]<-0
-      for (i in 1:R){#for each of the sample groups(THIS IS A DOUBLE LOOP)
-        loss[k] <- loss[k]+NCut(Clustc[[k]],Dclust[[i]])
+      Clusts[[k]]=RandomMatrix(n,R,Ps)
+      for (r in 1:R){#WARNING: double loop
+        W[[r]] <- w.gaussian(Z[Clusts[[r]],],Y[Clusts[[r]],],X[Clusts[[r]],],sigma2=sigma)
+      }
+      #Calculate L_{t,b}
+      loss[k] <- 0
+      for (r in 1:R){#WARNING: double loop
+        loss[k] <- loss[k]+NCut(Clustc[[k]],W[[r]])
       }
     }
-
+    #Calculate \hat{q}
     cutoff <- quantile(loss,q)
+    quantiles[j] <- cutoff
+    #Calculate P_v^{(t)} and P_s^{(t)}
     s1 <- which(loss<=cutoff)
     sumc <- Reduce('+',Clustc[s1])
     Pc <- sumc/length(s1)
-
-    #CONTINUE HERE
-    #CONTINUE HERE
-    #CONTINUE HERE
-    #2.-Cluster the samples
-    #Sampling N new clusters and calculating the corresponding loss
-    for (k in 1:N){
-      Clusts[[k]]=RandomMatrix(n,R,Ps)
-      for (i in 1:R){
-        Dclust[[i]] <- w.gaussian(Z,Y,X,sigma2=1,w=Clusts[[k]][,i])
-      }
-      loss[k]<-0
-      for (i in 1:R){#for each of the sample groups
-        loss[k] <- loss[k]+WNCut(Pc,Dclust[[i]])
-      }
-    }
-
-    cutoff <- quantile(loss,q)
-    s1 <- which(loss<=cutoff)
-    quantiles[j] <- cutoff
     sums <- Reduce('+',Clusts[s1])
     Ps <- sums/length(s1)
-
   }#End of cross entropy optimization
 
   Res[[1]] <- quantiles
