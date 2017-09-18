@@ -2,10 +2,10 @@
 # Sebastian Jose Teran Hidalgo
 
 # Table of contents
-1. [Description](#Description)
-2. [ANCut](#ANCut)
-3. [MuNCut](#MuNCut)
-4. [SpaWN](#SpaWN)
+1. [Description](#description)
+2. [ANCut](#ancut)
+3. [MuNCut](#muncut)
+4. [SpaWN](#spawn)
 
 ## Description
 
