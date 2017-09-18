@@ -964,15 +964,14 @@ bml<-function(Z,
   #Initialize step in the algorithm
   Ps <- matrix(1/R,n,R)
   Pc <- matrix(1/K,m,K)
-  Dclust <- vector('list',R)
+  Clusts <- vector('list',N)
+  Clustc <- vector('list',N)
+  W <-  vector('list',R)
+  loss <- vector(mode="numeric", length=N)
   #Start of the Cross entropy optimization
   #For j in {B}
   for (j in 1:B){
     print(paste('jth Loop is ', j))
-    Clusts <- vector('list',N)
-    Clustc <- vector('list',N)
-    W <-  vector('list',R)
-    loss <- vector(mode="numeric", length=N)
     #For k in {N}
     for (k in 1:N){
       #Sample the partitions V_b^{(t)} and S_b^{(t)} from P_v^{(t-1)} and P_s^{(t-1)}
