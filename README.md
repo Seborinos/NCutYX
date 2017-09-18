@@ -3,7 +3,7 @@
 
 # Table of contents
 1. [Description](#description)
-2. [ANCut](#ancut)
+2. [Assisted clustering of gene expression data using ANCut](#ancut)
 3. [MuNCut](#muncut)
 4. [SpaWN](#spawn)
 
