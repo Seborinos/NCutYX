@@ -1,12 +1,13 @@
 # The NCutYX package
 # Sebastian Jose Teran Hidalgo
 
-[Description](#Description)
-[ANCut](#ANCut)
-[MuNCut](#MuNCut)
-[SpaWN](#SpaWN)
+# Table of contents
+1. [Description](#Description)
+2. [ANCut](#ANCut)
+3. [MuNCut](#MuNCut)
+4. [SpaWN](#SpaWN)
 
-# Description
+## Description
 
 The NCutYX package includes functions on clustering genomic data using graph theory. 
 
@@ -20,7 +21,7 @@ To install:
     1. install and load package devtools
     2. `install_github("Seborinos/NCutYX")`
 
-# Assisted clustering of gene expression data using ANCut
+## Assisted clustering of gene expression data using ANCut
 
 This example shows how to use the ANCut function. ANCut clusters the columns of a data set Y into K groups with the help of an external data set X.First we define some of the simulation parameters below.
 ```{r}
@@ -33,7 +34,7 @@ This example shows how to use the ANCut function. ANCut clusters the columns of 
  h2=0.15 #Upper bound for the coefficients in the model Y=X*B+e.
 ```
  
- The data will be simulated as Y=X*B+e where X will be normal and a convariance matrix S with 2 blocks of correlated variables. This induces the correlation among the Y's as well. W0 is a matrix that will be used to calculate the error of the procedure.
+The data will be simulated as Y=X*B+e where X will be normal and a convariance matrix S with 2 blocks of correlated variables. This induces the correlation among the Y's as well. W0 is a matrix that will be used to calculate the error of the procedure.
 
 ```{r}
  S=matrix(0.2,q,q)
@@ -96,7 +97,7 @@ image.plot(Cx)
 
  
 
-# MuNCut
+## MuNCut
 
 ```{r}
   #parameters#
@@ -154,4 +155,4 @@ image.plot(Cx)
 
 ![](BrcaAnalysis1.png) 
 
-# SpaWN
+## SpaWN
