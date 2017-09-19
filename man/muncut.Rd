@@ -9,11 +9,11 @@ muncut(Z, Y, X, K = 2, B = 3000, L = 1000, alpha = 0.5, ncv = 3,
   dist = "gaussian", sigma = 1)
 }
 \arguments{
-\item{Z}{is a n x p1 matrix of p1 variables and n observations.}
+\item{Z}{is a n x q matrix of q variables and n observations.}
 
-\item{Y}{is a n x p2 matrix of p2 variables and n observations.}
+\item{Y}{is a n x p matrix of p variables and n observations.}
 
-\item{X}{is a n x p3 matrix of p3 variables and n observations.}
+\item{X}{is a n x r matrix of r variables and n observations.}
 
 \item{B}{is the number of iterations in the simulated annealing algorithm.}
 
@@ -26,4 +26,62 @@ This function will output K channels of variables.
 The algorithm minimizes a modified version of NCut through simulated annealing.
 The clusers correspond to partitions that minimize this objective function.
 The external information of X is incorporated by using ridge regression to predict Y.
+}
+\examples{
+#Example for the muncut
+library(NCutYX)
+library(MASS)
+library(fields) #for image.plot
+
+#parameters#
+n=15
+p=400
+h=0.15
+rho=0.2
+
+W0=matrix(1,p,p)
+W0[1:(p/5),1:(p/5)]=0
+W0[(p/5+1):(3*p/5),(p/5+1):(3*p/5)]=0
+W0[(3*p/5+1):(4*p/5),(3*p/5+1):(4*p/5)]=0
+W0[(4*p/5+1):p,(4*p/5+1):p]=0
+W0=cbind(W0,W0,W0)
+W0=rbind(W0,W0,W0)
+
+Y=matrix(0,n,p)
+Z=matrix(0,n,p)
+Sigma=matrix(rho,p,p)
+Sigma[1:(p/5),1:(p/5)]=2*rho
+Sigma[(p/5+1):(3*p/5),(p/5+1):(3*p/5)]=2*rho
+Sigma[(3*p/5+1):(4*p/5),(3*p/5+1):(4*p/5)]=2*rho
+Sigma=Sigma-diag(diag(Sigma))
+Sigma=Sigma+diag(p)
+
+X=mvrnorm(n,rep(0,p),Sigma)
+B1=matrix(0,p,p)
+B2=matrix(0,p,p)
+
+B1[1:(p/5),1:(p/5)]=runif((p/5)^2,h/2,h)*rbinom((p/5)^2,1,0.2)
+B1[(p/5+1):(3*p/5),(p/5+1):(3*p/5)]=runif((2*p/5)^2,h/2,h)*rbinom((2*p/5)^2,1,0.2)
+B1[(3*p/5+1):(4*p/5),(3*p/5+1):(4*p/5)]=runif((p/5)^2,h/2,h)*rbinom((p/5)^2,1,0.2)
+
+B2[1:(p/5),1:(p/5)]=runif((p/5)^2,h/2,h)*rbinom((p/5)^2,1,0.2)
+B2[(p/5+1):(3*p/5),(p/5+1):(3*p/5)]=runif((2*p/5)^2,h/2,h)*rbinom((2*p/5)^2,1,0.2)
+B2[(3*p/5+1):(4*p/5),(3*p/5+1):(4*p/5)]=runif((p/5)^2,h/2,h)*rbinom((p/5)^2,1,0.2)
+
+Y=X\%*\%B1+matrix(rnorm(n*p,0,0.5),n,p)
+Y2=X\%*\%B1
+
+Z=Y\%*\%B2+matrix(rnorm(n*p,0,0.5),n,p)
+Z2=Y\%*\%B2
+
+#Computing our method
+clust<-muncut(Z,Y,X,K=4,B=15000,L=500,alpha=0.5,ncv=3,nlambdas=20,scale=F,model=F,gamma=0.1)
+
+A <- clust[[2]][,1]\%*\%t(clust[[2]][,1])+
+     clust[[2]][,2]\%*\%t(clust[[2]][,2])+
+     clust[[2]][,3]\%*\%t(clust[[2]][,3])+
+     clust[[2]][,4]\%*\%t(clust[[2]][,4])
+
+errorK=sum(A*W0)/(3*p)^2
+errorK
 }
