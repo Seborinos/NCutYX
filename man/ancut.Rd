@@ -44,7 +44,6 @@ The external information of X is incorporated by using ridge regression to predi
 \examples{
 #This sets up the initial parameters for the simulation.
 library(MASS)#for mvrnorm
-library(fields)#for image.plot
 n=200 #Sample size
 B=5000 #Number of iterations in the simulated annealing algorithm.
 L=10000 #Temperature coefficient.

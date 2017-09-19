@@ -28,14 +28,13 @@ The clusers correspond to partitions that minimize this objective function.
 The external information of X is incorporated by using ridge regression to predict Y.
 }
 \examples{
-#Example for the muncut
 library(NCutYX)
 library(MASS)
 library(fields) #for image.plot
 
 #parameters#
-n=15
-p=400
+n=100
+p=200
 h=0.15
 rho=0.2
 
@@ -75,7 +74,7 @@ Z=Y\%*\%B2+matrix(rnorm(n*p,0,0.5),n,p)
 Z2=Y\%*\%B2
 
 #Computing our method
-clust<-muncut(Z,Y,X,K=4,B=15000,L=500,alpha=0.5,ncv=3,nlambdas=20,scale=F,model=F,gamma=0.1)
+clust<-muncut(Z,Y,X,K=4,B=20000,L=500,alpha=0.5,ncv=3,nlambdas=20,scale=F,model=F,gamma=0.1)
 
 A <- clust[[2]][,1]\%*\%t(clust[[2]][,1])+
      clust[[2]][,2]\%*\%t(clust[[2]][,2])+

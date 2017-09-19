@@ -964,32 +964,70 @@ spawn2<-function(X,
 #' The clusters correspond to partitions that minimize this objective function.
 #' @examples
 #' #This sets up the initial parameters for the simulation.
+#' library(NCutYX)
 #' library(MASS)
-#' n=200 #Sample size
-#' B=30 #Number of iterations in the simulated annealing algorithm.
-#' p=500 #Number of columns of Y.
-#'
-#' S=matrix(0.2,p,p)
-#' S[1:(p/2),(p/2+1):p]=0
-#' S[(p/2+1):p,1:(p/2)]=0
-#' S=S-diag(diag(S))+diag(p)
-#' mu=rep(0,p)
+#' library(fields) #for image.plot
+#' #parameters#
+#' n=150
+#' p=50
+#' h=0.25
+#' rho=0.4
 #'
 #' W0=matrix(1,p,p)
-#' W0[1:(p/2),1:(p/2)]=0
-#' W0[(p/2+1):p,(p/2+1):p]=0
-#' Denum=sum(W0)
+#' W0[1:(p/5),1:(p/5)]=0
+#' W0[(p/5+1):(3*p/5),(p/5+1):(3*p/5)]=0
+#' W0[(3*p/5+1):(4*p/5),(3*p/5+1):(4*p/5)]=0
+#' W0[(4*p/5+1):p,(4*p/5+1):p]=0
+#' W0=cbind(W0,W0,W0)
+#' W0=rbind(W0,W0,W0)
 #'
-#' Y=mvrnorm(n, mu, S)
-#' #Our method
-#' Res=NCut(Y,B=30,N=500,K=2,dist='gaussian',sigma=1)
-#' Cx=Res[[2]]
-#' f11=matrix(Cx[,1],p,1)
-#' f12=matrix(Cx[,2],p,1)
+#' Y=matrix(0,n,p)
+#' Z=matrix(0,n,p)
+#' Sigma=matrix(0,p,p)
+#' Sigma[1:(p/5),1:(p/5)]=rho
+#' Sigma[(p/5+1):(3*p/5),(p/5+1):(3*p/5)]=rho
+#' Sigma[(3*p/5+1):(4*p/5),(3*p/5+1):(4*p/5)]=rho
+#' Sigma[(4*p/5+1):p,(4*p/5+1):p]=rho
+#' Sigma=Sigma-diag(diag(Sigma))
+#' Sigma=Sigma+diag(p)
 #'
-#' errorL=sum((f11%*%t(f11))*W0)/Denum+sum((f12%*%t(f12))*W0)/Denum
-#' #This is the true error of the clustering solution.
-#' errorL
+#' X=mvrnorm(n,rep(0,p),Sigma)
+#' B1=matrix(0,p,p)
+#' B2=matrix(0,p,p)
+#'
+#' B1[1:(p/5),1:(p/5)]=runif((p/5)^2,h/2,h)*rbinom((p/5)^2,1,0.5)
+#' B1[(p/5+1):(3*p/5),(p/5+1):(3*p/5)]=runif((2*p/5)^2,h/2,h)*rbinom((2*p/5)^2,1,0.5)
+#' B1[(3*p/5+1):(4*p/5),(3*p/5+1):(4*p/5)]=runif((p/5)^2,h/2,h)*rbinom((p/5)^2,1,0.5)
+#' B1[(4*p/5+1):p,(4*p/5+1):p]=runif((1*p/5)^2,h/2,h)*rbinom((1*p/5)^2,1,0.5)
+#'
+#' B2[1:(p/5),1:(p/5)]=runif((p/5)^2,h/2,h)*rbinom((p/5)^2,1,0.5)
+#' B2[(p/5+1):(3*p/5),(p/5+1):(3*p/5)]=runif((2*p/5)^2,h/2,h)*rbinom((2*p/5)^2,1,0.5)
+#' B2[(3*p/5+1):(4*p/5),(3*p/5+1):(4*p/5)]=runif((p/5)^2,h/2,h)*rbinom((p/5)^2,1,0.5)
+#' B2[(4*p/5+1):p,(4*p/5+1):p]=runif((1*p/5)^2,h/2,h)*rbinom((1*p/5)^2,1,0.5)
+#'
+#' B2[1:(p/5),1:(p/5)]=runif((p/5)^2,h/2,h)*rbinom((p/5)^2,1,0.5)
+#' B2[(p/5+1):(3*p/5),(p/5+1):(3*p/5)]=runif((2*p/5)^2,h/2,h)*rbinom((2*p/5)^2,1,0.5)
+#' B2[(3*p/5+1):(4*p/5),(3*p/5+1):(4*p/5)]=runif((p/5)^2,h/2,h)*rbinom((p/5)^2,1,0.5)
+#' B2[(4*p/5+1):p,(4*p/5+1):p]=runif((1*p/5)^2,h/2,h)*rbinom((1*p/5)^2,1,0.5)
+#'
+#' Y=X%*%B1+matrix(rnorm(n*p,0,0.25),n,p)
+#'
+#' Z=Y%*%B2+matrix(rnorm(n*p,0,0.25),n,p)
+#'
+#' #Computing our method
+#' clust<-bml(Z,
+#'            Y,
+#'            X,
+#'            K=4,
+#'            R=1,
+#'            B=50,
+#'            N=1000,
+#'            dist='correlation',
+#'            scale=F,
+#'            eta=0.25)
+#' plot(clust[[1]],type='l')
+#' image.plot(clust[[3]])
+
 
 bml<-function(Z,
                  Y,
@@ -998,9 +1036,9 @@ bml<-function(Z,
                  R=2,
                  B=30,
                  N=500,
-                 dist='gaussian',
+                 dist='correlation',
                  scale=T,
-                 q=0.1,
+                 eta=0.1,
                  sigma=1){
   #The lsit of the final oject returned by the function
   Res <- list()
@@ -1033,7 +1071,8 @@ bml<-function(Z,
       Clustc[[k]]=RandomMatrix(m,K,Pc)
       Clusts[[k]]=RandomMatrix(n,R,Ps)
       for (r in 1:R){#WARNING: double loop
-        W[[r]] <- w.gaussian(Z[Clusts[[r]],],Y[Clusts[[r]],],X[Clusts[[r]],],sigma2=sigma)
+        c1 <- which(Clusts[[r]]==1)
+        W[[r]] <- w.cor(Z[c1,],Y[c1,],X[c1,])#slowest.
       }
       #Calculate L_{t,b}
       loss[k] <- 0
@@ -1042,7 +1081,7 @@ bml<-function(Z,
       }
     }
     #Calculate \hat{q}
-    cutoff <- quantile(loss,q)
+    cutoff <- quantile(loss,eta)
     quantiles[j] <- cutoff
     #Calculate P_v^{(t)} and P_s^{(t)}
     s1 <- which(loss<=cutoff)
