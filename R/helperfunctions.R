@@ -52,15 +52,13 @@ w.cor <- function(Z,Y,X){
   p <- dim(Y)[2]
   r <- dim(X)[2]
   m <- q + p + r
-  Dzy <- matrix(0,q,p)
-  Dyx <- matrix(0,p,r)
   D <- matrix(0,m,m)
 
 
   D[1:q,(q+1):(q+p)] <- abs(cor(Z,Y))
-  D[(q+1):(q+p),1:q] <- t(Dzy)
+  D[(q+1):(q+p),1:q] <- t(D[1:q,(q+1):(q+p)])
   D[(q+1):(q+p),(q+p+1):(q+p+r)] <- abs(cor(Y,X))
-  D[(q+p+1):(q+p+r),(q+1):(q+p)] <- t(Dyx)
+  D[(q+p+1):(q+p+r),(q+1):(q+p)] <- t(D[(q+1):(q+p),(q+p+1):(q+p+r)] )
   return(D)
 }
 

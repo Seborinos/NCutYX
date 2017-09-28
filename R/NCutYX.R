@@ -1049,6 +1049,7 @@ bml<-function(Z,
     Y=scale(Y)
     X=scale(X)
   }
+  ZYX <- cbind(Z,Y,X)
   q=dim(Z)[2]
   p=dim(Y)[2]
   r=dim(X)[2]
@@ -1059,7 +1060,8 @@ bml<-function(Z,
   Pc <- matrix(1/K,m,K)
   Clusts <- vector('list',N)
   Clustc <- vector('list',N)
-  W <-  vector('list',R)
+  Wr <-  vector('list',R)
+  Wk <-  vector('list',K)
   loss <- vector(mode="numeric", length=N)
   #Start of the Cross entropy optimization
   #For j in {B}
@@ -1070,18 +1072,32 @@ bml<-function(Z,
       #Sample the partitions V_b^{(t)} and S_b^{(t)} from P_v^{(t-1)} and P_s^{(t-1)}
       Clustc[[k]]=RandomMatrix(m,K,Pc)
       Clusts[[k]]=RandomMatrix(n,R,Ps)
-      for (r in 1:R){#WARNING: double loop
-        c1 <- which(Clusts[[r]]==1)
-        W[[r]] <- w.cor(Z[c1,],Y[c1,],X[c1,])#slowest.
-      }
-      #Calculate L_{t,b}
       loss[k] <- 0
-      for (r in 1:R){#WARNING: double loop
-        loss[k] <- loss[k]+NCut(Clustc[[k]],W[[r]])
+
+      for (r in 1:R){
+        c1 <- which(Clusts[[k]][,r]==1)
+        Wr[[r]] <- w.cor(Z[c1,],Y[c1,],X[c1,])
       }
+
+      for (i in 1:K){
+        cz <- which(Clustc[[k]][1:q,i]==1)
+        cy <- which(Clustc[[k]][(q+1):(q+p),i]==1)
+        cx <- which(Clustc[[k]][(q+p+1):m,i]==1)
+        A1 <- cbind(Z[,cz],Y[,cy],X[,cx])
+        Wk[[i]] <- cor(t(A1))
+      }
+
+      for (r in 1:R){
+          loss[k] <- loss[k]+NCut(Clustc[[k]],Wr[[r]])
+      }
+
+      for (i in 1:K){
+        loss[k] <- loss[k]+NCut(Clusts[[k]],Wk[[i]])
+      }
+
     }
     #Calculate \hat{q}
-    cutoff <- quantile(loss,eta)
+    cutoff <- quantile(loss,eta,na.rm=T)
     quantiles[j] <- cutoff
     #Calculate P_v^{(t)} and P_s^{(t)}
     s1 <- which(loss<=cutoff)

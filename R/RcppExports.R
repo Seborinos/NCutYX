@@ -89,6 +89,14 @@ COR <- function(X) {
     .Call('NCutYX_COR', PACKAGE = 'NCutYX', X)
 }
 
+CORYX <- function(Zs, Ys, Xs) {
+    .Call('NCutYX_CORYX', PACKAGE = 'NCutYX', Zs, Ys, Xs)
+}
+
+CORYX2 <- function(Zs, Ys, Xs) {
+    .Call('NCutYX_CORYX2', PACKAGE = 'NCutYX', Zs, Ys, Xs)
+}
+
 COR2 <- function(Xs) {
     .Call('NCutYX_COR2', PACKAGE = 'NCutYX', Xs)
 }

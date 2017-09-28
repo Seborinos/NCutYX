@@ -608,6 +608,82 @@ Eigen::MatrixXd COR(const Eigen::MatrixXd &X){
 
 // [[Rcpp::depends(RcppEigen)]]
 // [[Rcpp::export]]
+NumericMatrix CORYX(const NumericMatrix &Zs,
+                    const NumericMatrix &Ys,
+                    const NumericMatrix &Xs){
+
+  Eigen::Map<Eigen::MatrixXd> Z = as<Eigen::Map<Eigen::MatrixXd> >(Zs);
+  Eigen::Map<Eigen::MatrixXd> Y = as<Eigen::Map<Eigen::MatrixXd> >(Ys);
+  Eigen::Map<Eigen::MatrixXd> X = as<Eigen::Map<Eigen::MatrixXd> >(Xs);
+
+  const int q = Z.cols();
+  const int p = Y.cols();
+  const int r = X.cols();
+  const int n = X.rows();
+  const double dn = n;
+  const int m = q+p+r;
+
+  MatrixXd Cors  = MatrixXd::Zero(m,m);
+  MatrixXd CorZY = MatrixXd::Zero(q,p);
+  MatrixXd CorYX = MatrixXd::Zero(p,r);
+  //Here I need to initiate Cors as a matrix of zeros
+
+  for (int i = 0;i<q;i++){
+    for (int j = 0;j<p;j++){
+      CorZY(i,j)=Z.col(i).transpose()*Y.col(j);
+    }
+  }
+
+  for (int i = 0;i<p;i++){
+    for (int j = 0;j<r;j++){
+      CorYX(i,j)=Y.col(i).transpose()*X.col(j);
+    }
+  }
+
+  Cors.block(0,q,q,p) = CorZY/dn;
+  Cors.block(q,0,p,q) = CorZY.transpose()/dn;
+  Cors.block(q,q+p,p,r) = CorYX/dn;
+  Cors.block(q+p,q,r,q) = CorYX.transpose()/dn;
+  NumericMatrix Corsx(wrap(Cors));
+  return Corsx;
+}
+
+// [[Rcpp::depends(RcppEigen)]]
+// [[Rcpp::export]]
+NumericMatrix CORYX2(const NumericMatrix &Zs,
+                    const NumericMatrix &Ys,
+                    const NumericMatrix &Xs){
+
+  Eigen::Map<Eigen::MatrixXd> Z = as<Eigen::Map<Eigen::MatrixXd> >(Zs);
+  Eigen::Map<Eigen::MatrixXd> Y = as<Eigen::Map<Eigen::MatrixXd> >(Ys);
+  Eigen::Map<Eigen::MatrixXd> X = as<Eigen::Map<Eigen::MatrixXd> >(Xs);
+
+  const int q = Z.cols();
+  const int p = Y.cols();
+  const int r = X.cols();
+  const int n = X.rows();
+  const double dn = n;
+  const int m = q+p+r;
+
+  MatrixXd Cors  = MatrixXd::Zero(m,m);
+  MatrixXd CorZY = MatrixXd::Zero(q,p);
+  MatrixXd CorYX = MatrixXd::Zero(p,r);
+  //Here I need to initiate Cors as a matrix of zeros
+
+  CorZY=Z.transpose()*Y;
+  CorYX=Y.transpose()*X;
+
+  Cors.block(0,q,q,p) = CorZY/dn;
+  Cors.block(q,0,p,q) = CorZY.transpose()/dn;
+  Cors.block(q,q+p,p,r) = CorYX/dn;
+  Cors.block(q+p,q,r,q) = CorYX.transpose()/dn;
+
+  NumericMatrix Corsx(wrap(Cors));
+  return Corsx;
+}
+
+// [[Rcpp::depends(RcppEigen)]]
+// [[Rcpp::export]]
 NumericMatrix COR2(const NumericMatrix &Xs){
 
   Eigen::Map<Eigen::MatrixXd> X = as<Eigen::Map<Eigen::MatrixXd> >(Xs);
