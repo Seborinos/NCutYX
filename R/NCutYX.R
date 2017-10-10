@@ -1029,16 +1029,17 @@ swncut2<-function(X,
 #' image.plot(clust[[3]])
 
 bml<-function(Z,
-                 Y,
-                 X,
-                 K=2,
-                 R=2,
-                 B=30,
-                 N=500,
-                 dist='correlation',
-                 q0=0.25,
-                 scale=T,
-                 sigma=1){
+              Y,
+              X,
+              K      = 2,
+              R      = 2,
+              B      = 30,
+              N      = 500,
+              q0     = 0.25,
+              scale  = T,
+              dist   = 'gaussian',
+              sigmas = 1,
+              sigmac = 1){
   #The lsit of the final oject returned by the function
   eta=c(seq(q0,1/B,-q0/(B+3)),0.01)[1:B]
   Res <- list()
@@ -1073,10 +1074,18 @@ bml<-function(Z,
       Clustc[[k]]=RandomMatrix(m,K,Pc)
       Clusts[[k]]=RandomMatrix(n,R,Ps)
       loss[k] <- 0
+      if (dist=='correlation'){
+        for (r in 1:R){
+          c1 <- which(Clusts[[k]][,r]==1)
+          Wr[[r]] <- w.cor(Z[c1, ],Y[c1, ],X[c1, ])
+        }
+      }
 
-      for (r in 1:R){
-        c1 <- which(Clusts[[k]][,r]==1)
-        Wr[[r]] <- w.cor(Z[c1, ],Y[c1, ],X[c1, ])
+      if (dist=='gaussian'){
+        for (r in 1:R){
+          c1 <- which(Clusts[[k]][,r]==1)
+          Wr[[r]] <- w.gauss(Z[c1, ],Y[c1, ],X[c1, ],sigma=sigmac)
+        }
       }
 
       for (i in 1:K){
@@ -1084,7 +1093,7 @@ bml<-function(Z,
         cy <- which(Clustc[[k]][(q+1):(q+p),i]==1)
         cx <- which(Clustc[[k]][(q+p+1):m,i]==1)
         A1 <- cbind(Z[ ,cz],Y[ ,cy],X[ ,cx])
-        Wk[[i]] <- abs(cor(t(A1)))
+        Wk[[i]] <- exp((-sigmas)*as.matrix(dist(A1,method='euclidean',diag=T,upper=T)))
       }
 
       for (r in 1:R){
