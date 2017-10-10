@@ -670,7 +670,7 @@ muncut<-function(Z,
 #' The algorithm minimizes a modified version of NCut through simulated annealing.
 #' The clusers correspond to partitions that minimize this objective function.
 
-spawn<-function(X,
+swncut<-function(X,
                 K=2,
                 B=3000,
                 L=1000,
@@ -869,7 +869,7 @@ spawn<-function(X,
 #' #This is the true error of the clustering solution.
 #' errorL
 
-spawn2<-function(X,
+swncut2<-function(X,
                K=2,
                B=30,
                N=500,
@@ -1028,7 +1028,6 @@ spawn2<-function(X,
 #' plot(clust[[1]],type='l')
 #' image.plot(clust[[3]])
 
-
 bml<-function(Z,
                  Y,
                  X,
@@ -1037,10 +1036,11 @@ bml<-function(Z,
                  B=30,
                  N=500,
                  dist='correlation',
+                 q0=0.25,
                  scale=T,
-                 eta=0.1,
                  sigma=1){
   #The lsit of the final oject returned by the function
+  eta=c(seq(q0,1/B,-q0/(B+3)),0.01)[1:B]
   Res <- list()
   quantiles <- vector(mode="numeric", length=B)
   #Beginning of the function
@@ -1097,7 +1097,7 @@ bml<-function(Z,
 
     }
     #Calculate \hat{q}
-    cutoff <- quantile(loss,eta,na.rm=T)
+    cutoff <- quantile(loss,eta[j],na.rm=T)
     quantiles[j] <- cutoff
     #Calculate P_v^{(t)} and P_s^{(t)}
     s1 <- which(loss<=cutoff)
@@ -1112,3 +1112,250 @@ bml<-function(Z,
   Res[[3]] <- Pc
   return(Res)
 }
+
+#' Cluster the columns of Y into K groups using the NCut graph measure.
+#'
+#' This function will output K clusters of the columns of Y.
+#' @param Y is a n x p matrix of p variables and n observations. The p columns of
+#' Y will be clustered into K groups using NCut.
+#' @param K is the number of clusters.
+#' @param B is the number of iterations.
+#' @param N is the number of samples per iterations.
+#' @param scale equals TRUE if data Y is to be scaled with mean 0 and variance 1.
+#' @return A list with the final value of the objective function and
+#' the clusters.
+#' @details
+#' The algorithm minimizes the NCut through the cross entropy method.
+#' The clusters correspond to partitions that minimize this objective function.
+#' @examples
+#' #This sets up the initial parameters for the simulation.
+#' library(NCutYX)
+#' library(MASS)
+#' library(fields) #for image.plot
+#' #parameters#
+#' n=150
+#' p=50
+#' h=0.25
+#' rho=0.4
+#'
+#' W0=matrix(1,p,p)
+#' W0[1:(p/5),1:(p/5)]=0
+#' W0[(p/5+1):(3*p/5),(p/5+1):(3*p/5)]=0
+#' W0[(3*p/5+1):(4*p/5),(3*p/5+1):(4*p/5)]=0
+#' W0[(4*p/5+1):p,(4*p/5+1):p]=0
+#' W0=cbind(W0,W0,W0)
+#' W0=rbind(W0,W0,W0)
+#'
+#' Y=matrix(0,n,p)
+#' Z=matrix(0,n,p)
+#' Sigma=matrix(0,p,p)
+#' Sigma[1:(p/5),1:(p/5)]=rho
+#' Sigma[(p/5+1):(3*p/5),(p/5+1):(3*p/5)]=rho
+#' Sigma[(3*p/5+1):(4*p/5),(3*p/5+1):(4*p/5)]=rho
+#' Sigma[(4*p/5+1):p,(4*p/5+1):p]=rho
+#' Sigma=Sigma-diag(diag(Sigma))
+#' Sigma=Sigma+diag(p)
+#'
+#' X=mvrnorm(n,rep(0,p),Sigma)
+#' B1=matrix(0,p,p)
+#' B2=matrix(0,p,p)
+#'
+#' B1[1:(p/5),1:(p/5)]=runif((p/5)^2,h/2,h)*rbinom((p/5)^2,1,0.5)
+#' B1[(p/5+1):(3*p/5),(p/5+1):(3*p/5)]=runif((2*p/5)^2,h/2,h)*rbinom((2*p/5)^2,1,0.5)
+#' B1[(3*p/5+1):(4*p/5),(3*p/5+1):(4*p/5)]=runif((p/5)^2,h/2,h)*rbinom((p/5)^2,1,0.5)
+#' B1[(4*p/5+1):p,(4*p/5+1):p]=runif((1*p/5)^2,h/2,h)*rbinom((1*p/5)^2,1,0.5)
+#'
+#' B2[1:(p/5),1:(p/5)]=runif((p/5)^2,h/2,h)*rbinom((p/5)^2,1,0.5)
+#' B2[(p/5+1):(3*p/5),(p/5+1):(3*p/5)]=runif((2*p/5)^2,h/2,h)*rbinom((2*p/5)^2,1,0.5)
+#' B2[(3*p/5+1):(4*p/5),(3*p/5+1):(4*p/5)]=runif((p/5)^2,h/2,h)*rbinom((p/5)^2,1,0.5)
+#' B2[(4*p/5+1):p,(4*p/5+1):p]=runif((1*p/5)^2,h/2,h)*rbinom((1*p/5)^2,1,0.5)
+#'
+#' B2[1:(p/5),1:(p/5)]=runif((p/5)^2,h/2,h)*rbinom((p/5)^2,1,0.5)
+#' B2[(p/5+1):(3*p/5),(p/5+1):(3*p/5)]=runif((2*p/5)^2,h/2,h)*rbinom((2*p/5)^2,1,0.5)
+#' B2[(3*p/5+1):(4*p/5),(3*p/5+1):(4*p/5)]=runif((p/5)^2,h/2,h)*rbinom((p/5)^2,1,0.5)
+#' B2[(4*p/5+1):p,(4*p/5+1):p]=runif((1*p/5)^2,h/2,h)*rbinom((1*p/5)^2,1,0.5)
+#'
+#' Y=X%*%B1+matrix(rnorm(n*p,0,0.25),n,p)
+#'
+#' Z=Y%*%B2+matrix(rnorm(n*p,0,0.25),n,p)
+#'
+#' #Computing our method
+#' clust<-bml(Z,
+#'            Y,
+#'            X,
+#'            K=4,
+#'            R=1,
+#'            B=50,
+#'            N=1000,
+#'            dist='correlation',
+#'            scale=F,
+#'            eta=0.25)
+#' plot(clust[[1]],type='l')
+#' image.plot(clust[[3]])
+
+bml2<-function(Z,
+               Y,
+               X,
+               K=2,
+               R=2,
+               B=1000,
+               L=100,
+               dist='correlation',
+               sampling='size',
+               scale=T,
+               sigma=1){
+  #The list of the final oject returned by the function
+  Res <- list()
+  #Beginning of the function
+  if (scale==T){
+    Z=scale(Z)
+    Y=scale(Y)
+    X=scale(X)
+  }
+  ZYX <- cbind(Z,Y,X)
+  q=dim(Z)[2]
+  p=dim(Y)[2]
+  r=dim(X)[2]
+  m=q+p+r
+
+  #This creates a random starting point in the split in the algorithm for R clusters for samples
+  Cs=matrix(0,n,R)
+
+  for (i in 1:n){
+    Cs[i,sample(R,1)]=1
+  }
+
+  #Now, calculate the number of indices in each group.
+  Ns=apply(Cs[,1:R],2,sum)
+
+  #This creates a random starting point in the split in the algorithm for K clusters for all variables
+  Cc=matrix(0,m,K)
+
+  for (i in 1:m){
+    Cc[i,sample(K,1)]=1
+  }
+
+  #Now, calculate the number of indices in each group.
+  Nc=apply(Cc,2,sum)
+
+  #These matrices will keep track of the elements of the clusters while
+  #doing simulated annealing.
+  C2s=matrix(0,n,R)
+  C2s=Cs
+
+  C2c=matrix(0,m,K)
+  C2c=Cc
+
+  Wr <-  vector('list',R)
+  Wk <-  vector('list',K)
+
+  W2r <-  vector('list',R)
+  W2k <-  vector('list',K)
+
+  #Calculating the initial loss
+  for (r in 1:R){
+    c1 <- which(Cs[,r]==1)
+    Wr[[r]] <- w.cor(Z[c1,],Y[c1,],X[c1,])
+  }
+
+  for (i in 1:K){
+    cz <- which(Cc[1:q,i]==1)
+    cy <- which(Cc[(q+1):(q+p),i]==1)
+    cx <- which(Cc[(q+p+1):m,i]==1)
+    A1 <- cbind(Z[,cz],Y[,cy],X[,cx])
+    Wk[[i]] <- cor(t(A1))
+  }
+
+  W2r <- Wr
+  W2k <- Wk
+
+  J <- 0
+  for (r in 1:R){
+    J <- J + NCut(Cc,Wr[[r]])
+  }
+  for (i in 1:K){
+    J <- J + NCut(Cs,Wk[[i]])
+  }
+
+  Test<- vector(mode="numeric", length=B)
+
+  for (k in 1:B){
+    ###Draw k(-) and k(+)with unequal probabilites.
+    #This section needs to change dramatically for
+    #the general case
+    Ps=Ns/sum(Ns)
+    Pc=Nc/sum(Nc)
+
+    if(sampling=='equal'){
+      sample.s <- sample.int(R,R,replace=FALSE)
+      sample.c <- sample.int(K,K,replace=FALSE)
+    }else if(sampling=='size'){
+      sample.s <- sample.int(R,R,replace=FALSE,prob=Ps)
+      sample.c <- sample.int(K,K,replace=FALSE,prob=Pc)
+    }
+
+    ###Select a vertex from cluster s[1] with unequal probability
+    #Calculating Unequal probabilites
+    #Draw a coin to see whether we choose X or Y
+    sub.s <- which(Cs[,sample.s[1]]==1)#which Xs belong to the cluster
+    samp.sub.s <- sample(sub.s,1)
+    C2s[samp.sub.s,sample.s[1]]=0
+    C2s[samp.sub.s,sample.s[R]]=1
+
+    sub.c <- which(Cc[,sample.c[1]]==1)#which Xs belong to the cluster
+    samp.sub.c <- sample(sub.c,1)
+    C2c[samp.sub.c,sample.c[1]]=0
+    C2c[samp.sub.c,sample.c[K]]=1
+
+    #Recalculate the weight matrices
+    for (r in 1:R){
+      c1 <- which(C2s[,r]==1)
+      W2r[[r]] <- w.cor(Z[c1,],Y[c1,],X[c1,])
+    }
+
+    for (i in 1:K){
+      cz <- which(C2c[1:q,i]==1)
+      cy <- which(C2c[(q+1):(q+p),i]==1)
+      cx <- which(C2c[(q+p+1):m,i]==1)
+      A1 <- cbind(Z[,cz],Y[,cy],X[,cx])
+      W2k[[i]] <- cor(t(A1))
+    }
+
+    J2 <- 0
+    for (r in 1:R){
+      J2 <- J2 + NCut(C2c,W2r[[r]])
+    }
+
+    for (i in 1:K){
+      J2 <- J2 + NCut(C2s,W2k[[i]])
+    }
+
+    if (J2>J){
+      #Prob[Count]=exp(-10000*log(k+1)*(J2-J))
+      des=rbinom(1,1,exp(-L*log(k+1)*(J2-J)))
+      if (des==1){
+        Cs <- C2s#Set-up the new clusters
+        Cc <- C2c
+        J <- J2
+        Ns <- apply(Cs,2,sum)
+        Nc <- apply(Cc,2,sum)
+      }else{
+        C2s <- Cs
+        C2c <- Cc
+      }
+    } else{
+      Cs <- C2s
+      Cc <- C2c
+      J <- J2
+      Ns <- apply(Cs,2,sum)
+      Nc <- apply(Cc,2,sum)
+    }
+    Test[k] <- J
+  }
+  Res<-list()
+  Res[[1]]=Test
+  Res[[2]]=Cs
+  Res[[3]]=Cc
+  return(Res)
+}
+
