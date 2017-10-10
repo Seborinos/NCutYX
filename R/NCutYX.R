@@ -1076,15 +1076,15 @@ bml<-function(Z,
 
       for (r in 1:R){
         c1 <- which(Clusts[[k]][,r]==1)
-        Wr[[r]] <- w.cor(Z[c1,],Y[c1,],X[c1,])
+        Wr[[r]] <- w.cor(Z[c1, ],Y[c1, ],X[c1, ])
       }
 
       for (i in 1:K){
         cz <- which(Clustc[[k]][1:q,i]==1)
         cy <- which(Clustc[[k]][(q+1):(q+p),i]==1)
         cx <- which(Clustc[[k]][(q+p+1):m,i]==1)
-        A1 <- cbind(Z[,cz],Y[,cy],X[,cx])
-        Wk[[i]] <- cor(t(A1))
+        A1 <- cbind(Z[ ,cz],Y[ ,cy],X[ ,cx])
+        Wk[[i]] <- abs(cor(t(A1)))
       }
 
       for (r in 1:R){
@@ -1092,7 +1092,7 @@ bml<-function(Z,
       }
 
       for (i in 1:K){
-        loss[k] <- loss[k]+NCut(Clusts[[k]],Wk[[i]])
+          loss[k] <- loss[k]+NCut(Clusts[[k]],Wk[[i]])
       }
 
     }
