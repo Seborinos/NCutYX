@@ -1111,9 +1111,9 @@ bml<-function(Z,
     #Calculate P_v^{(t)} and P_s^{(t)}
     s1 <- which(loss<=cutoff)
     sumc <- Reduce('+',Clustc[s1])
-    Pc <- sumc/length(s1)
+    Pc <- as.matrix(sumc/length(s1))
     sums <- Reduce('+',Clusts[s1])
-    Ps <- sums/length(s1)
+    Ps <- as.matrix(sums/length(s1))
   }#End of cross entropy optimization
 
   Res[[1]] <- quantiles
