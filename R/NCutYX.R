@@ -1041,7 +1041,7 @@ bml<-function(Z,
               sigmas = 1,
               sigmac = 1){
   #The lsit of the final oject returned by the function
-  eta=c(seq(q0,1/B,-q0/(B+3)),0.01)[1:B]
+  eta=c(seq(q0,1/B,-q0/(B+3)),0.1)[1:B]
   Res <- list()
   quantiles <- vector(mode="numeric", length=B)
   #Beginning of the function
