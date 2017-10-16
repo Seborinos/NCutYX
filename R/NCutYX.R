@@ -1051,10 +1051,11 @@ bml<-function(Z,
     X=scale(X)
   }
   ZYX <- cbind(Z,Y,X)
-  q=dim(Z)[2]
-  p=dim(Y)[2]
-  r=dim(X)[2]
-  m=q+p+r
+  q <- dim(Z)[2]
+  p <- dim(Y)[2]
+  r <- dim(X)[2]
+  n <- dim(X)[1]
+  m <- q + p + r
   #vector with the probabilites for clustering samples and columns
   #Initialize step in the algorithm
   Ps <- matrix(1/R,n,R)
@@ -1111,9 +1112,9 @@ bml<-function(Z,
     #Calculate P_v^{(t)} and P_s^{(t)}
     s1 <- which(loss<=cutoff)
     sumc <- Reduce('+',Clustc[s1])
-    Pc <- as.matrix(sumc/length(s1))
+    Pc <- sumc/length(s1)
     sums <- Reduce('+',Clusts[s1])
-    Ps <- as.matrix(sums/length(s1))
+    Ps <- sums/length(s1)
   }#End of cross entropy optimization
 
   Res[[1]] <- quantiles
