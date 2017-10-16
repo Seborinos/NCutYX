@@ -1051,11 +1051,11 @@ bml<-function(Z,
     X=scale(X)
   }
   ZYX <- cbind(Z,Y,X)
-  q <- dim(Z)[2]
-  p <- dim(Y)[2]
-  r <- dim(X)[2]
+  dimz <- dim(Z)[2]
+  dimy <- dim(Y)[2]
+  dimx <- dim(X)[2]
   n <- dim(X)[1]
-  m <- q + p + r
+  m <- dimz + dimy + dimx
   #vector with the probabilites for clustering samples and columns
   #Initialize step in the algorithm
   Ps <- matrix(1/R,n,R)
@@ -1090,11 +1090,14 @@ bml<-function(Z,
       }
 
       for (i in 1:K){
-        cz <- which(Clustc[[k]][1:q,i]==1)
-        cy <- which(Clustc[[k]][(q+1):(q+p),i]==1)
-        cx <- which(Clustc[[k]][(q+p+1):m,i]==1)
+        cz <- which(Clustc[[k]][1:dimz,i]==1)
+        cy <- which(Clustc[[k]][(dimz+1):(dimz+dimy),i]==1)
+        cx <- which(Clustc[[k]][(dimz+dimy+1):m,i]==1)
         A1 <- cbind(Z[ ,cz],Y[ ,cy],X[ ,cx])
-        Wk[[i]] <- exp((-sigmas)*as.matrix(dist(A1,method='euclidean',diag=T,upper=T)))
+        Wk[[i]] <- exp((-sigmas)*as.matrix(dist(A1,
+                                                method = 'euclidean',
+                                                diag   = T,
+                                                upper  = T)))
       }
 
       for (r in 1:R){
