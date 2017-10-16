@@ -1110,7 +1110,7 @@ bml<-function(Z,
 
     }
     #Calculate \hat{q}
-    cutoff <- quantile(loss,eta[j],na.rm=T)
+    cutoff <- as.numeric(quantile(loss,eta[j],na.rm=T,type=4))
     quantiles[j] <- cutoff
     #Calculate P_v^{(t)} and P_s^{(t)}
     s1 <- which(loss<=cutoff)
