@@ -1041,7 +1041,7 @@ bml<-function(Z,
               sigmas = 1,
               sigmac = 1){
   #The lsit of the final oject returned by the function
-  eta=c(seq(q0,1/B,-q0/(B+3)),0.1)[1:B]
+  #eta=c(seq(q0,1/B,-q0/(B+3)),0.1)[1:B]
   Res <- list()
   quantiles <- vector(mode="numeric", length=B)
   #Beginning of the function
@@ -1110,7 +1110,7 @@ bml<-function(Z,
 
     }
     #Calculate \hat{q}
-    cutoff <- as.numeric(quantile(loss,eta[j],na.rm=T,type=4))
+    cutoff <- as.numeric(quantile(loss,q0,na.rm=T,type=4))
     quantiles[j] <- cutoff
     #Calculate P_v^{(t)} and P_s^{(t)}
     s1 <- which(loss<=cutoff)
