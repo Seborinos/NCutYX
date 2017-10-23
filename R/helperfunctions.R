@@ -53,3 +53,50 @@ w.cor <- function(Z,
   return(D)
 }
 
+
+OP <- function(X,
+               Z,
+               WX,
+               WZ,
+               Cs){
+
+  n  <- nrow(X)
+  p1 <- ncol(X)
+  p2 <- ncol(Z)
+  # Cut and cutvol
+  cutvolX <- NULL
+  cutX    <- NULL
+  for(i in 1:ncol(Cs)){
+    T1      <- WX[which(Cs[,i]==1),which(Cs[,i]==1)]
+    T2      <- WX[which(Cs[,i]==1),which(Cs[,1]==0)]
+    cutvolX <- c(cutvolX, sum(T1[upper.tri(T1)]))
+    cutX    <- c(cutX,sum(T2))
+  }
+  OP1 <- cutvolX/cutX
+
+  cutvolZ <- NULL
+  cutZ    <- NULL
+  for(i in 1:ncol(Cs)){
+    T1      <- WZ[which(Cs[,i]==1),which(Cs[,i]==1)]
+    T2      <- WZ[which(Cs[,i]==1),which(Cs[,1]==0)]
+    cutvolZ <- c(cutvolZ, sum(T1[upper.tri(T1)]))
+    cutZ    <- c(cutZ,sum(T2))
+  }
+  OP2 <- cutvolZ/cutZ
+  # Correlations perfeature
+  Cor.X <- 0
+  Cor.Z <- 0
+  for(i in 1:ncol(Cs)){
+    T           <- cor(X[which(Cs[,i]==1),],Z[which(Cs[,i]==1),])
+    T[is.na(T)] <- 0
+    Cor.X       <- Cor.X+apply(abs(T),1,mean)
+    Cor.Z       <- Cor.Z+apply(abs(T),2,mean)
+  }
+  return(list(OP1=sum(OP1),
+              OP2=sum(OP2),
+              TOP=sum(OP1)+sum(OP2),
+              Cor.X=Cor.X, Cor.Z=Cor.Z,
+              Cor.perfeature=c(Cor.X,Cor.Z)))
+}
+
+

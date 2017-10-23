@@ -1126,3 +1126,143 @@ bml<-function(Z,
   return(Res)
 }
 
+
+#' Cluster the columns of Y into K groups using the NCut graph measure.
+#'
+#' This function will output K clusters of the columns of Y.
+#' @param Y is a n x p matrix of p variables and n observations. The p columns of
+#' Y will be clustered into K groups using NCut.
+#' @param K is the number of clusters.
+#' @param B is the number of iterations.
+#' @param N is the number of samples per iterations.
+#' @param scale equals TRUE if data Y is to be scaled with mean 0 and variance 1.
+#' @return A list with the final value of the objective function and
+#' the clusters.
+#' @details
+#' The algorithm minimizes the NCut through the cross entropy method.
+#' The clusters correspond to partitions that minimize this objective function.
+#' @examples
+#' #This sets up the initial parameters for the simulation.
+#' library(NCutYX)
+#' library(MASS)
+#' library(fields) #for image.plot
+#' #parameters#
+#' n=150
+#' p=50
+#' h=0.25
+#' rho=0.4
+#'
+#' W0=matrix(1,p,p)
+#' W0[1:(p/5),1:(p/5)]=0
+#' W0[(p/5+1):(3*p/5),(p/5+1):(3*p/5)]=0
+#' W0[(3*p/5+1):(4*p/5),(3*p/5+1):(4*p/5)]=0
+#' W0[(4*p/5+1):p,(4*p/5+1):p]=0
+#' W0=cbind(W0,W0,W0)
+#' W0=rbind(W0,W0,W0)
+#'
+#' Y=matrix(0,n,p)
+#' Z=matrix(0,n,p)
+#' Sigma=matrix(0,p,p)
+#' Sigma[1:(p/5),1:(p/5)]=rho
+#' Sigma[(p/5+1):(3*p/5),(p/5+1):(3*p/5)]=rho
+#' Sigma[(3*p/5+1):(4*p/5),(3*p/5+1):(4*p/5)]=rho
+#' Sigma[(4*p/5+1):p,(4*p/5+1):p]=rho
+#' Sigma=Sigma-diag(diag(Sigma))
+#' Sigma=Sigma+diag(p)
+#'
+#' X=mvrnorm(n,rep(0,p),Sigma)
+#' B1=matrix(0,p,p)
+#' B2=matrix(0,p,p)
+#'
+#' B1[1:(p/5),1:(p/5)]=runif((p/5)^2,h/2,h)*rbinom((p/5)^2,1,0.5)
+#' B1[(p/5+1):(3*p/5),(p/5+1):(3*p/5)]=runif((2*p/5)^2,h/2,h)*rbinom((2*p/5)^2,1,0.5)
+#' B1[(3*p/5+1):(4*p/5),(3*p/5+1):(4*p/5)]=runif((p/5)^2,h/2,h)*rbinom((p/5)^2,1,0.5)
+#' B1[(4*p/5+1):p,(4*p/5+1):p]=runif((1*p/5)^2,h/2,h)*rbinom((1*p/5)^2,1,0.5)
+#'
+#' B2[1:(p/5),1:(p/5)]=runif((p/5)^2,h/2,h)*rbinom((p/5)^2,1,0.5)
+#' B2[(p/5+1):(3*p/5),(p/5+1):(3*p/5)]=runif((2*p/5)^2,h/2,h)*rbinom((2*p/5)^2,1,0.5)
+#' B2[(3*p/5+1):(4*p/5),(3*p/5+1):(4*p/5)]=runif((p/5)^2,h/2,h)*rbinom((p/5)^2,1,0.5)
+#' B2[(4*p/5+1):p,(4*p/5+1):p]=runif((1*p/5)^2,h/2,h)*rbinom((1*p/5)^2,1,0.5)
+#'
+#' B2[1:(p/5),1:(p/5)]=runif((p/5)^2,h/2,h)*rbinom((p/5)^2,1,0.5)
+#' B2[(p/5+1):(3*p/5),(p/5+1):(3*p/5)]=runif((2*p/5)^2,h/2,h)*rbinom((2*p/5)^2,1,0.5)
+#' B2[(3*p/5+1):(4*p/5),(3*p/5+1):(4*p/5)]=runif((p/5)^2,h/2,h)*rbinom((p/5)^2,1,0.5)
+#' B2[(4*p/5+1):p,(4*p/5+1):p]=runif((1*p/5)^2,h/2,h)*rbinom((1*p/5)^2,1,0.5)
+#'
+#' Y=X%*%B1+matrix(rnorm(n*p,0,0.25),n,p)
+#'
+#' Z=Y%*%B2+matrix(rnorm(n*p,0,0.25),n,p)
+#'
+#' #Computing our method
+#' clust<-bml(Z,
+#'            Y,
+#'            X,
+#'            K=4,
+#'            R=1,
+#'            B=50,
+#'            N=1000,
+#'            dist='correlation',
+#'            scale=F,
+#'            eta=0.25)
+#' plot(clust[[1]],type='l')
+#' image.plot(clust[[3]])
+
+sncut <- function(X,
+                  Z,
+                  K,
+                  lamda,
+                  B=500,
+                  L=1000){
+
+  X <- scale(X)
+  Z <- scale(Z)
+
+  out <- list()
+  for(lam in lamda){
+
+    p1     <- ncol(X)
+    p2     <- ncol(Z)
+    w1     <- rep(1/sqrt(p1), p1)
+    w2     <- rep(1/sqrt(p2), p2)
+    b      <- 0
+    ws.old <- c(w1,w2)
+    ws     <- rep(0, p1+p2)
+    Cs.old <- matrix(rep(0,nrow(Z)*K),nrow(Z),K)
+    for(i in 1:nrow(Z)){
+      Cs.old[i,sample(K,1)] <- 1
+    }
+    while((b<=B)||(sum(ws-ws.old)/sum(ws.old)>=10e-4)){
+      b            <- b+1
+      wm1          <- W(X, Z, ws.old)
+      WX1          <- wm1[[1]]
+      WZ1          <- wm1[[2]]
+      a1           <- OP(X, Z, WX1, WZ1, Cs.old)
+      OP.value.old <- a1$TOP+lam*sum(ws.old*a1$Cor.perfeature)/(p1+p2)
+      Cs           <- UpdateCs(WX1, WZ1, K, Cs.old, ws.old)
+      ws           <- UpdateWs(X, Z, K, WX1, WZ1, b, Cs, ws.old)
+
+      wm2      <- W(X, Z, ws)
+      WX2      <- wm2[[1]]
+      WZ2      <- wm2[[2]]
+      a2       <- OP(X, Z, WX2, WZ2, Cs)
+      OP.value <- a2$TOP+lam*sum(ws*a2$Cor.perfeature)/(p1+p2)
+
+      if(OP.value<=OP.value.old){
+        des <- rbinom(1,1,Prob(OP.value, OP.value.old, L, b))
+        if(des==1){
+          Cs.old <- Cs
+          ws.old <- ws
+        }else{
+          Cs <- Cs.old
+          ws <- ws.old
+        }
+      }else{
+        Cs.old <- Cs
+        ws.old <- ws
+      }
+    }
+    out[[which(lamda==lam)]] <- list(Cs=Cs.old, ws=ws.old, OP.value=OP.value)
+  }
+  return(out)
+}
+
