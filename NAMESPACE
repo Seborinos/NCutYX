@@ -2,5 +2,10 @@
 
 exportPattern("^[[:alpha:]]+")
 importFrom(Rcpp, evalCpp)
-import(glmnet)
 useDynLib(NCutYX)
+export(ancut)
+export(bml)
+export(muncut)
+export(ncut)
+export(sncut)
+export(swncut)

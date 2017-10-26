@@ -13,34 +13,6 @@ WNCut <- function(Cys, Cy2s, Wys) {
     .Call('NCutYX_WNCut', PACKAGE = 'NCutYX', Cys, Cy2s, Wys)
 }
 
-WNCut2 <- function(Cys, Cy2s, Dys, Wys) {
-    .Call('NCutYX_WNCut2', PACKAGE = 'NCutYX', Cys, Cy2s, Dys, Wys)
-}
-
-WNCut3 <- function(Cys, Cy2s, Wys) {
-    .Call('NCutYX_WNCut3', PACKAGE = 'NCutYX', Cys, Cy2s, Wys)
-}
-
-WNCut4 <- function(Cys, Cy2s, Dys, Wys) {
-    .Call('NCutYX_WNCut4', PACKAGE = 'NCutYX', Cys, Cy2s, Dys, Wys)
-}
-
-WNCut5 <- function(Cys, Dys, Wys) {
-    .Call('NCutYX_WNCut5', PACKAGE = 'NCutYX', Cys, Dys, Wys)
-}
-
-WNCut6 <- function(Cys, Cy2s, Wys) {
-    .Call('NCutYX_WNCut6', PACKAGE = 'NCutYX', Cys, Cy2s, Wys)
-}
-
-WNCut7 <- function(Cys, Cy2s, Dys) {
-    .Call('NCutYX_WNCut7', PACKAGE = 'NCutYX', Cys, Cy2s, Dys)
-}
-
-WNCut8 <- function(Cys, Cy2s, Wys) {
-    .Call('NCutYX_WNCut8', PACKAGE = 'NCutYX', Cys, Cy2s, Wys)
-}
-
 NCutLayer3V1 <- function(Cys, Cy2s, Wzs, Wys, Wxs, Wzyxs) {
     .Call('NCutYX_NCutLayer3V1', PACKAGE = 'NCutYX', Cys, Cy2s, Wzs, Wys, Wxs, Wzyxs)
 }
@@ -51,26 +23,6 @@ Penal <- function(Cys) {
 
 Ranking <- function(C) {
     .Call('NCutYX_Ranking', PACKAGE = 'NCutYX', C)
-}
-
-Ranking2 <- function(C) {
-    .Call('NCutYX_Ranking2', PACKAGE = 'NCutYX', C)
-}
-
-Ranking3 <- function(C) {
-    .Call('NCutYX_Ranking3', PACKAGE = 'NCutYX', C)
-}
-
-Ranking4 <- function(C) {
-    .Call('NCutYX_Ranking4', PACKAGE = 'NCutYX', C)
-}
-
-Ranking5 <- function(C) {
-    .Call('NCutYX_Ranking5', PACKAGE = 'NCutYX', C)
-}
-
-Ranking6 <- function(C, alpha) {
-    .Call('NCutYX_Ranking6', PACKAGE = 'NCutYX', C, alpha)
 }
 
 oneMultinomCalt <- function(probs) {

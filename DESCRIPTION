@@ -7,11 +7,13 @@ Maintainer: Sebastian J Teran Hidalgo <sebastianteranhidalgo@gmail.com>
 Description: Clusters the columns of Y into K groups with the help of
     variables in X
 License: GPL-3
+Depends: R (>= 2.10)
 Imports:
     Rcpp (>= 0.12.2),
     RcppEigen (>= 0.3.2.5.1),
-    glmnet (>= 2.0-5)
-LinkingTo: Rcpp, RcppEigen, glmnet
+    glmnet (>= 2.0-5),
+    MASS (>= 7.3-47)
+LinkingTo: Rcpp, RcppEigen
 RoxygenNote: 6.0.1
 URL: https://github.com/Seborinos/NCutYX
 BugReports: https://github.com/Seborinos/NCutYX/issues

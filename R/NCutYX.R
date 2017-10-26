@@ -13,11 +13,11 @@
 #' The algorithm minimizes the NCut through the cross entropy method.
 #' The clusters correspond to partitions that minimize this objective function.
 #' @examples
-#' #This sets up the initial parameters for the simulation.
+#' # This sets up the initial parameters for the simulation.
 #' library(MASS)
-#' n=200 #Sample size
-#' B=30 #Number of iterations in the simulated annealing algorithm.
-#' p=500 #Number of columns of Y.
+#' n=200 # Sample size
+#' B=30 # Number of iterations in the simulated annealing algorithm.
+#' p=500 # Number of columns of Y.
 #'
 #' S=matrix(0.2,p,p)
 #' S[1:(p/2),(p/2+1):p]=0
@@ -31,60 +31,59 @@
 #' Denum=sum(W0)
 #'
 #' Y=mvrnorm(n, mu, S)
-#' #Our method
+#' # Our method
 #' Res=NCut(Y,B=30,N=500,K=2,dist='gaussian',sigma=1)
 #' Cx=Res[[2]]
 #' f11=matrix(Cx[,1],p,1)
 #' f12=matrix(Cx[,2],p,1)
 #'
 #' errorL=sum((f11%*%t(f11))*W0)/Denum+sum((f12%*%t(f12))*W0)/Denum
-#' #This is the true error of the clustering solution.
+#' # This is the true error of the clustering solution.
 #' errorL
-
-ncut<-function(Y,
-               K=2,
-               B=30,
-               N=500,
-               dist='correlation',
-               scale=T,
-               q=0.1,
-               sigma=1){
-  #This creates the weight matrix W
+#' @export
+ncut <- function(Y,
+                 K=2,
+                 B=30,
+                 N=500,
+                 dist='correlation',
+                 scale=T,
+                 q=0.1,
+                 sigma=1){
+  # This creates the weight matrix W
   Res <- list()
   quantiles <- vector(mode="numeric", length=B)
   if(scale==T){
-    Y=scale(Y)
+    Y <- scale(Y)
   }
 
-  p=dim(Y)[2]
+  p <- dim(Y)[2]
   if(dist=='euclidean'){
-    Wyy=as.matrix(dist(t(Y),diag=T,upper=T))+diag(p)
-    Wyy=Wyy^(-1)
+    Wyy <- as.matrix(stats::dist(t(Y),diag=T,upper=T)) + diag(p)
+    Wyy <- Wyy^(-1)
   }else if(dist=='gaussian'){
-    Wyy=exp((-1)*as.matrix(dist(t(Y),diag=T,upper=T))/sigma)
+    Wyy <- exp((-1)*as.matrix(stats::dist(t(Y),diag=T,upper=T))/sigma)
   }else if(dist=='correlation'){
-    Wyy<-abs(cor(Y))
+    Wyy <- abs(stats::cor(Y))
   }else{
     print('Distance Error')
   }
 
-  #vector with probabilities of mus being 0 or not
+  # vector with probabilities of mus being 0 or not
   Ps <- matrix(1/K,p,K)
   for (j in 1:B){
     print(paste('jth Loop is ', j))
     Clusters <- vector('list',N)
-    loss <- vector(mode="numeric", length=N)
-    #M1 <- matrix(1L,p,K)
+    loss     <- vector(mode="numeric", length=N)
     for (k in 1:N){
-       Clusters[[k]]=RandomMatrix(p,K,Ps)
-       loss[k] <- NCut(Clusters[[k]],Wyy)#Can we make this run faster?
+       Clusters[[k]] <- RandomMatrix(p,K,Ps)
+       loss[k]       <- NCut(Clusters[[k]],Wyy)
     }
 
-    cutoff <- quantile(loss,q)
-    s1 <- which(loss<=cutoff)
+    cutoff       <- quantile(loss,q)
+    s1           <- which(loss<=cutoff)
     quantiles[j] <- cutoff
-    sums <- Reduce('+',Clusters[s1])
-    Ps <- sums/length(s1)
+    sums         <- Reduce('+',Clusters[s1])
+    Ps           <- sums/length(s1)
 
   }
   Res[[1]] <- quantiles
@@ -167,120 +166,126 @@ ncut<-function(Y,
 #' plot(Res[[1]],type='l',ylab='')
 #' #Cluster found by ANCut
 #' image.plot(Cx)
+#' @export
+ancut <- function(Y,
+                  X,
+                  K=2,
+                  B=3000,
+                  L=1000,
+                  alpha=0.5,
+                  nlambdas=100,
+                  sampling='equal',
+                  ncv=5,
+                  dist='correlation',
+                  sigma=1){
+  # This creates the weight matrix W
+  X <- scale(X)
+  Y <- scale(Y)
+  p <- dim(Y)[2]
 
-ancut<-function(Y,
-                X,
-                K=2,
-                B=3000,
-                L=1000,
-                alpha=0.5,
-                nlambdas=100,
-                sampling='equal',
-                ncv=5,
-                dist='correlation',
-                sigma=1){
-  #This creates the weight matrix W
-  X=scale(X)
-  Y=scale(Y)
-  p=dim(Y)[2]
-
-  p=dim(Y)[2]
+  p <- dim(Y)[2]
   if(dist=='euclidean'){
-    Wyy=as.matrix(dist(t(Y),diag=T,upper=T))+diag(p)
-    Wyy=Wyy^(-1)
+    Wyy <- as.matrix(stats::dist(t(Y),diag=T,upper=T)) + diag(p)
+    Wyy <- Wyy^(-1)
   }else if(dist=='gaussian'){
-    Wyy=exp((-1)*as.matrix(dist(t(Y),diag=T,upper=T))/sigma)
+    Wyy <- exp((-1)*as.matrix(stats::dist(t(Y),diag=T,upper=T))/sigma)
   }else if(dist=='correlation'){
-    Wyy<-abs(cor(Y))
+    Wyy <- abs(stats::cor(Y))
   }else{
     print('Distance Error')
   }
 
   #modelling the relationship between Y and X
-  cv.m1=cv.glmnet(X, Y, family=c("mgaussian"),
-                  alpha=alpha,nfolds=ncv,nlambda=nlambdas,intercept=FALSE)
-  m1=glmnet(X, Y, family=c("mgaussian"),
-            alpha=alpha,lambda=cv.m1$lambda.min,intercept=FALSE)
+  cv.m1 <- glmnet::cv.glmnet(X,
+                             Y,
+                             family=c("mgaussian"),
+                             alpha=alpha,
+                             nfolds=ncv,
+                             nlambda=nlambdas,
+                             intercept=FALSE)
 
-  Y2=predict(m1,newx=X)
-  Y2=scale(Y2[,,1])
+  m1 <- glmnet::glmnet(X,
+               Y,
+               family=c("mgaussian"),
+               alpha=alpha,
+               lambda=cv.m1$lambda.min,
+               intercept=FALSE)
+
+  Y2 <- predict(m1,newx=X)
+  Y2 <- scale(Y2[ , ,1])
   if(dist=='euclidean'){
-    Wxx=as.matrix(dist(t(Y2),diag=T,upper=T))+diag(p)
-    Wxx=Wxx^(-1)
+    Wxx <- as.matrix(stats::dist(t(Y2),diag=T,upper=T)) + diag(p)
+    Wxx <- Wxx^(-1)
   }else if(dist=='gaussian'){
-    Wxx=exp((-1)*as.matrix(dist(t(Y2),diag=T,upper=T))/sigma)
+    Wxx <- exp((-1)*as.matrix(stats::dist(t(Y2),diag=T,upper=T))/sigma)
   }else if(dist=='correlation'){
-    Wxx<-abs(cor(Y2))
+    Wxx <- abs(stats::cor(Y2))
   }else{
     print('Distance Error')
   }
 
   #This creates a random starting point in the split in the algorithm for K clusters
-  Cx=matrix(0,p,K)
+  Cx <- matrix(0,p,K)
 
   for (i in 1:p){
-    Cx[i,sample(K,1)]=1
+    Cx[i,sample(K,1)] <- 1
   }
 
   #Now, calculate the number of indices in each group.
-  Nx=apply(Cx[,1:K],2,sum)
+  Nx <- apply(Cx[,1:K],2,sum)
 
   #These matrices will keep track of the elements of the clusters while
   #doing simulated annealing.
-  C2x=matrix(0,p,K+1)
-  C2x=Cx
-
-  J=NCutY3V1(Cx[,1:K],matrix(1,p,K)-Cx[,1:K],Wyy,Wxx)
-
-  Test<- vector(mode="numeric", length=B)
+  C2x  <- matrix(0,p,K+1)
+  C2x  <- Cx
+  J    <- NCutY3V1(Cx[,1:K],matrix(1,p,K)-Cx[,1:K],Wyy,Wxx)
+  Test <- vector(mode="numeric", length=B)
 
   for (k in 1:B){
     ###Draw k(-) and k(+)with unequal probabilites.
     #This section needs to change dramatically for
     #the general case
-    N=sum(Nx)
-    P=Nx/N
+    N <- sum(Nx)
+    P <- Nx/N
 
     if(sampling=='equal'){
-      s=sample.int(K,K,replace=FALSE)
+      s <- sample.int(K,K,replace=FALSE)
     }else if(sampling=='size'){
-      s=sample.int(K,K,replace=FALSE,prob=P)
+      s <- sample.int(K,K,replace=FALSE,prob=P)
     }
 
     ###Select a vertex from cluster s[1] with unequal probability
     #Calculating Unequal probabilites
     #Draw a coin to see whether we choose X or Y
-    ax=which(Cx[,s[1]]==1)#which Xs belong to the cluster
-
-    sx=sample(ax,1)
-    C2x[sx,s[1]]=0
-    C2x[sx,s[K]]=1
+    ax           <- which(Cx[,s[1]]==1)#which Xs belong to the cluster
+    sx           <- sample(ax,1)
+    C2x[sx,s[1]] <- 0
+    C2x[sx,s[K]] <- 1
 
     #Now Step 3 in the algorithm
-    J2=NCutY3V1(C2x[,1:K],matrix(1,p,K)-C2x[,1:K],Wyy,Wxx)
+    J2 <- NCutY3V1(C2x[ ,1:K],matrix(1,p,K)-C2x[ ,1:K],Wyy,Wxx)
 
     if (J2>J){
-      #Prob[Count]=exp(-10000*log(k+1)*(J2-J))
-      des=rbinom(1,1,exp(-L*log(k+1)*(J2-J)))
+      des <- rbinom(1,1,exp(-L*log(k+1)*(J2-J)))
       if (des==1){
-        Cx=C2x#Set-up the new clusters
-        J=J2
-        Nx=apply(Cx[,1:K],2,sum)
+        Cx <- C2x#Set-up the new clusters
+        J  <- J2
+        Nx <- apply(Cx[,1:K],2,sum)
       }else{
-        C2x=Cx
+        C2x <- Cx
       }
     } else{
-      Cx=C2x
-      J=J2
-      Nx=apply(Cx[,1:K],2,sum)
+      Cx <- C2x
+      J  <- J2
+      Nx <- apply(Cx[,1:K],2,sum)
     }
-    Test[k]=J
+    Test[k] <- J
 
   }
-  Res<-list()
-  Res[[1]]=Test
-  Res[[2]]=Cx
-  Res[[3]]=cv.m1$lambda.min
+  Res      <- list()
+  Res[[1]] <- Test
+  Res[[2]] <- Cx
+  Res[[3]] <- cv.m1$lambda.min
   return(Res)
 }
 
@@ -352,114 +357,156 @@ ancut<-function(Y,
 #'
 #' errorK=sum(A*W0)/(3*p)^2
 #' errorK
-
-muncut<-function(Z,
-                 Y,
-                 X,
-                 K=2,
-                 B=3000,
-                 L=1000,
-                 alpha=0.5,
-                 ncv=3,
-                 nlambdas=100,
-                 scale=F,
-                 model=F,
-                 gamma=0.5,
-                 dist='gaussian',
-                 sigma=1){
-  #Beginning of the function
+#' @export
+muncut <- function(Z,
+                   Y,
+                   X,
+                   K=2,
+                   B=3000,
+                   L=1000,
+                   alpha=0.5,
+                   ncv=3,
+                   nlambdas=100,
+                   scale=F,
+                   model=F,
+                   gamma=0.5,
+                   dist='gaussian',
+                   sigma=1){
+  # Beginning of the function
   if (model==T){
     if (scale==T){
-      Z=scale(Z)
-      Y=scale(Y)
-      X=scale(X)
-      q=dim(Z)[2]
-      p=dim(Y)[2]
-      r=dim(X)[2]
+      Z <- scale(Z)
+      Y <- scale(Y)
+      X <- scale(X)
+      q <- dim(Z)[2]
+      p <- dim(Y)[2]
+      r <- dim(X)[2]
+      m <- q + p + r
       #Elastic net to predict Y with X
-      cv.m1=cv.glmnet(X, Y, family=c("mgaussian"),
-                      alpha=alpha,nfolds=ncv,nlambda=nlambdas,intercept=FALSE)
-      m1=glmnet(X, Y, family=c("mgaussian"),
-                alpha=alpha,lambda=cv.m1$lambda.min,intercept=FALSE)
-      Y2=predict(m1,newx=X)
-      Y2=scale(Y2[,,1])
+      cv.m1 <- glmnet::cv.glmnet(X,
+                         Y,
+                         family=c("mgaussian"),
+                         alpha=alpha,
+                         nfolds=ncv,
+                         nlambda=nlambdas,
+                         intercept=FALSE)
+
+      m1    <- glmnet::glmnet(X,
+                      Y,
+                      family=c("mgaussian"),
+                      alpha=alpha,
+                      lambda=cv.m1$lambda.min,
+                      intercept=FALSE)
+
+      Y2 <- predict(m1,newx=X)
+      Y2 <- scale(Y2[ , ,1])
       #Elastic net to predict Z with Y
-      cv.m2=cv.glmnet(Y, Z, family=c("mgaussian"),
-                      alpha=alpha,nfolds=ncv,nlambda=nlambdas,intercept=FALSE)
-      m2=glmnet(Y, Z, family=c("mgaussian"),
-                alpha=alpha,lambda=cv.m1$lambda.min,intercept=FALSE)
-      Z2=predict(m2,newx=Y)
-      Z2=scale(Z2[,,1])
+      cv.m2 <- glmnet::cv.glmnet(Y,
+                         Z,
+                         family=c("mgaussian"),
+                         alpha=alpha,
+                         nfolds=ncv,
+                         nlambda=nlambdas,
+                         intercept=FALSE)
+
+      m2    <- glmnet::glmnet(Y,
+                      Z,
+                      family=c("mgaussian"),
+                      alpha=alpha,
+                      lambda=cv.m1$lambda.min,
+                      intercept=FALSE)
+
+      Z2 <- predict(m2,newx=Y)
+      Z2 <- scale(Z2[ , ,1])
       if (dist=='euclidean'){
         #Distance matrix for the predicted variables
-        ZYX2=cbind(Z2,Y2,X)
-        Wzyx2=as.matrix(dist(t(ZYX2),diag=T,upper=T))+diag(q+p+r)
-        Wzyx2=Wzyx2^(-1)
+        ZYX2  <- cbind(Z2,Y2,X)
+        Wzyx2 <- as.matrix(stats::dist(t(ZYX2),diag=T,upper=T)) + diag(m)
+        Wzyx2 <- Wzyx2^(-1)
         #Z's distance matrix
-        Wz=as.matrix(dist(t(Z),diag=T,upper=T))+diag(q)
-        Wz=Wz^(-1)
+        Wz    <- as.matrix(stats::dist(t(Z),diag=T,upper=T)) + diag(q)
+        Wz    <- Wz^(-1)
         #Y's distance matrix
-        Wy=as.matrix(dist(t(Y),diag=T,upper=T))+diag(p)
-        Wy=Wy^(-1)
+        Wy    <- as.matrix(stats::dist(t(Y),diag=T,upper=T)) + diag(p)
+        Wy    <- Wy^(-1)
         #X's distance matrix
-        Wx=as.matrix(dist(t(X),diag=T,upper=T))+diag(r)
-        Wx=Wx^(-1)
+        Wx    <- as.matrix(stats::dist(t(X),diag=T,upper=T))+diag(r)
+        Wx    <- Wx^(-1)
         #Matrix without diagonal entries
-        Izyx2=Wzyx2
-        Izyx2[1:q,1:q]=0
-        Izyx2[(1:p+q),(1:p+q)]=0
-        Izyx2[(1:r+p+q),(1:r+p+q)]=0
+        Izyx2                      <- Wzyx2
+        Izyx2[1:q,1:q]             <- 0
+        Izyx2[(1:p+q),(1:p+q)]     <- 0
+        Izyx2[(1:r+p+q),(1:r+p+q)] <- 0
       }else if(dist=='gaussian'){
         #Distance matrix for the predicted variables
-        ZYX2=cbind(Z2,Y2,X)
-        Wzyx2=exp((-1)*as.matrix(dist(t(ZYX2),diag=T,upper=T))/sigma)
+        ZYX2  <- cbind(Z2,Y2,X)
+        Wzyx2 <- exp((-1)*as.matrix(stats::dist(t(ZYX2),diag=T,upper=T))/sigma)
         #Z's distance matrix
-        Wz=exp((-1)*as.matrix(dist(t(Z),diag=T,upper=T))/sigma)
+        Wz    <- exp((-1)*as.matrix(stats::dist(t(Z),diag=T,upper=T))/sigma)
         #Y's distance matrix
-        Wy=exp((-1)*as.matrix(dist(t(Y),diag=T,upper=T))/sigma)
+        Wy    <- exp((-1)*as.matrix(stats::dist(t(Y),diag=T,upper=T))/sigma)
         #X's distance matrix
-        Wx=exp((-1)*as.matrix(dist(t(X),diag=T,upper=T))/sigma)
+        Wx    <- exp((-1)*as.matrix(stats::dist(t(X),diag=T,upper=T))/sigma)
         #Matrix without diagonal entries
-        Izyx2=Wzyx2
-        Izyx2[1:q,1:q]=0
-        Izyx2[(1:p+q),(1:p+q)]=0
-        Izyx2[(1:r+p+q),(1:r+p+q)]=0
+        Izyx2                      <- Wzyx2
+        Izyx2[1:q,1:q]             <- 0
+        Izyx2[(1:p+q),(1:p+q)]     <- 0
+        Izyx2[(1:r+p+q),(1:r+p+q)] <- 0
       } else{
         print('Distance Error')
       }
 
 
     }else{
-      q=dim(Z)[2]
-      p=dim(Y)[2]
-      r=dim(X)[2]
+      q <- dim(Z)[2]
+      p <- dim(Y)[2]
+      r <- dim(X)[2]
+      m <- m + p + r
       #Elastic net to predict Y with X
-      cv.m1=cv.glmnet(X, Y, family=c("mgaussian"),
-                      alpha=alpha,nfolds=ncv,nlambda=nlambdas,intercept=FALSE)
-      m1=glmnet(X, Y, family=c("mgaussian"),
-                alpha=alpha,lambda=cv.m1$lambda.min,intercept=FALSE)
-      Y2=predict(m1,newx=X)
-      Y2=Y2[,,1]
+      cv.m1 <- glmnet::cv.glmnet(X,
+                         Y,
+                         family=c("mgaussian"),
+                         alpha=alpha,
+                         nfolds=ncv,
+                         nlambda=nlambdas,
+                         intercept=FALSE)
+      m1    <- glmnet::glmnet(X,
+                      Y,
+                      family=c("mgaussian"),
+                      alpha=alpha,
+                      lambda=cv.m1$lambda.min,
+                      intercept=FALSE)
+      Y2 <- predict(m1,newx=X)
+      Y2 <- Y2[ , ,1]
       #Elastic net to predict Z with Y
-      cv.m2=cv.glmnet(Y, Z, family=c("mgaussian"),
-                      alpha=alpha,nfolds=ncv,nlambda=nlambdas,intercept=FALSE)
-      m2=glmnet(Y, Z, family=c("mgaussian"),
-                alpha=alpha,lambda=cv.m2$lambda.min,intercept=FALSE)
-      Z2=predict(m2,newx=Y)
-      Z2=Z2[,,1]
+      cv.m2 <- glmnet::cv.glmnet(Y,
+                         Z,
+                         family=c("mgaussian"),
+                         alpha=alpha,
+                         nfolds=ncv,
+                         nlambda=nlambdas,
+                         intercept=FALSE)
+      m2    <- glmnet::glmnet(Y,
+                      Z,
+                      family=c("mgaussian"),
+                      alpha=alpha,
+                      lambda=cv.m2$lambda.min,
+                      intercept=FALSE)
+      Z2 <- predict(m2,newx=Y)
+      Z2 <- Z2[ , ,1]
       if (dist=='euclidean'){
         #Distance matrix for the predicted variables
         ZYX2=cbind(Z2,Y2,X)
-        Wzyx2=as.matrix(dist(t(ZYX2),diag=T,upper=T))+diag(q+p+r)
+        Wzyx2=as.matrix(stats::dist(t(ZYX2),diag=T,upper=T))+diag(q+p+r)
         Wzyx2=Wzyx2^(-1)
         #Z's distance matrix
-        Wz=as.matrix(dist(t(Z),diag=T,upper=T))+diag(q)
+        Wz=as.matrix(stats::dist(t(Z),diag=T,upper=T))+diag(q)
         Wz=Wz^(-1)
         #Y's distance matrix
-        Wy=as.matrix(dist(t(Y),diag=T,upper=T))+diag(p)
+        Wy=as.matrix(stats::dist(t(Y),diag=T,upper=T))+diag(p)
         Wy=Wy^(-1)
         #X's distance matrix
-        Wx=as.matrix(dist(t(X),diag=T,upper=T))+diag(r)
+        Wx=as.matrix(stats::dist(t(X),diag=T,upper=T))+diag(r)
         Wx=Wx^(-1)
         #Matrix without diagonal entries
         Izyx2=Wzyx2
@@ -469,13 +516,13 @@ muncut<-function(Z,
       }else if(dist=='gaussian'){
         #Distance matrix for the predicted variables
         ZYX2=cbind(Z2,Y2,X)
-        Wzyx2=exp((-1)*as.matrix(dist(t(ZYX2),diag=T,upper=T))/sigma)
+        Wzyx2=exp((-1)*as.matrix(stats::dist(t(ZYX2),diag=T,upper=T))/sigma)
         #Z's distance matrix
-        Wz=exp((-1)*as.matrix(dist(t(Z),diag=T,upper=T))/sigma)
+        Wz=exp((-1)*as.matrix(stats::dist(t(Z),diag=T,upper=T))/sigma)
         #Y's distance matrix
-        Wy=exp((-1)*as.matrix(dist(t(Y),diag=T,upper=T))/sigma)
+        Wy=exp((-1)*as.matrix(stats::dist(t(Y),diag=T,upper=T))/sigma)
         #X's distance matrix
-        Wx=exp((-1)*as.matrix(dist(t(X),diag=T,upper=T))/sigma)
+        Wx=exp((-1)*as.matrix(stats::dist(t(X),diag=T,upper=T))/sigma)
         #Matrix without diagonal entries
         Izyx2=Wzyx2
         Izyx2[1:q,1:q]=0
@@ -497,16 +544,16 @@ muncut<-function(Z,
       if (dist=='euclidean'){
         #Distance matrix for the predicted variables
         ZYX2=cbind(Z,Y,X)
-        Wzyx2=as.matrix(dist(t(ZYX2),diag=T,upper=T))+diag(q+p+r)
+        Wzyx2=as.matrix(stats::dist(t(ZYX2),diag=T,upper=T))+diag(q+p+r)
         Wzyx2=Wzyx2^(-1)
         #Z's distance matrix
-        Wz=as.matrix(dist(t(Z),diag=T,upper=T))+diag(q)
+        Wz=as.matrix(stats::dist(t(Z),diag=T,upper=T))+diag(q)
         Wz=Wz^(-1)
         #Y's distance matrix
-        Wy=as.matrix(dist(t(Y),diag=T,upper=T))+diag(p)
+        Wy=as.matrix(stats::dist(t(Y),diag=T,upper=T))+diag(p)
         Wy=Wy^(-1)
         #X's distance matrix
-        Wx=as.matrix(dist(t(X),diag=T,upper=T))+diag(r)
+        Wx=as.matrix(stats::dist(t(X),diag=T,upper=T))+diag(r)
         Wx=Wx^(-1)
         #Matrix without diagonal entries
         Izyx2=Wzyx2
@@ -669,23 +716,23 @@ muncut<-function(Z,
 #' @details
 #' The algorithm minimizes a modified version of NCut through simulated annealing.
 #' The clusers correspond to partitions that minimize this objective function.
-
-swncut<-function(X,
-                K=2,
-                B=3000,
-                L=1000,
-                N=100,
-                scale=T,
-                lambda=1,
-                epsilon=0,
-                beta=1,
-                nstarts=10,
-                start='default',
-                dist='gaussian',
-                sigma=1){
+#' @export
+swncut <- function(X,
+                   K=2,
+                   B=3000,
+                   L=1000,
+                   N=100,
+                   scale=T,
+                   lambda=1,
+                   epsilon=0,
+                   beta=1,
+                   nstarts=10,
+                   start='default',
+                   dist='gaussian',
+                   sigma=1){
   #Beginning of the function
   if (scale==T){
-    X=apply(X,2,function(e) {return(e/var(e)^0.5)})
+    X=apply(X,2,function(e) {return(e/stats::var(e)^0.5)})
     p=dim(X)[2]
     if (dist=='gaussian'){
       Wx=exp((-1)*as.matrix(dist(t(X),diag=T,upper=T))/(sigma^2))
@@ -695,7 +742,7 @@ swncut<-function(X,
       Wx=Wx^(-1)
       Wx[which(Wx<epsilon)]=0
     }else if(dist=='correlation'){
-      Wx<-abs(cor(X))^beta
+      Wx<-abs(stats::cor(X))^beta
       Wx[which(Wx<epsilon)]=0
     }else{
       print('Distance Error')
@@ -711,7 +758,7 @@ swncut<-function(X,
       Wx=Wx^(-1)
       Wx[which(Wx<epsilon)]=0
     }else if(dist=='correlation'){
-      Wx<-abs(cor(X))^beta
+      Wx<-abs(stats::cor(X))^beta
       Wx[which(Wx<epsilon)]=0
     }else{
       print('Distance Error')
@@ -747,13 +794,10 @@ swncut<-function(X,
     }
 
     #Now, calculate the number of indices in each group.
-    Nx=apply(Cx,2,sum)
-    M1=matrix(1,p,K)
-    #J=WNCut3(Cx,M1-Cx,Wx)+lambda*Ranking(Cx)/(K*p)
-    J=WNCut(Cx,M1-Cx,Wx)+lambda*Ranking(Cx)/(p*K)
-    #J=WNCut(Cx,M1-Cx,Wx)+lambda*Ranking6(Cx,alpha)/(p*K)
-    #J=WNCut(Cx,M1-Cx,Wx)+lambda*sum(abs(Cx-1/K))/(p*K)
-    Test<- vector(mode="numeric", length=B)
+    Nx   <- apply(Cx,2,sum)
+    M1   <- matrix(1,p,K)
+    J    <- WNCut(Cx,M1-Cx,Wx)+lambda*Ranking(Cx)/(p*K)
+    Test <- vector(mode="numeric", length=B)
       #These matrices will keep track of the elements of the clusters while
       #doing simulated annealing.
       C2x=matrix(0,p,K)
@@ -784,19 +828,14 @@ swncut<-function(X,
           w.replace<-w.replace[a1[1]]#what weight are we going to replace
         }
 
-
         p_minus=runif(1,min=0,max=C2x[s,cluster])
         C2x[s,cluster]=C2x[s,cluster]-p_minus#This element will give somethin between 0 and its value
         C2x[s,w.replace]=C2x[s,w.replace]+p_minus#This element will get something between 0 and the value of the other element
 
         #Now Step 3 in the algorithm
-        J2=WNCut(C2x,M1-C2x,Wx)+lambda*Ranking(C2x)/(K*p)
-        #J2=WNCut(C2x,M1-C2x,Wx)+lambda*Ranking6(C2x,alpha)/(K*p)
-        #J2=WNCut(C2x,M1-C2x,Wx)+lambda*sum(abs(C2x-1/K))/(p*K)
-        #J2=WNCut3(C2x,M1-C2x,Wx)+lambda*Ranking(C2x)/(K*p)
+        J2 <- WNCut(C2x,M1-C2x,Wx) + lambda*Ranking(C2x)/(K*p)
 
         if (J2>J){
-          #Prob[Count]=exp(-10000*log(k+1)*(J2-J))
           des=rbinom(1,1,exp(-L*log(k+1)*(J2-J)))
           if (des==1){
             Cx=C2x#Set-up the new clusters
@@ -869,23 +908,23 @@ swncut<-function(X,
 #' #This is the true error of the clustering solution.
 #' errorL
 
-swncut2<-function(X,
-               K=2,
-               B=30,
-               N=500,
-               dist='correlation',
-               scale=T,
-               q=0.1,
-               beta=1,
-               lambda=1,
-               epsilon=0,
-               sigma=1){
+swncut2 <- function(X,
+                    K=2,
+                    B=30,
+                    N=500,
+                    dist='correlation',
+                    scale=T,
+                    q=0.1,
+                    beta=1,
+                    lambda=1,
+                    epsilon=0,
+                    sigma=1){
   #This creates the weight matrix W
   Res <- list()
   quantiles <- vector(mode="numeric", length=B)
   #Beginning of the function
   if (scale==T){
-    X=apply(X,2,function(e) {return(e/var(e)^0.5)})
+    X=apply(X,2,function(e) {return(e/stats::var(e)^0.5)})
     p=dim(X)[2]
     if (dist=='gaussian'){
       Wx=exp((-1)*as.matrix(dist(t(X),diag=T,upper=T))/(sigma^2))
@@ -895,7 +934,7 @@ swncut2<-function(X,
       Wx=Wx^(-1)
       Wx[which(Wx<epsilon)]=0
     }else if(dist=='correlation'){
-      Wx<-abs(cor(X))^beta
+      Wx<-abs(stats::cor(X))^beta
       Wx[which(Wx<epsilon)]=0
     }else{
       print('Distance Error')
@@ -911,7 +950,7 @@ swncut2<-function(X,
       Wx=Wx^(-1)
       Wx[which(Wx<epsilon)]=0
     }else if(dist=='correlation'){
-      Wx<-abs(cor(X))^beta
+      Wx<-abs(stats::cor(X))^beta
       Wx[which(Wx<epsilon)]=0
     }else{
       print('Distance Error')
@@ -1027,7 +1066,7 @@ swncut2<-function(X,
 #'            eta=0.25)
 #' plot(clust[[1]],type='l')
 #' image.plot(clust[[3]])
-
+#' @export
 bml<-function(Z,
               Y,
               X,
@@ -1094,7 +1133,7 @@ bml<-function(Z,
         cy <- which(Clustc[[k]][(dimz+1):(dimz+dimy),i]==1)
         cx <- which(Clustc[[k]][(dimz+dimy+1):m,i]==1)
         A1 <- cbind(Z[ ,cz],Y[ ,cy],X[ ,cx])
-        Wk[[i]] <- exp((-sigmas)*as.matrix(dist(A1,
+        Wk[[i]] <- exp((-sigmas)*as.matrix(stats::dist(A1,
                                                 method = 'euclidean',
                                                 diag   = T,
                                                 upper  = T)))
@@ -1206,7 +1245,7 @@ bml<-function(Z,
 #'            eta=0.25)
 #' plot(clust[[1]],type='l')
 #' image.plot(clust[[3]])
-
+#' @export
 sncut <- function(X,
                   Z,
                   K,
