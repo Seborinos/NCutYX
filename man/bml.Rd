@@ -8,8 +8,11 @@ bml(Z, Y, X, K = 2, R = 2, B = 30, N = 500, q0 = 0.25, scale = T,
   dist = "gaussian", sigmas = 1, sigmac = 1)
 }
 \arguments{
-\item{Y}{is a n x p matrix of p variables and n observations. The p columns of
-Y will be clustered into K groups using NCut.}
+\item{Z}{is a n x q matrix of q variables and n observations.}
+
+\item{Y}{is a n x p matrix of p variables and n observations.}
+
+\item{X}{is a n x r matrix of r variables and n observations.}
 
 \item{K}{is the number of clusters.}
 
@@ -17,7 +20,15 @@ Y will be clustered into K groups using NCut.}
 
 \item{N}{is the number of samples per iterations.}
 
+\item{q0}{is the quantiles in the cross entropy method.}
+
 \item{scale}{equals TRUE if data Y is to be scaled with mean 0 and variance 1.}
+
+\item{dist}{is the distance metric used.}
+
+\item{sigams}{is the tuning parameter of the Gaussian kernel of the samples.}
+
+\item{sigamc}{is the tuning parameter of the Gaussian kernel of the variables.}
 }
 \value{
 A list with the final value of the objective function and

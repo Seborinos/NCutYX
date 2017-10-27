@@ -98,6 +98,10 @@ ncut <- function(Y,
 #' @param Y is a n x p matrix of p variables and n observations. The columns of
 #' Y will be clustered into K groups.
 #' @param X is a n x q matrix of q variables and n observations.
+#' @param K is the number of clusters.
+#' @param sampling if 'equal' then the sampling probabilities is the same during
+#' the simulated annealing algorithm, if 'size' the probabilites are proportional
+#' the the sizes of the clusters in the current iterations.
 #' @param B is the number of iterations in the simulated annealing algorithm.
 #' @param L is the temperature coefficient in the simulated annealing algorithm.
 #' @param alpha is the coefficient of the elastic net penalty.
@@ -990,11 +994,16 @@ swncut2 <- function(X,
 #' Cluster the columns of Y into K groups using the NCut graph measure.
 #'
 #' This function will output K clusters of the columns of Y.
-#' @param Y is a n x p matrix of p variables and n observations. The p columns of
-#' Y will be clustered into K groups using NCut.
+#' @param Z is a n x q matrix of q variables and n observations.
+#' @param Y is a n x p matrix of p variables and n observations.
+#' @param X is a n x r matrix of r variables and n observations.
 #' @param K is the number of clusters.
 #' @param B is the number of iterations.
 #' @param N is the number of samples per iterations.
+#' @param q0 is the quantiles in the cross entropy method.
+#' @param sigams is the tuning parameter of the Gaussian kernel of the samples.
+#' @param sigamc is the tuning parameter of the Gaussian kernel of the variables.
+#' @param dist is the distance metric used.
 #' @param scale equals TRUE if data Y is to be scaled with mean 0 and variance 1.
 #' @return A list with the final value of the objective function and
 #' the clusters.
