@@ -4,7 +4,7 @@
 \alias{sncut}
 \title{Cluster the columns of Y into K groups using the NCut graph measure.}
 \usage{
-sncut(X, Z, K, lamda, B = 500, L = 1000)
+sncut(X, Z, K, lambda, B = 500, L = 1000)
 }
 \arguments{
 \item{K}{is the number of clusters.}

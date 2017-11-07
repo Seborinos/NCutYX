@@ -107,6 +107,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// RandomMatrix2
+NumericMatrix RandomMatrix2(const int& p, const int& K, const NumericMatrix& P);
+RcppExport SEXP NCutYX_RandomMatrix2(SEXP pSEXP, SEXP KSEXP, SEXP PSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int& >::type p(pSEXP);
+    Rcpp::traits::input_parameter< const int& >::type K(KSEXP);
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type P(PSEXP);
+    rcpp_result_gen = Rcpp::wrap(RandomMatrix2(p, K, P));
+    return rcpp_result_gen;
+END_RCPP
+}
 // RandomUnifMatrix
 NumericMatrix RandomUnifMatrix(const int& p, const int& K, const NumericMatrix& Pmin, const NumericMatrix& Pmax);
 RcppExport SEXP NCutYX_RandomUnifMatrix(SEXP pSEXP, SEXP KSEXP, SEXP PminSEXP, SEXP PmaxSEXP) {
@@ -193,6 +206,76 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// samplingncut
+List samplingncut(const NumericMatrix& W, const NumericMatrix& Prob, const int& p, const int& K, const int& N);
+RcppExport SEXP NCutYX_samplingncut(SEXP WSEXP, SEXP ProbSEXP, SEXP pSEXP, SEXP KSEXP, SEXP NSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type W(WSEXP);
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type Prob(ProbSEXP);
+    Rcpp::traits::input_parameter< const int& >::type p(pSEXP);
+    Rcpp::traits::input_parameter< const int& >::type K(KSEXP);
+    Rcpp::traits::input_parameter< const int& >::type N(NSEXP);
+    rcpp_result_gen = Rcpp::wrap(samplingncut(W, Prob, p, K, N));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cutoff
+double cutoff(NumericVector& loss, const int& q0);
+RcppExport SEXP NCutYX_cutoff(SEXP lossSEXP, SEXP q0SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector& >::type loss(lossSEXP);
+    Rcpp::traits::input_parameter< const int& >::type q0(q0SEXP);
+    rcpp_result_gen = Rcpp::wrap(cutoff(loss, q0));
+    return rcpp_result_gen;
+END_RCPP
+}
+// ProbAve
+NumericMatrix ProbAve(List& Cs, IntegerVector& Ind, const int& p, const int& K);
+RcppExport SEXP NCutYX_ProbAve(SEXP CsSEXP, SEXP IndSEXP, SEXP pSEXP, SEXP KSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List& >::type Cs(CsSEXP);
+    Rcpp::traits::input_parameter< IntegerVector& >::type Ind(IndSEXP);
+    Rcpp::traits::input_parameter< const int& >::type p(pSEXP);
+    Rcpp::traits::input_parameter< const int& >::type K(KSEXP);
+    rcpp_result_gen = Rcpp::wrap(ProbAve(Cs, Ind, p, K));
+    return rcpp_result_gen;
+END_RCPP
+}
+// Indexing
+IntegerVector Indexing(NumericVector& loss, const double& qloss);
+RcppExport SEXP NCutYX_Indexing(SEXP lossSEXP, SEXP qlossSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector& >::type loss(lossSEXP);
+    Rcpp::traits::input_parameter< const double& >::type qloss(qlossSEXP);
+    rcpp_result_gen = Rcpp::wrap(Indexing(loss, qloss));
+    return rcpp_result_gen;
+END_RCPP
+}
+// ncutcem
+List ncutcem(const NumericMatrix& W, const int& p, const int& K, const int& N, const int& B, const int& q0, const double& p0);
+RcppExport SEXP NCutYX_ncutcem(SEXP WSEXP, SEXP pSEXP, SEXP KSEXP, SEXP NSEXP, SEXP BSEXP, SEXP q0SEXP, SEXP p0SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type W(WSEXP);
+    Rcpp::traits::input_parameter< const int& >::type p(pSEXP);
+    Rcpp::traits::input_parameter< const int& >::type K(KSEXP);
+    Rcpp::traits::input_parameter< const int& >::type N(NSEXP);
+    Rcpp::traits::input_parameter< const int& >::type B(BSEXP);
+    Rcpp::traits::input_parameter< const int& >::type q0(q0SEXP);
+    Rcpp::traits::input_parameter< const double& >::type p0(p0SEXP);
+    rcpp_result_gen = Rcpp::wrap(ncutcem(W, p, K, N, B, q0, p0));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"NCutYX_NCutY3V1", (DL_FUNC) &NCutYX_NCutY3V1, 4},
@@ -203,6 +286,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"NCutYX_Ranking", (DL_FUNC) &NCutYX_Ranking, 1},
     {"NCutYX_oneMultinomCalt", (DL_FUNC) &NCutYX_oneMultinomCalt, 1},
     {"NCutYX_RandomMatrix", (DL_FUNC) &NCutYX_RandomMatrix, 3},
+    {"NCutYX_RandomMatrix2", (DL_FUNC) &NCutYX_RandomMatrix2, 3},
     {"NCutYX_RandomUnifMatrix", (DL_FUNC) &NCutYX_RandomUnifMatrix, 4},
     {"NCutYX_COR", (DL_FUNC) &NCutYX_COR, 1},
     {"NCutYX_CORYX", (DL_FUNC) &NCutYX_CORYX, 3},
@@ -210,6 +294,11 @@ static const R_CallMethodDef CallEntries[] = {
     {"NCutYX_COR2", (DL_FUNC) &NCutYX_COR2, 1},
     {"NCutYX_matrixMAX", (DL_FUNC) &NCutYX_matrixMAX, 2},
     {"NCutYX_matrixMIN", (DL_FUNC) &NCutYX_matrixMIN, 2},
+    {"NCutYX_samplingncut", (DL_FUNC) &NCutYX_samplingncut, 5},
+    {"NCutYX_cutoff", (DL_FUNC) &NCutYX_cutoff, 2},
+    {"NCutYX_ProbAve", (DL_FUNC) &NCutYX_ProbAve, 4},
+    {"NCutYX_Indexing", (DL_FUNC) &NCutYX_Indexing, 2},
+    {"NCutYX_ncutcem", (DL_FUNC) &NCutYX_ncutcem, 7},
     {NULL, NULL, 0}
 };
 

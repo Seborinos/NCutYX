@@ -50,13 +50,13 @@ The external information of X is incorporated by using ridge regression to predi
 \examples{
 #This sets up the initial parameters for the simulation.
 library(MASS)#for mvrnorm
-n=200 #Sample size
-B=5000 #Number of iterations in the simulated annealing algorithm.
+n=100 #Sample size
+B=3000 #Number of iterations in the simulated annealing algorithm.
 L=10000 #Temperature coefficient.
-p=200 #Number of columns of Y.
+p=50 #Number of columns of Y.
 q=p #Number of columns of X.
-h1=0.05
-h2=0.15
+h1=0.15
+h2=0.25
 
 S=matrix(0.2,q,q)
 S[1:(q/2),(q/2+1):q]=0
@@ -85,7 +85,7 @@ for (i in (p/2+1):p){
 
 X=mvrnorm(n, mu, S)
 Z=X\%*\%B2
-Y=Z+matrix(rnorm(n*p,0,2),n,p)
+Y=Z+matrix(rnorm(n*p,0,1),n,p)
 #Our method
 Res=ancut(Y=Y,X=X,B=B,L=L,alpha=0,ncv=5)
 Cx=Res[[2]]
@@ -96,7 +96,7 @@ errorL=sum((f11\%*\%t(f11))*W0)/Denum+sum((f12\%*\%t(f12))*W0)/Denum
 #This is the true error of the clustering solution.
 errorL
 
-par(mfrow=c(2,2))
+par(mfrow=c(1,2))
 #Below is a plot of the simulated annealing path.
 plot(Res[[1]],type='l',ylab='')
 #Cluster found by ANCut

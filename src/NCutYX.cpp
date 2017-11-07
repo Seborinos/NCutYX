@@ -4,6 +4,7 @@
 using namespace Rcpp;
 using namespace Eigen;
 
+
 //This function calculates the NCutYX objective function.
 
 // [[Rcpp::depends(RcppEigen)]]
@@ -192,10 +193,23 @@ IntegerMatrix RandomMatrix(const int &p,
                            const int &K,
                            const NumericMatrix &P){
   IntegerMatrix Cluster(p,K);
-  //std::fill(Cluster.begin(), Cluster.end(),0);
 
   for (int i=0;i<p;i++){
         Cluster(i,_)=oneMultinomCalt(P(i,_));
+  }
+
+  return Cluster;
+}
+
+// [[Rcpp::depends(RcppEigen)]]
+// [[Rcpp::export]]
+NumericMatrix RandomMatrix2(const int &p,
+                            const int &K,
+                            const NumericMatrix &P){
+  NumericMatrix Cluster(p,K);
+
+  for (int i=0;i<p;i++){
+    Cluster(i,_)=oneMultinomCalt(P(i,_));
   }
 
   return Cluster;
@@ -369,3 +383,88 @@ NumericMatrix matrixMIN(const NumericMatrix &A1,
 
   return A;
 }
+
+// [[Rcpp::depends(RcppEigen)]]
+// [[Rcpp::export]]
+List samplingncut(const NumericMatrix &W,
+                  const NumericMatrix &Prob,
+                  const int &p,
+                  const int &K,
+                  const int &N){
+  NumericVector l(N);
+  List C(N);
+  for (int k = 0; k < N; k++){
+    // draw from Prob a Cluster and calculate its loss
+    C[k] = RandomMatrix2(p,K,Prob);
+    l[k] = NCut(C[k],W);
+  }
+  return List::create(Named("Clusters") = C,
+                      Named("loss")     = l);
+}
+
+// [[Rcpp::depends(RcppEigen)]]
+// [[Rcpp::export]]
+double cutoff(NumericVector &loss,
+              const int &q0){
+  std::sort(loss.begin(), loss.end());
+  double qloss = loss(q0);
+  return qloss;
+}
+
+// [[Rcpp::depends(RcppEigen)]]
+// [[Rcpp::export]]
+NumericMatrix ProbAve(List &Cs,
+                      IntegerVector &Ind,
+                      const int &p,
+                      const int &K){
+  NumericMatrix Prob(p,K);
+  Rcpp::Function Reduce("Reduce");
+  Prob = Reduce('+',Cs[Ind]);
+  double N2 = Ind.length();
+  double w = 1.0/N2;
+  Prob = Prob*w;
+  return Prob;
+}
+
+// [[Rcpp::depends(RcppEigen)]]
+// [[Rcpp::export]]
+IntegerVector Indexing(NumericVector &loss,
+                       const double &qloss){
+  // create an index Ind
+  Rcpp::Function which("which");
+  IntegerVector Ind = which(loss<=qloss);
+  return Ind;
+}
+
+// [[Rcpp::depends(RcppEigen)]]
+// [[Rcpp::export]]
+List ncutcem(const NumericMatrix &W,
+                      const int &p,
+                      const int &K,
+                      const int &N,
+                      const int &B,
+                      const int &q0,
+                      const double &p0){
+  NumericMatrix Prob(p,K);
+  NumericVector loss(N);
+  NumericVector Quant(B);
+  NumericVector loss2(N);
+  List          Cs(N);
+  // start some intial distribution for the variables
+  std::fill(Prob.begin(), Prob.end(), p0);
+  for (int i = 0; i < B; i++){
+    List sample = samplingncut(W, Prob, p, K, N);
+    Cs          = sample["Clusters"];
+    loss        = sample["loss"];
+    loss2       = clone(loss);
+    // calculate the quantile and create an index
+    double qloss      = cutoff(loss2, q0);
+    Quant(i)          = qloss;
+    IntegerVector Ind = Indexing(loss, qloss);
+    Ind               = Ind - 1;
+    Prob              = ProbAve(Cs, Ind, p, K);
+  }
+  return List::create(Named("quantile") = Quant,
+                      Named("clusters") = Prob);
+}
+

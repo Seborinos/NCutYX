@@ -17,7 +17,13 @@ Y will be clustered into K groups using NCut.}
 
 \item{N}{is the number of samples per iterations.}
 
+\item{dist}{is the type of distance metric for the construction of the similarity matrix.}
+
 \item{scale}{equals TRUE if data Y is to be scaled with mean 0 and variance 1.}
+
+\item{q}{is the quantile used for the top results at each iterations.}
+
+\item{sigma}{is the bandwith parameter when the dist metric chosen is gaussian.}
 }
 \value{
 A list with the final value of the objective function and
@@ -33,9 +39,9 @@ The clusters correspond to partitions that minimize this objective function.
 \examples{
 # This sets up the initial parameters for the simulation.
 library(MASS)
-n=200 # Sample size
+n=100 # Sample size
 B=30 # Number of iterations in the simulated annealing algorithm.
-p=500 # Number of columns of Y.
+p=50 # Number of columns of Y.
 
 S=matrix(0.2,p,p)
 S[1:(p/2),(p/2+1):p]=0
@@ -50,7 +56,14 @@ Denum=sum(W0)
 
 Y=mvrnorm(n, mu, S)
 # Our method
-Res=NCut(Y,B=30,N=500,K=2,dist='gaussian',sigma=1)
+Res=ncut(Y,
+K=2,
+B=30,
+N=1000,
+dist='correlation',
+scale=T,
+q=0.2,
+sigma=0.1)
 Cx=Res[[2]]
 f11=matrix(Cx[,1],p,1)
 f12=matrix(Cx[,2],p,1)

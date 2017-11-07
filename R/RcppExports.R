@@ -33,6 +33,10 @@ RandomMatrix <- function(p, K, P) {
     .Call('NCutYX_RandomMatrix', PACKAGE = 'NCutYX', p, K, P)
 }
 
+RandomMatrix2 <- function(p, K, P) {
+    .Call('NCutYX_RandomMatrix2', PACKAGE = 'NCutYX', p, K, P)
+}
+
 RandomUnifMatrix <- function(p, K, Pmin, Pmax) {
     .Call('NCutYX_RandomUnifMatrix', PACKAGE = 'NCutYX', p, K, Pmin, Pmax)
 }
@@ -59,5 +63,25 @@ matrixMAX <- function(A1, A2) {
 
 matrixMIN <- function(A1, A2) {
     .Call('NCutYX_matrixMIN', PACKAGE = 'NCutYX', A1, A2)
+}
+
+samplingncut <- function(W, Prob, p, K, N) {
+    .Call('NCutYX_samplingncut', PACKAGE = 'NCutYX', W, Prob, p, K, N)
+}
+
+cutoff <- function(loss, q0) {
+    .Call('NCutYX_cutoff', PACKAGE = 'NCutYX', loss, q0)
+}
+
+ProbAve <- function(Cs, Ind, p, K) {
+    .Call('NCutYX_ProbAve', PACKAGE = 'NCutYX', Cs, Ind, p, K)
+}
+
+Indexing <- function(loss, qloss) {
+    .Call('NCutYX_Indexing', PACKAGE = 'NCutYX', loss, qloss)
+}
+
+ncutcem <- function(W, p, K, N, B, q0, p0) {
+    .Call('NCutYX_ncutcem', PACKAGE = 'NCutYX', W, p, K, N, B, q0, p0)
 }
 
