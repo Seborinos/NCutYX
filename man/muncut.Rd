@@ -6,7 +6,7 @@
 \usage{
 muncut(Z, Y, X, K = 2, B = 3000, L = 1000, alpha = 0.5, ncv = 3,
   nlambdas = 100, scale = F, model = F, gamma = 0.5,
-  dist = "gaussian", sigma = 1)
+  dist = "gaussian", sigma = 0.1)
 }
 \arguments{
 \item{Z}{is a n x q matrix of q variables and n observations.}
@@ -18,6 +18,25 @@ muncut(Z, Y, X, K = 2, B = 3000, L = 1000, alpha = 0.5, ncv = 3,
 \item{B}{is the number of iterations in the simulated annealing algorithm.}
 
 \item{L}{is the temperature coefficient in the simulated annealing algorithm.}
+
+\item{alpha}{is the tuning parameter in the elastic net penalty, only used when model=T.}
+
+\item{ncv}{is the number of cross-validations used to choose the tuning parameter lambda in the
+elastic net penatly, only used when model=T.}
+
+\item{nlambdas}{number of tuning parameters lambda used during cross-validation, only when model=T.}
+
+\item{scale}{when TRUE the Z, Y and X are scaled with mean 0 and standard deviation equal 1.}
+
+\item{model}{when TRUE the the relationship between Z and Y, and between Y and X are modelled
+with the elastic net. The predictions of Z, and Y from the models are used in the clustering algorithm.}
+
+\item{gamma}{is the tuning parameter of the clustering penalty. Larger values give more importance to
+within layer effects and less to across layer effects.}
+
+\item{dist}{is the type of distance measure use in the similarity matrix.}
+
+\item{sigma}{is the bandwith parameter when the dist metric chosen is gaussian.}
 }
 \description{
 This function will output K channels of variables.
@@ -33,6 +52,7 @@ library(MASS)
 library(fields) #for image.plot
 
 #parameters#
+set.seed(7777)
 n=100
 p=200
 h=0.15

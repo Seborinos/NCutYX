@@ -23,18 +23,28 @@ Y will be clustered into K groups using NCut.}
 
 \item{q}{is the quantile used for the top results at each iterations.}
 
-\item{sigma}{is the bandwith parameter when the dist metric chosen is gaussian.}
+\item{sigma}{is the bandwith parameter when the dist metric chosen is 'gaussian' (default=0.1).}
 }
 \value{
-A list with the final value of the objective function and
-the clusters.
+A list with the following components:
+\describe{
+\item{quantile}{a vector of length \code{N} which contains the quantiles
+\code{q} at each iteration of the optimization algorithm.}
+\item{cluster}{a matrix representing the clustering result of dimension \code{p} times
+\code{K}, where \code{p} is the number of columns of \code{X}.}
+\item{ncut}{the NCut measure for the cluster result.}
+}
 }
 \description{
-This function will output K clusters of the columns of Y.
+Builds a similarity matrix for the columns of Y and clusters them into
+K groups based on the NCut graph measure. Correlation and Gaussian distance can be used
+to construct the similarity matrix.
 }
 \details{
 The algorithm minimizes the NCut through the cross entropy method.
-The clusters correspond to partitions that minimize this objective function.
+The edges of the graph correspond to the entries of a similarity matrix constructed based on a
+correlation, euclidean or gaussian distance metric.
+The clusters correspond to partitions that minimize this NCut objective function.
 }
 \examples{
 # This sets up the initial parameters for the simulation.
@@ -71,4 +81,15 @@ f12=matrix(Cx[,2],p,1)
 errorL=sum((f11\%*\%t(f11))*W0)/Denum+sum((f12\%*\%t(f12))*W0)/Denum
 # This is the true error of the clustering solution.
 errorL
+}
+\references{
+Von Luxburg, Ulrike. "A tutorial on spectral clustering."
+Statistics and computing 17.4 (2007): 395-416.
+
+Kroese, Dirk P., et al. "Cross-entropy method."
+Encyclopedia of Operations Research and Management Science. Springer US, 2013. 326-333
+}
+\author{
+Sebastian Jose Teran Hidalgo. Maintainer: Sebastian Jose Teran Hidalgo
+\url{sebastianteranhidalgo@gmail.com}.
 }
