@@ -31,7 +31,7 @@ A list with the following components:
 \item{quantile}{a vector of length \code{N} which contains the quantiles
 \code{q} at each iteration of the optimization algorithm.}
 \item{cluster}{a matrix representing the clustering result of dimension \code{p} times
-\code{K}, where \code{p} is the number of columns of \code{X}.}
+\code{K}, where \code{p} is the number of columns of \code{Y}.}
 \item{ncut}{the NCut measure for the cluster result.}
 }
 }

@@ -125,6 +125,18 @@ ncut <- function(Y,
 #' The algorithm minimizes a modified version of NCut through simulated annealing.
 #' The clusters correspond to partitions that minimize this objective function.
 #' The external information of X is incorporated by using ridge regression to predict Y.
+#' @author Sebastian Jose Teran Hidalgo and Shuangge Ma. Maintainer: Sebastian Jose Teran Hidalgo.
+#' \url{sebastianteranhidalgo@gmail.com}.
+#' @references Hidalgo, Sebastian J. Teran, Mengyun Wu, and Shuangge Ma.
+#' Assisted clustering of gene expression data using ANCut. BMC genomics 18.1 (2017): 623.
+#' @return A list with the following components:
+#' \describe{
+#' \item{loss}{a vector of length \code{N} which contains the loss
+#' at each iteration of the simulated annealing algorithm.}
+#' \item{cluster}{a matrix representing the clustering result of dimension \code{p} times
+#' \code{K}, where \code{p} is the number of columns of \code{Y}.}
+#' \item{lambda.min}{is the optimal lambda chosen through cross-validation.}
+#' }
 #' @examples
 #' #This sets up the initial parameters for the simulation.
 #' library(MASS)#for mvrnorm
@@ -295,10 +307,10 @@ ancut <- function(Y,
     Test[k] <- J
 
   }
-  Res      <- list()
-  Res[[1]] <- Test
-  Res[[2]] <- Cx
-  Res[[3]] <- cv.m1$lambda.min
+  Res            <- list()
+  Res$loss       <- Test
+  Res$cluster    <- Cx
+  Res$lambda.min <- cv.m1$lambda.min
   return(Res)
 }
 

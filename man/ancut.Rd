@@ -37,6 +37,15 @@ not chosen as distance measure.}
 \value{
 A list with the final value of the objective function,
 the clusters and the lambda penalty chosen through cross-validation.
+
+A list with the following components:
+\describe{
+\item{loss}{a vector of length \code{N} which contains the loss
+at each iteration of the simulated annealing algorithm.}
+\item{cluster}{a matrix representing the clustering result of dimension \code{p} times
+\code{K}, where \code{p} is the number of columns of \code{Y}.}
+\item{lambda.min}{is the optimal lambda chosen through cross-validation.}
+}
 }
 \description{
 This function will output K clusters of  the columns of Y, using the help of
@@ -101,4 +110,12 @@ par(mfrow=c(1,2))
 plot(Res[[1]],type='l',ylab='')
 #Cluster found by ANCut
 image.plot(Cx)
+}
+\references{
+Hidalgo, Sebastian J. Teran, Mengyun Wu, and Shuangge Ma.
+Assisted clustering of gene expression data using ANCut. BMC genomics 18.1 (2017): 623.
+}
+\author{
+Sebastian Jose Teran Hidalgo and Shuangge Ma. Maintainer: Sebastian Jose Teran Hidalgo.
+\url{sebastianteranhidalgo@gmail.com}.
 }
