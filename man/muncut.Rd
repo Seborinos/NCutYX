@@ -6,7 +6,7 @@
 \usage{
 muncut(Z, Y, X, K = 2, B = 3000, L = 1000, alpha = 0.5, ncv = 3,
   nlambdas = 100, scale = F, model = F, gamma = 0.5,
-  dist = "gaussian", sigma = 0.1)
+  sampling = "equal", dist = "gaussian", sigma = 0.1)
 }
 \arguments{
 \item{Z}{is a n x q matrix of q variables and n observations.}
@@ -52,11 +52,11 @@ library(MASS)
 library(fields) #for image.plot
 
 #parameters#
-set.seed(7777)
+set.seed(777)
 n=100
-p=200
-h=0.15
-rho=0.2
+p=100
+h=0.5
+rho=0.5
 
 W0=matrix(1,p,p)
 W0[1:(p/5),1:(p/5)]=0
@@ -94,7 +94,20 @@ Z=Y\%*\%B2+matrix(rnorm(n*p,0,0.5),n,p)
 Z2=Y\%*\%B2
 
 #Computing our method
-clust<-muncut(Z,Y,X,K=4,B=20000,L=500,alpha=0.5,ncv=3,nlambdas=20,scale=F,model=F,gamma=0.1)
+clust <- muncut(Z,
+                Y,
+                X,
+                K        = 4,
+                B        = 15000,
+                L        = 500,
+                sampling = 'size',
+                alpha    = 0.5,
+                ncv      = 3,
+                nlambdas = 20,
+                sigma    = 10,
+                scale    = T,
+                model    = F,
+                gamma    = 0.1)
 
 A <- clust[[2]][,1]\%*\%t(clust[[2]][,1])+
      clust[[2]][,2]\%*\%t(clust[[2]][,2])+
@@ -103,4 +116,6 @@ A <- clust[[2]][,1]\%*\%t(clust[[2]][,1])+
 
 errorK=sum(A*W0)/(3*p)^2
 errorK
+plot(clust[[1]],type='l')
+image.plot(A)
 }

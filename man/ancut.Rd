@@ -5,7 +5,7 @@
 \title{Cluster the columns of Y into K groups with the help of external features in X.}
 \usage{
 ancut(Y, X, K = 2, B = 3000, L = 1000, alpha = 0.5, nlambdas = 100,
-  sampling = "equal", ncv = 5, dist = "correlation", sigma = 1)
+  sampling = "equal", ncv = 5, dist = "correlation", sigma = 0.1)
 }
 \arguments{
 \item{Y}{is a n x p matrix of p variables and n observations. The columns of
@@ -44,7 +44,8 @@ A list with the following components:
 at each iteration of the simulated annealing algorithm.}
 \item{cluster}{a matrix representing the clustering result of dimension \code{p} times
 \code{K}, where \code{p} is the number of columns of \code{Y}.}
-\item{lambda.min}{is the optimal lambda chosen through cross-validation.}
+\item{lambda.min}{is the optimal lambda chosen through cross-validation for the elastic net for
+predicting \code{Y} with \code{Y}.}
 }
 }
 \description{
@@ -53,8 +54,10 @@ X.
 }
 \details{
 The algorithm minimizes a modified version of NCut through simulated annealing.
+The modified NCut uses in the numerator the similarity matrix of the original data \code{Y}
+and the denominator uses the similarity matrix of the prediction of \code{Y} using \code{X}.
 The clusters correspond to partitions that minimize this objective function.
-The external information of X is incorporated by using ridge regression to predict Y.
+The external information of \code{X} is incorporated by using elastic net to predict \code{Y}.
 }
 \examples{
 #This sets up the initial parameters for the simulation.

@@ -123,8 +123,10 @@ ncut <- function(Y,
 #' the clusters and the lambda penalty chosen through cross-validation.
 #' @details
 #' The algorithm minimizes a modified version of NCut through simulated annealing.
+#' The modified NCut uses in the numerator the similarity matrix of the original data \code{Y}
+#' and the denominator uses the similarity matrix of the prediction of \code{Y} using \code{X}.
 #' The clusters correspond to partitions that minimize this objective function.
-#' The external information of X is incorporated by using ridge regression to predict Y.
+#' The external information of \code{X} is incorporated by using elastic net to predict \code{Y}.
 #' @author Sebastian Jose Teran Hidalgo and Shuangge Ma. Maintainer: Sebastian Jose Teran Hidalgo.
 #' \url{sebastianteranhidalgo@gmail.com}.
 #' @references Hidalgo, Sebastian J. Teran, Mengyun Wu, and Shuangge Ma.
@@ -135,7 +137,8 @@ ncut <- function(Y,
 #' at each iteration of the simulated annealing algorithm.}
 #' \item{cluster}{a matrix representing the clustering result of dimension \code{p} times
 #' \code{K}, where \code{p} is the number of columns of \code{Y}.}
-#' \item{lambda.min}{is the optimal lambda chosen through cross-validation.}
+#' \item{lambda.min}{is the optimal lambda chosen through cross-validation for the elastic net for
+#' predicting \code{Y} with \code{Y}.}
 #' }
 #' @examples
 #' #This sets up the initial parameters for the simulation.
@@ -194,15 +197,15 @@ ncut <- function(Y,
 #' @export
 ancut <- function(Y,
                   X,
-                  K=2,
-                  B=3000,
-                  L=1000,
-                  alpha=0.5,
-                  nlambdas=100,
-                  sampling='equal',
-                  ncv=5,
-                  dist='correlation',
-                  sigma=1){
+                  K        = 2,
+                  B        = 3000,
+                  L        = 1000,
+                  alpha    = 0.5,
+                  nlambdas = 100,
+                  sampling = 'equal',
+                  ncv      = 5,
+                  dist     = 'correlation',
+                  sigma    = 0.1){
   # This creates the weight matrix W
   X <- scale(X)
   Y <- scale(Y)
@@ -223,18 +226,18 @@ ancut <- function(Y,
   #modelling the relationship between Y and X
   cv.m1 <- glmnet::cv.glmnet(X,
                              Y,
-                             family=c("mgaussian"),
-                             alpha=alpha,
-                             nfolds=ncv,
-                             nlambda=nlambdas,
-                             intercept=FALSE)
+                             family    = c("mgaussian"),
+                             alpha     = alpha,
+                             nfolds    = ncv,
+                             nlambda   = nlambdas,
+                             intercept = FALSE)
 
   m1 <- glmnet::glmnet(X,
                        Y,
-                       family=c("mgaussian"),
-                       alpha=alpha,
-                       lambda=cv.m1$lambda.min,
-                       intercept=FALSE)
+                       family    = c("mgaussian"),
+                       alpha     = alpha,
+                       lambda    = cv.m1$lambda.min,
+                       intercept = FALSE)
 
   Y2 <- predict(m1,newx=X)
   Y2 <- scale(Y2[ , ,1])
@@ -295,7 +298,7 @@ ancut <- function(Y,
       if (des==1){
         Cx <- C2x#Set-up the new clusters
         J  <- J2
-        Nx <- apply(Cx[,1:K],2,sum)
+        Nx <- apply(Cx[ ,1:K],2,sum)
       }else{
         C2x <- Cx
       }
@@ -343,11 +346,11 @@ ancut <- function(Y,
 #' library(fields) #for image.plot
 #'
 #' #parameters#
-#' set.seed(7777)
+#' set.seed(777)
 #' n=100
-#' p=200
-#' h=0.15
-#' rho=0.2
+#' p=100
+#' h=0.5
+#' rho=0.5
 #'
 #' W0=matrix(1,p,p)
 #' W0[1:(p/5),1:(p/5)]=0
@@ -385,7 +388,20 @@ ancut <- function(Y,
 #' Z2=Y%*%B2
 #'
 #' #Computing our method
-#' clust<-muncut(Z,Y,X,K=4,B=20000,L=500,alpha=0.5,ncv=3,nlambdas=20,scale=F,model=F,gamma=0.1)
+#' clust <- muncut(Z,
+#'                 Y,
+#'                 X,
+#'                 K        = 4,
+#'                 B        = 15000,
+#'                 L        = 500,
+#'                 sampling = 'size',
+#'                 alpha    = 0.5,
+#'                 ncv      = 3,
+#'                 nlambdas = 20,
+#'                 sigma    = 10,
+#'                 scale    = T,
+#'                 model    = F,
+#'                 gamma    = 0.1)
 #'
 #' A <- clust[[2]][,1]%*%t(clust[[2]][,1])+
 #'      clust[[2]][,2]%*%t(clust[[2]][,2])+
@@ -394,6 +410,8 @@ ancut <- function(Y,
 #'
 #' errorK=sum(A*W0)/(3*p)^2
 #' errorK
+#' plot(clust[[1]],type='l')
+#' image.plot(A)
 #' @export
 muncut <- function(Z,
                    Y,
@@ -407,6 +425,7 @@ muncut <- function(Z,
                    scale    = F,
                    model    = F,
                    gamma    = 0.5,
+                   sampling = 'equal',
                    dist     = 'gaussian',
                    sigma    = 0.1){
   # Beginning of the function
@@ -440,18 +459,18 @@ muncut <- function(Z,
       #Elastic net to predict Z with Y
       cv.m2 <- glmnet::cv.glmnet(Y,
                                  Z,
-                                 family=c("mgaussian"),
-                                 alpha=alpha,
-                                 nfolds=ncv,
-                                 nlambda=nlambdas,
-                                 intercept=FALSE)
+                                 family    = c("mgaussian"),
+                                 alpha     = alpha,
+                                 nfolds    = ncv,
+                                 nlambda   = nlambdas,
+                                 intercept = FALSE)
 
       m2    <- glmnet::glmnet(Y,
                               Z,
-                              family=c("mgaussian"),
-                              alpha=alpha,
-                              lambda=cv.m1$lambda.min,
-                              intercept=FALSE)
+                              family    = c("mgaussian"),
+                              alpha     = alpha,
+                              lambda    = cv.m1$lambda.min,
+                              intercept = FALSE)
 
       Z2 <- predict(m2,newx=Y)
       Z2 <- scale(Z2[ , ,1])
@@ -467,7 +486,7 @@ muncut <- function(Z,
         Wy    <- as.matrix(stats::dist(t(Y),diag=T,upper=T)) + diag(p)
         Wy    <- Wy^(-1)
         #X's distance matrix
-        Wx    <- as.matrix(stats::dist(t(X),diag=T,upper=T))+diag(r)
+        Wx    <- as.matrix(stats::dist(t(X),diag=T,upper=T)) + diag(r)
         Wx    <- Wx^(-1)
         #Matrix without diagonal entries
         Izyx2                      <- Wzyx2
@@ -496,37 +515,37 @@ muncut <- function(Z,
       q <- dim(Z)[2]
       p <- dim(Y)[2]
       r <- dim(X)[2]
-      m <- m + p + r
+      m <- q + p + r
       #Elastic net to predict Y with X
       cv.m1 <- glmnet::cv.glmnet(X,
                                  Y,
-                                 family=c("mgaussian"),
-                                 alpha=alpha,
-                                 nfolds=ncv,
-                                 nlambda=nlambdas,
-                                 intercept=FALSE)
+                                 family    = c("mgaussian"),
+                                 alpha     = alpha,
+                                 nfolds    = ncv,
+                                 nlambda   = nlambdas,
+                                 intercept = FALSE)
       m1    <- glmnet::glmnet(X,
                               Y,
-                              family=c("mgaussian"),
-                              alpha=alpha,
-                              lambda=cv.m1$lambda.min,
-                              intercept=FALSE)
+                              family    = c("mgaussian"),
+                              alpha     = alpha,
+                              lambda    = cv.m1$lambda.min,
+                              intercept = FALSE)
       Y2 <- predict(m1,newx=X)
       Y2 <- Y2[ , ,1]
       #Elastic net to predict Z with Y
       cv.m2 <- glmnet::cv.glmnet(Y,
                                  Z,
-                                 family=c("mgaussian"),
-                                 alpha=alpha,
-                                 nfolds=ncv,
-                                 nlambda=nlambdas,
-                                 intercept=FALSE)
+                                 family    = c("mgaussian"),
+                                 alpha     = alpha,
+                                 nfolds    = ncv,
+                                 nlambda   = nlambdas,
+                                 intercept = FALSE)
       m2    <- glmnet::glmnet(Y,
                               Z,
-                              family=c("mgaussian"),
-                              alpha=alpha,
-                              lambda=cv.m2$lambda.min,
-                              intercept=FALSE)
+                              family    = c("mgaussian"),
+                              alpha     = alpha,
+                              lambda    = cv.m2$lambda.min,
+                              intercept = FALSE)
       Z2 <- predict(m2,newx=Y)
       Z2 <- Z2[ , ,1]
       if (dist=='euclidean'){
@@ -693,20 +712,26 @@ muncut <- function(Z,
 
   for (k in 1:B){
     ###Draw k(-) and k(+)with unequal probabilites.
-    #This section needs to change dramatically for
-    #the general case
-    N=sum(Nx)
-    P=Nx/N
-    s=sample.int(K,K,replace=FALSE)#No probability right now
+    if(sampling=='equal'){
+      s  <- sample.int(K, K, replace=FALSE)
+      while(length(which(Cx[ ,s[1]]==1))==1){
+        s  <- sample.int(K, K, replace=FALSE)
+      }
+      ax <- which(Cx[ ,s[1]]==1)
+    }else if(sampling=='size'){
+      Nx <- apply(Cx, 2, sum)
+      N  <- sum(Nx)
+      P  <- Nx/N
+      s  <- sample.int(K, K, replace=FALSE, prob=P)
+      while(length(which(Cx[ ,s[1]]==1))==1){
+        s  <- sample.int(K, K, replace=FALSE, prob=P)
+      }
+      ax <- which(Cx[ ,s[1]]==1)
+    }
 
-    ###Select a vertex from cluster s[1] with unequal probability
-    #Calculating Unequal probabilites
-    #Draw a coin to see whether we choose X or Y
-    ax=which(Cx[,s[1]]==1)#which Xs belong to the cluster
-
-    sx=sample(ax,1)
-    C2x[sx,s[1]]=0
-    C2x[sx,s[K]]=1
+    sx           <- sample(ax,1)
+    C2x[sx,s[1]] <- 0
+    C2x[sx,s[K]] <- 1
 
     #Now Step 3 in the algorithm
     # J2=NCutY3V1(C2x[,1:K],M1-C2x[,1:K],Izyx2,Izyx2)+
@@ -936,7 +961,6 @@ swncut <- function(X,
 #' The algorithm minimizes a modified version of NCut through simulated annealing.
 #' The clusers correspond to partitions that minimize this objective function.
 #' @export
-
 swncut.cem <- function(X,
                        K       = 2,
                        B       = 30,
@@ -1113,31 +1137,29 @@ bml <- function(Z,
                 dist   = 'gaussian',
                 sigmas = 1,
                 sigmac = 1){
-  #The lsit of the final oject returned by the function
-  #eta=c(seq(q0,1/B,-q0/(B+3)),0.1)[1:B]
-  Res <- list()
+  Res       <- list()
   quantiles <- vector(mode="numeric", length=B)
   #Beginning of the function
   if (scale==T){
-    Z=scale(Z)
-    Y=scale(Y)
-    X=scale(X)
+    Z <- scale(Z)
+    Y <- scale(Y)
+    X <- scale(X)
   }
-  ZYX <- cbind(Z,Y,X)
+  ZYX  <- cbind(Z,Y,X)
   dimz <- dim(Z)[2]
   dimy <- dim(Y)[2]
   dimx <- dim(X)[2]
-  n <- dim(X)[1]
-  m <- dimz + dimy + dimx
+  n    <- dim(X)[1]
+  m    <- dimz + dimy + dimx
   #vector with the probabilites for clustering samples and columns
   #Initialize step in the algorithm
-  Ps <- matrix(1/R,n,R)
-  Pc <- matrix(1/K,m,K)
+  Ps     <- matrix(1/R,n,R)
+  Pc     <- matrix(1/K,m,K)
   Clusts <- vector('list',N)
   Clustc <- vector('list',N)
-  Wr <-  vector('list',R)
-  Wk <-  vector('list',K)
-  loss <- vector(mode="numeric", length=N)
+  Wr     <- vector('list',R)
+  Wk     <- vector('list',K)
+  loss   <- vector(mode="numeric", length=N)
   #Start of the Cross entropy optimization
   #For j in {B}
   for (j in 1:B){
@@ -1145,52 +1167,48 @@ bml <- function(Z,
     #For k in {N}
     for (k in 1:N){
       #Sample the partitions V_b^{(t)} and S_b^{(t)} from P_v^{(t-1)} and P_s^{(t-1)}
-      Clustc[[k]]=RandomMatrix(m,K,Pc)
-      Clusts[[k]]=RandomMatrix(n,R,Ps)
-      loss[k] <- 0
+      Clustc[[k]] <- RandomMatrix(m,K,Pc)
+      Clusts[[k]] <- RandomMatrix(n,R,Ps)
+      loss[k]     <- 0
       if (dist=='correlation'){
         for (r in 1:R){
-          c1 <- which(Clusts[[k]][,r]==1)
+          c1      <- which(Clusts[[k]][,r]==1)
           Wr[[r]] <- w.cor(Z[c1, ],Y[c1, ],X[c1, ])
         }
       }
 
       if (dist=='gaussian'){
         for (r in 1:R){
-          c1 <- which(Clusts[[k]][,r]==1)
+          c1      <- which(Clusts[[k]][,r]==1)
           Wr[[r]] <- w.gauss(Z[c1, ],Y[c1, ],X[c1, ],sigma=sigmac)
         }
       }
-
       for (i in 1:K){
-        cz <- which(Clustc[[k]][1:dimz,i]==1)
-        cy <- which(Clustc[[k]][(dimz+1):(dimz+dimy),i]==1)
-        cx <- which(Clustc[[k]][(dimz+dimy+1):m,i]==1)
-        A1 <- cbind(Z[ ,cz],Y[ ,cy],X[ ,cx])
+        cz      <- which(Clustc[[k]][1:dimz,i]==1)
+        cy      <- which(Clustc[[k]][(dimz+1):(dimz+dimy),i]==1)
+        cx      <- which(Clustc[[k]][(dimz+dimy+1):m,i]==1)
+        A1      <- cbind(Z[ ,cz],Y[ ,cy],X[ ,cx])
         Wk[[i]] <- exp((-sigmas)*as.matrix(stats::dist(A1,
-                                                method = 'euclidean',
-                                                diag   = T,
-                                                upper  = T)))
+                                                       method = 'euclidean',
+                                                       diag   = T,
+                                                       upper  = T)))
       }
-
       for (r in 1:R){
           loss[k] <- loss[k]+NCut(Clustc[[k]],Wr[[r]])
       }
-
       for (i in 1:K){
           loss[k] <- loss[k]+NCut(Clusts[[k]],Wk[[i]])
       }
-
     }
     #Calculate \hat{q}
-    cutoff <- as.numeric(quantile(loss,q0,na.rm=T,type=4))
+    cutoff       <- as.numeric(quantile(loss,q0,na.rm=T,type=4))
     quantiles[j] <- cutoff
     #Calculate P_v^{(t)} and P_s^{(t)}
-    s1 <- which(loss<=cutoff)
+    s1   <- which(loss<=cutoff)
     sumc <- Reduce('+',Clustc[s1])
-    Pc <- sumc/length(s1)
+    Pc   <- sumc/length(s1)
     sums <- Reduce('+',Clusts[s1])
-    Ps <- sums/length(s1)
+    Ps   <- sums/length(s1)
   }#End of cross entropy optimization
 
   Res[[1]] <- quantiles
@@ -1221,8 +1239,8 @@ sncut <- function(X,
                   lambda,
                   B = 500,
                   L = 1000){
-  X <- scale(X)
-  Z <- scale(Z)
+  X   <- scale(X)
+  Z   <- scale(Z)
   out <- list()
   for(lam in lambda){
     p1     <- ncol(X)

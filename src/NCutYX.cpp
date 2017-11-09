@@ -466,6 +466,6 @@ List ncutcem(const NumericMatrix &W,
   }
   return List::create(Named("quantile") = Quant,
                       Named("clusters") = Prob,
-                      Named("ncut")     = NCut(Prob,W));
+                      Named("ncut")     = NCut(Prob, W));
 }
 
