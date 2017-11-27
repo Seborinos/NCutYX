@@ -1217,59 +1217,127 @@ bml <- function(Z,
   return(Res)
 }
 
-
-#' Cluster the columns of Y into K groups using the NCut graph measure.
+#' Cluster the rows of X into K clusters using the AWNCut method.
 #'
-#' This function will output K clusters of the columns of Y.
-#' @param Y is a n x p matrix of p variables and n observations. The p columns of
-#' Y will be clustered into K groups using NCut.
+#' Builds similarity matrices for the row of X and an assisted dataset Z.
+#' Clusters them into K groups while conducting feature selection based on the AWNCut method.
+#'
+#' @param X is an n x p1 matrix of n observations and p1 variables. The rows of
+#'         X into K clusters using the AWNCut method.
+#' @param Z is an n x p2 matrix of n observations and p2 variables. Z is the assistant dataset.
 #' @param K is the number of clusters.
-#' @param B is the number of iterations.
-#' @param N is the number of samples per iterations.
-#' @param scale equals TRUE if data Y is to be scaled with mean 0 and variance 1.
-#' @return A list with the final value of the objective function and
-#' the clusters.
+#' @param lambda is a vector of tuning parameter lambda in the objective function.
+#' @param Tau is a vector of tuning parameter tau in the objective function.
+#' @param B is the number of iterations in the simulated annealing algorithm.
+#' @param L is the temperature coefficient in the simulated annealing algorithm.
+#' @return  A list with the following components:
+#' \describe{
+#' \item{lambda}{the value of tuning parameter lambda for the result}
+#' \item{tau}{the value of tuning parameter tau for the result}
+#' \item{Cs}{a matrix of the clustering result}
+#' \item{ws}{a vector of the feature selection result}
+#' \item{OP.value}{the value of the objective function}
+#' }
 #' @details
-#' The algorithm minimizes the NCut through the cross entropy method.
-#' The clusters correspond to partitions that minimize this objective function.
+#' The algorithm maximizes a sum of the weighed NCut measure for X and assisted dataset Z,
+#' with the addition of a correlation measure between the two datasets. Feature selection
+#' is implemented by using the average correlation of each feature as a criterion.
+#' @author Ruofan Bie. Maintainer: Sebastian Jose Teran Hidalgo
+#' \url{sebastianteranhidalgo@gmail.com}.
+#'
+#' @examples
+#' set.seed(123456)
+#' #This sets up the initial parameters for the simulation.
+#' lambda <- seq(2,6,1) #Tuning parameter lambda
+#' Tau    <- seq(0.2,0.8,0.2) #Tuning parameter tau
+#'
+#' n=30; n1=10; n2=10; n3=n-n1-n2 #Sample size
+#' p1=30; p2=50; r1=28; r2=48; #Number of variables and noises in each dataset
+#'
+#' K=3; #Number of clusters
+#'
+#' mu=1; #Mean of the marginal distribution
+#' u1=0.5; #Range of enties in the coefficient matrix
+#'
+#' library(mvtnorm)
+#' epsilon <- matrix(rnorm(n*(p1-r1),0,1), n, (p1-r1)) #Generation of random error in the regression model
+#'
+#' Sigma1 <- matrix(rep(0.8,(p1-r1)^2),(p1-r1),(p1-r1)) #Generation of the covariance matrix
+#' diag(Sigma1) <- 1
+#'
+#' T1 <- matrix(rmvnorm(n1,mean=rep(-mu,(p1-r1)),sigma=Sigma1),n1,(p1-r1)) #Generation of the original distribution of the three clusters
+#' T2 <- matrix(rmvnorm(n2,mean=rep(0,(p1-r1)),sigma=Sigma1),n2,(p1-r1))
+#' T3 <- matrix(rmvnorm(n3,mean=rep(mu,(p1-r1)),sigma=Sigma1),n3,(p1-r1))
+#'
+#' X1 <- sign(T1)*(exp(abs(T1))) #Generation of signals in X
+#' X2 <- sign(T2)*(exp(abs(T2)))
+#' X3 <- sign(T3)*(exp(abs(T3)))
+#' ep1 <- (matrix(rnorm(n*r1,0,1),n,r1)) #Generation of noises in X
+#' X <- rbind(X1,X2,X3)
+#'
+#' beta1 <- matrix(runif((p1-r1)*(p2-r2),-u1,u1),(p1-r1),(p2-r2)) #Generation of the coefficient matrix
+#' Z     <- X%*%beta1+epsilon #Generation of signals in Z
+#' ep2   <- (matrix(rnorm(n*r2,0.5,1),n,r2)) #Generation of noises in Z
+#'
+#' X <- cbind(X,ep1)
+#' Z <- cbind(Z,ep2)
+#' #our method
+#' Tune1         <- awncut.selection(X, Z, K, lambda, Tau, B=100, L=1000)
+#' awncut.result <- awncut(X,Z,3, Tune1$lam, Tune1$tau,B=300, L=1000)
+#' ErrorRate(awncut.result[[1]]$Cs)
 #' @export
-sncut <- function(X,
-                  Z,
-                  K,
-                  lambda,
-                  B = 500,
-                  L = 1000){
-  X   <- scale(X)
-  Z   <- scale(Z)
-  out <- list()
-  for(lam in lambda){
-    p1     <- ncol(X)
-    p2     <- ncol(Z)
-    w1     <- rep(1/sqrt(p1), p1)
-    w2     <- rep(1/sqrt(p2), p2)
-    b      <- 0
+awncut <- function(X,
+                   Z,
+                   K,
+                   lambda,
+                   Tau,
+                   B=500,
+                   L=1000){
+  X <- scale(X)
+  Z <- scale(Z)
+  #Generate a Cartesian product of the two tuning parameters and try all possible conbinations
+  Para <- as.data.frame(cbind(rep(lambda,each=length(Tau)),rep(Tau,length(lambda))))
+  out  <- list()
+  for(para in 1:nrow(Para)){
+
+    #Initialization
+    lam <- Para[para,1]
+    tau <- Para[para,2]
+    p1 <- ncol(X)
+    p2 <- ncol(Z)
+    w1 <- rep(1/sqrt(p1), p1)
+    w2 <- rep(1/sqrt(p2), p2)
+    b <- 0
     ws.old <- c(w1,w2)
-    ws     <- rep(0, p1+p2)
+    ws <- rep(0, p1+p2)
     Cs.old <- matrix(rep(0,nrow(Z)*K),nrow(Z),K)
     for(i in 1:nrow(Z)){
       Cs.old[i,sample(K,1)] <- 1
     }
+
     while((b<=B)||(sum(ws-ws.old)/sum(ws.old)>=10e-4)){
-      b            <- b+1
-      wm1          <- W(X, Z, ws.old)
-      WX1          <- wm1[[1]]
-      WZ1          <- wm1[[2]]
-      a1           <- OP(X, Z, WX1, WZ1, Cs.old)
+      b <- b+1
+      #Calculate the weight datasets
+      wm1 <- AWNcut.W(X, Z, ws.old)
+      WX1 <- wm1[[1]]
+      WZ1 <- wm1[[2]]
+
+      #Compute the value of the objective function using the old clustering and feature selection results
+      a1 <- AWNcut.OP(X, Z, WX1, WZ1, Cs.old, tau)
       OP.value.old <- a1$TOP+lam*sum(ws.old*a1$Cor.perfeature)/(p1+p2)
-      Cs           <- UpdateCs(WX1, WZ1, K, Cs.old, ws.old)
-      ws           <- UpdateWs(X, Z, K, WX1, WZ1, b, Cs, ws.old)
 
-      wm2      <- W(X, Z, ws)
-      WX2      <- wm2[[1]]
-      WZ2      <- wm2[[2]]
-      a2       <- OP(X, Z, WX2, WZ2, Cs)
+      #Update the clustering and feature selection results
+      Cs <- AWNcut.UpdateCs(WX1, WZ1, K, Cs.old)
+      ws <- AWNcut.UpdateWs(X, Z, K, WX1, WZ1, b, Cs, ws.old, tau)
+
+      #Calculate the weight datasets using updated weights
+      wm2 <- AWNcut.W(X, Z, ws)
+      WX2 <- wm2[[1]]
+      WZ2 <- wm2[[2]]
+
+      #Compute the value of the objective function using the updated clustering and feature selection results
+      a2 <- AWNcut.OP(X, Z, WX2, WZ2, Cs, tau)
       OP.value <- a2$TOP+lam*sum(ws*a2$Cor.perfeature)/(p1+p2)
-
       if(OP.value<=OP.value.old){
         des <- rbinom(1,1,Prob(OP.value, OP.value.old, L, b))
         if(des==1){
@@ -1284,8 +1352,34 @@ sncut <- function(X,
         ws.old <- ws
       }
     }
-    out[[which(lambda==lam)]] <- list(Cs=Cs.old, ws=ws.old, OP.value=OP.value)
+    out[[para]] <- list(lambda=lam, tau=tau, Cs=Cs.old, ws=ws.old, OP.value=OP.value)
   }
   return(out)
 }
 
+#' This function outputs the selection of tuning parameters for the AWNCut method.
+#' @value num is the position of the max DBI.
+#' @value Table is the Table of the DBI for all possible combination of the parameters.
+#' @value lam is the best choice of tuning parameter lambda.
+#' @value tau is the best choice of tuning parameter tau.
+#'
+#' @param X is an n x p1 matrix of n observations and p1 variables. The rows of
+#'             X into K clusters using the AWNCut method.
+#' @param Z is an n x p2 matrix of n observations and p2 variables. Z is the assistant dataset.
+#' @param K is the number of clusters.
+#' @param lambda is a vector of tuning parameter lambda in the objective function.
+#' @param Tau is a vector of tuning parameter tau in the objective function.
+#' @param B is the number of iterations in the simulated annealing algorithm.
+#' @param L is the temperature coefficient in the simulated annealing algorithm.
+#' @export
+awncut.selection <- function(X, Z, K, lambda, Tau, B=500, L=1000){
+  out <- awncut(X, Z, K, lambda, Tau, B, L=1000)
+  Para <- as.data.frame(cbind(rep(lambda,each=length(Tau)),rep(Tau,length(lambda))))
+  dbi <- NULL
+  for(i in 1:nrow(Para)){
+    Cs <- out[[i]]$Cs
+    ws <- out[[i]]$ws
+    dbi <- c(dbi, DBI(cbind(X,Z),K,Cs,ws))
+  }
+  return(list(num=which.max(dbi),Table=t(cbind(Para,dbi)), lam=Para[which.max(dbi),1], tau=Para[which.max(dbi),2], DBI=max(dbi)))
+}
