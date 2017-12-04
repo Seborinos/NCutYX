@@ -788,6 +788,52 @@ muncut <- function(Z,
 #' @details
 #' The algorithm minimizes a modified version of NCut through simulated annealing.
 #' The clusers correspond to partitions that minimize this objective function.
+#' @examples
+#' # This sets up the initial parameters for the simulation.
+#' n <- 100 # Sample size
+#' p <- 100 # Number of columns of Y.
+#' K <- 3
+#'
+#' C0            <- matrix(0,p,K)
+#' C0[1:25,1]    <- matrix(1,25,1)
+#' C0[26:75,1:3] <- matrix(1/3,50,3)
+#' C0[76:100,3]  <- matrix(1,25,1)
+#'
+#' A0 <- C0[ ,1]%*%t(C0[ ,1]) + C0[ ,2]%*%t(C0[ ,2]) +
+#'       C0[ ,3]%*%t(C0[ ,3])
+#' A0 <- A0 - diag(diag(A0)) + diag(p)
+#'
+#' Z1 <- rnorm(n,0,2)
+#' Z2 <- rnorm(n,0,2)
+#' Z3 <- rnorm(n,0,2)
+#'
+#' Y <- matrix(0,n,p)
+#' Y[ ,1:25]   <-  matrix(rnorm(n*25, 0, 2), n, 25) + matrix(Z1, n, 25, byrow=F)
+#' Y[ ,26:75]  <-  matrix(rnorm(n*50, 0, 2), n, 50) + matrix(Z1, n, 50, byrow=F) +
+#'                 matrix(Z2, n, 50, byrow=F) + matrix(Z3, n, 50, byrow=F)
+#' Y[ ,76:100] <-  matrix(rnorm(n*25, 0, 2), n, 25) + matrix(Z3, n, 25, byrow=F)
+#'
+#' trial <- swncut(Y,
+#'                 K       = 3,
+#'                 B       = 10000,
+#'                 L       = 1000,
+#'                 lambda  = 1.5,
+#'                 start   = 'default',
+#'                 scale   = T,
+#'                 nstarts = 3,
+#'                 epsilon = 0,
+#'                 dist    = 'correlation',
+#'                 sigma   = 10)
+#'
+#' A1 <- trial[[2]][ ,1]%*%t(trial[[2]][ ,1]) +
+#'       trial[[2]][ ,2]%*%t(trial[[2]][ ,2]) +
+#'       trial[[2]][ ,3]%*%t(trial[[2]][ ,3])
+#'
+#' A1 <- A1 - diag(diag(A1)) + diag(p)
+#'
+#' plot(trial[[1]], type='l')
+#' errorL <- sum(abs(A0-A1))/p^2
+#' errorL
 #' @export
 swncut <- function(X,
                    K       = 2,
@@ -921,7 +967,6 @@ swncut <- function(X,
           Nx=apply(Cx,2,sum)
         }
         Test[k]=J
-
       }
       if(j==1){
         Rfinal[[1]] <- Test
@@ -934,110 +979,6 @@ swncut <- function(X,
       }
   }
   return(Rfinal)
-}
-
-#' Cluster the columns of X into K clusters by giving a weight for each cluster while remaining sparse.
-#'
-#' This function will output K channels of variables.
-#' @param X is a n x p matrix of p variables and n observations.
-#' @param K is the number of clusters.
-#' @param B is the number of iterations in the cross entropy method.
-#' @param N is the number of samples within each iteration of the cross entropy method.
-#' @param scale equals TRUE if data X is to be scaled with mean 0 and variance 1.
-#' @param lambda the tuning parameter of the penalty. Larger values shrink the weighted
-#' cluster membership closer together (default = 1).
-#' @param nstarts the number of starting values also corresponding how many times simulated
-#' annealing is run. Larger values provide better results but takes longer.
-#' @param start if it equals 'default' then the starting value for all weights is 1/K. If
-#' 'random' then weights are sampled from a uniform distribution and then scaled to sum 1
-#' per variable.
-#' @param dist specifies the distance metric used for constructing the similarity matrix.
-#' Options are 'gaussian', 'correlation' and 'euclidean' (default = 'gaussian').
-#' @param epsilon values in the similarity matrix less than epsilon are set to 0 (default = 0).
-#' @param sigma is the bandwith parameter when the dist metric chosen is 'gaussian' (default = 0.1).
-#' @param beta when dist='correlation', beta is the exponent applied to each entry of the
-#' similarity matrix.
-#' @details
-#' The algorithm minimizes a modified version of NCut through simulated annealing.
-#' The clusers correspond to partitions that minimize this objective function.
-#' @export
-swncut.cem <- function(X,
-                       K       = 2,
-                       B       = 30,
-                       N       = 500,
-                       scale   = T,
-                       q       = 0.1,
-                       lambda  = 1,
-                       dist    = 'correlation',
-                       epsilon = 0,
-                       beta    = 1,
-                       sigma   = 1){
-  #This creates the weight matrix W
-  Res <- list()
-  quantiles <- vector(mode="numeric", length=B)
-  #Beginning of the function
-  if (scale==T){
-    X=apply(X,2,function(e) {return(e/stats::var(e)^0.5)})
-    p=dim(X)[2]
-    if (dist=='gaussian'){
-      Wx=exp((-1)*as.matrix(dist(t(X),diag=T,upper=T))/(sigma^2))
-      Wx[which(Wx<epsilon)]=0
-    }else if(dist=='euclidean'){
-      Wx=as.matrix(dist(t(X),diag=T,upper=T))+diag(p)
-      Wx=Wx^(-1)
-      Wx[which(Wx<epsilon)]=0
-    }else if(dist=='correlation'){
-      Wx<-abs(stats::cor(X))^beta
-      Wx[which(Wx<epsilon)]=0
-    }else{
-      print('Distance Error')
-    }
-
-  }else{
-    p=dim(X)[2]
-    if (dist=='gaussian'){
-      Wx=exp((-1)*as.matrix(dist(t(X),diag=T,upper=T))/(sigma^2))
-      Wx[which(Wx<epsilon)]=0
-    }else if(dist=='euclidean'){
-      Wx=as.matrix(dist(t(X),diag=T,upper=T))+diag(p)
-      Wx=Wx^(-1)
-      Wx[which(Wx<epsilon)]=0
-    }else if(dist=='correlation'){
-      Wx<-abs(stats::cor(X))^beta
-      Wx[which(Wx<epsilon)]=0
-    }else{
-      print('Distance Error')
-    }
-  }
-
-  M1=matrix(1,p,K)
-  #Pmin contains the minumum value of the uniform distribution for sample for the weights
-  #Pmax contains the minumum value of the uniform distribution for sample for the weights
-  Pmin <- matrix(0,p,K)
-  Pmax <- matrix(1/K,p,K)
-  for (j in 1:B){
-    Clusters <- vector('list',N)
-    loss <- vector(mode="numeric", length=N)
-
-    for (k in 1:N){
-      Clusters[[k]]=RandomUnifMatrix(p,K,Pmin,Pmax)
-      Probs <- matrix(apply(Clusters[[k]],1,sum),p,K)
-      Clusters[[k]] <- Clusters[[k]]/Probs
-      loss[k] <- WNCut(Clusters[[k]],M1-Clusters[[k]],Wx)+lambda*Ranking(Clusters[[k]])/(p*K)
-    }
-
-    cutoff <- quantile(loss,q)
-    s1 <- which(loss<=cutoff)
-    quantiles[j] <- cutoff
-    Pmin <- Reduce('matrixMIN',Clusters[s1])
-    Pmax <- Reduce('matrixMAX',Clusters[s1])
-
-  }
-  Res[[1]] <- quantiles
-  P <- (Pmin+Pmax)/2
-  Probs <- matrix(apply(P,1,sum),p,K)
-  Res[[2]] <- P/Probs
-  return(Res)
 }
 
 #' Cluster the columns of Y into K groups using the NCut graph measure.
@@ -1291,25 +1232,24 @@ awncut <- function(X,
                    K,
                    lambda,
                    Tau,
-                   B=500,
-                   L=1000){
+                   B = 500,
+                   L = 1000){
   X <- scale(X)
   Z <- scale(Z)
   #Generate a Cartesian product of the two tuning parameters and try all possible conbinations
   Para <- as.data.frame(cbind(rep(lambda,each=length(Tau)),rep(Tau,length(lambda))))
   out  <- list()
   for(para in 1:nrow(Para)){
-
     #Initialization
-    lam <- Para[para,1]
-    tau <- Para[para,2]
-    p1 <- ncol(X)
-    p2 <- ncol(Z)
-    w1 <- rep(1/sqrt(p1), p1)
-    w2 <- rep(1/sqrt(p2), p2)
-    b <- 0
+    lam    <- Para[para,1]
+    tau    <- Para[para,2]
+    p1     <- ncol(X)
+    p2     <- ncol(Z)
+    w1     <- rep(1/sqrt(p1), p1)
+    w2     <- rep(1/sqrt(p2), p2)
+    b      <- 0
     ws.old <- c(w1,w2)
-    ws <- rep(0, p1+p2)
+    ws     <- rep(0, p1+p2)
     Cs.old <- matrix(rep(0,nrow(Z)*K),nrow(Z),K)
     for(i in 1:nrow(Z)){
       Cs.old[i,sample(K,1)] <- 1
@@ -1323,7 +1263,7 @@ awncut <- function(X,
       WZ1 <- wm1[[2]]
 
       #Compute the value of the objective function using the old clustering and feature selection results
-      a1 <- AWNcut.OP(X, Z, WX1, WZ1, Cs.old, tau)
+      a1           <- AWNcut.OP(X, Z, WX1, WZ1, Cs.old, tau)
       OP.value.old <- a1$TOP+lam*sum(ws.old*a1$Cor.perfeature)/(p1+p2)
 
       #Update the clustering and feature selection results
@@ -1336,10 +1276,10 @@ awncut <- function(X,
       WZ2 <- wm2[[2]]
 
       #Compute the value of the objective function using the updated clustering and feature selection results
-      a2 <- AWNcut.OP(X, Z, WX2, WZ2, Cs, tau)
-      OP.value <- a2$TOP+lam*sum(ws*a2$Cor.perfeature)/(p1+p2)
+      a2       <- AWNcut.OP(X, Z, WX2, WZ2, Cs, tau)
+      OP.value <- a2$TOP + lam*sum(ws*a2$Cor.perfeature)/(p1 + p2)
       if(OP.value<=OP.value.old){
-        des <- rbinom(1,1,Prob(OP.value, OP.value.old, L, b))
+        des <- rbinom(1, 1, Prob(OP.value, OP.value.old, L, b))
         if(des==1){
           Cs.old <- Cs
           ws.old <- ws
@@ -1352,7 +1292,11 @@ awncut <- function(X,
         ws.old <- ws
       }
     }
-    out[[para]] <- list(lambda=lam, tau=tau, Cs=Cs.old, ws=ws.old, OP.value=OP.value)
+    out[[para]] <- list(lambda   = lam,
+                        tau      = tau,
+                        Cs       = Cs.old,
+                        ws       = ws.old,
+                        OP.value = OP.value)
   }
   return(out)
 }
@@ -1373,13 +1317,17 @@ awncut <- function(X,
 #' @param L is the temperature coefficient in the simulated annealing algorithm.
 #' @export
 awncut.selection <- function(X, Z, K, lambda, Tau, B=500, L=1000){
-  out <- awncut(X, Z, K, lambda, Tau, B, L=1000)
+  out  <- awncut(X, Z, K, lambda, Tau, B, L=1000)
   Para <- as.data.frame(cbind(rep(lambda,each=length(Tau)),rep(Tau,length(lambda))))
-  dbi <- NULL
+  dbi  <- NULL
   for(i in 1:nrow(Para)){
-    Cs <- out[[i]]$Cs
-    ws <- out[[i]]$ws
-    dbi <- c(dbi, DBI(cbind(X,Z),K,Cs,ws))
+    Cs  <- out[[i]]$Cs
+    ws  <- out[[i]]$ws
+    dbi <- c(dbi, DBI(cbind(X, Z), K, Cs, ws))
   }
-  return(list(num=which.max(dbi),Table=t(cbind(Para,dbi)), lam=Para[which.max(dbi),1], tau=Para[which.max(dbi),2], DBI=max(dbi)))
+  return(list(num   = which.max(dbi),
+              Table = t(cbind(Para, dbi)),
+              lam   = Para[which.max(dbi), 1],
+              tau   = Para[which.max(dbi), 2],
+              DBI   = max(dbi)))
 }
