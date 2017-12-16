@@ -37,7 +37,7 @@ A list with the following components:
 }
 \description{
 Builds a similarity matrix for the columns of Y and clusters them into
-K groups based on the NCut graph measure. Correlation and Gaussian distance can be used
+K groups based on the NCut graph measure. Correlation and Gaussian distances can be used
 to construct the similarity matrix.
 }
 \details{

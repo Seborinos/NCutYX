@@ -56,12 +56,13 @@ mu=1; #Mean of the marginal distribution
 u1=0.5; #Range of enties in the coefficient matrix
 
 library(mvtnorm)
-epsilon <- matrix(rnorm(n*(p1-r1),0,1), n, (p1-r1)) #Generation of random error in the regression model
+epsilon <- matrix(rnorm(n*(p1-r1),0,1), n, (p1-r1)) # Generation of random error
 
-Sigma1 <- matrix(rep(0.8,(p1-r1)^2),(p1-r1),(p1-r1)) #Generation of the covariance matrix
+Sigma1 <- matrix(rep(0.8,(p1-r1)^2),(p1-r1),(p1-r1)) # Generation of the covariance matrix
 diag(Sigma1) <- 1
 
-T1 <- matrix(rmvnorm(n1,mean=rep(-mu,(p1-r1)),sigma=Sigma1),n1,(p1-r1)) #Generation of the original distribution of the three clusters
+# Generation of the original distribution of the three clusters
+T1 <- matrix(rmvnorm(n1,mean=rep(-mu,(p1-r1)),sigma=Sigma1),n1,(p1-r1))
 T2 <- matrix(rmvnorm(n2,mean=rep(0,(p1-r1)),sigma=Sigma1),n2,(p1-r1))
 T3 <- matrix(rmvnorm(n3,mean=rep(mu,(p1-r1)),sigma=Sigma1),n3,(p1-r1))
 

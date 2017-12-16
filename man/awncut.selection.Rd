@@ -20,7 +20,15 @@ X into K clusters using the AWNCut method.}
 
 \item{B}{is the number of iterations in the simulated annealing algorithm.}
 
-\item{L}{is the temperature coefficient in the simulated annealing algorithm.}
+\item{L}{is the temperature coefficient in the simulated annealing algorithm.
+#' @return  A list with the following components:
+\describe{
+\item{num}{is the position of the max DBI}
+\item{Table}{is the Table of the DBI for all possible combination of the parameters}
+\item{lam}{is the best choice of tuning parameter lambda}
+\item{tau}{is the best choice of tuning parameter lambda}
+\item{DBI}{is the max DBI}
+}}
 }
 \description{
 This function outputs the selection of tuning parameters for the AWNCut method.

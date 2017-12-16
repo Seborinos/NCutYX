@@ -1,7 +1,7 @@
 #' Cluster the columns of Y into K groups using the NCut graph measure.
 #'
 #' Builds a similarity matrix for the columns of Y and clusters them into
-#' K groups based on the NCut graph measure. Correlation and Gaussian distance can be used
+#' K groups based on the NCut graph measure. Correlation and Gaussian distances can be used
 #' to construct the similarity matrix.
 #' @param Y is a n x p matrix of p variables and n observations. The p columns of
 #' Y will be clustered into K groups using NCut.
@@ -143,6 +143,7 @@ ncut <- function(Y,
 #' @examples
 #' #This sets up the initial parameters for the simulation.
 #' library(MASS)#for mvrnorm
+#' library(fields)
 #' n=100 #Sample size
 #' B=3000 #Number of iterations in the simulated annealing algorithm.
 #' L=10000 #Temperature coefficient.
@@ -323,6 +324,7 @@ ancut <- function(Y,
 #' @param Z is a n x q matrix of q variables and n observations.
 #' @param Y is a n x p matrix of p variables and n observations.
 #' @param X is a n x r matrix of r variables and n observations.
+#' @param K is the number of column clusters.
 #' @param B is the number of iterations in the simulated annealing algorithm.
 #' @param L is the temperature coefficient in the simulated annealing algorithm.
 #' @param alpha is the tuning parameter in the elastic net penalty, only used when model=T.
@@ -334,6 +336,9 @@ ancut <- function(Y,
 #' with the elastic net. The predictions of Z, and Y from the models are used in the clustering algorithm.
 #' @param gamma is the tuning parameter of the clustering penalty. Larger values give more importance to
 #' within layer effects and less to across layer effects.
+#' @param sampling if 'equal' then the sampling distribution is discrete uniform over the
+#' number of clusters, if 'size' the probabilities are inversely proportional to the size
+#' of each cluster.
 #' @param dist is the type of distance measure use in the similarity matrix.
 #' @param sigma is the bandwith parameter when the dist metric chosen is gaussian.
 #' @details
@@ -987,12 +992,13 @@ pwncut <- function(X,
 #' @param Z is a n x q matrix of q variables and n observations.
 #' @param Y is a n x p matrix of p variables and n observations.
 #' @param X is a n x r matrix of r variables and n observations.
-#' @param K is the number of clusters.
+#' @param K is the number of column clusters.
+#' @param R is the number of row clusters.
 #' @param B is the number of iterations.
 #' @param N is the number of samples per iterations.
 #' @param q0 is the quantiles in the cross entropy method.
-#' @param sigams is the tuning parameter of the Gaussian kernel of the samples.
-#' @param sigamc is the tuning parameter of the Gaussian kernel of the variables.
+#' @param sigmas is the tuning parameter of the Gaussian kernel of the samples.
+#' @param sigmac is the tuning parameter of the Gaussian kernel of the variables.
 #' @param dist is the distance metric used.
 #' @param scale equals TRUE if data Y is to be scaled with mean 0 and variance 1.
 #' @return A list with the final value of the objective function and
@@ -1095,7 +1101,7 @@ pwncut <- function(X,
 #'                  trial[[2]][,2]%*%t(trial[[2]][,2]))*W1)/(n)^2
 #' errorK
 #' @export
-mlb <- function(Z,
+mlbncut <- function(Z,
                 Y,
                 X,
                 K      = 2,
@@ -1230,12 +1236,13 @@ mlb <- function(Z,
 #' u1=0.5; #Range of enties in the coefficient matrix
 #'
 #' library(mvtnorm)
-#' epsilon <- matrix(rnorm(n*(p1-r1),0,1), n, (p1-r1)) #Generation of random error in the regression model
+#' epsilon <- matrix(rnorm(n*(p1-r1),0,1), n, (p1-r1)) # Generation of random error
 #'
-#' Sigma1 <- matrix(rep(0.8,(p1-r1)^2),(p1-r1),(p1-r1)) #Generation of the covariance matrix
+#' Sigma1 <- matrix(rep(0.8,(p1-r1)^2),(p1-r1),(p1-r1)) # Generation of the covariance matrix
 #' diag(Sigma1) <- 1
 #'
-#' T1 <- matrix(rmvnorm(n1,mean=rep(-mu,(p1-r1)),sigma=Sigma1),n1,(p1-r1)) #Generation of the original distribution of the three clusters
+#' # Generation of the original distribution of the three clusters
+#' T1 <- matrix(rmvnorm(n1,mean=rep(-mu,(p1-r1)),sigma=Sigma1),n1,(p1-r1))
 #' T2 <- matrix(rmvnorm(n2,mean=rep(0,(p1-r1)),sigma=Sigma1),n2,(p1-r1))
 #' T3 <- matrix(rmvnorm(n3,mean=rep(mu,(p1-r1)),sigma=Sigma1),n3,(p1-r1))
 #'
@@ -1331,10 +1338,6 @@ awncut <- function(X,
 }
 
 #' This function outputs the selection of tuning parameters for the AWNCut method.
-#' @value num is the position of the max DBI.
-#' @value Table is the Table of the DBI for all possible combination of the parameters.
-#' @value lam is the best choice of tuning parameter lambda.
-#' @value tau is the best choice of tuning parameter tau.
 #'
 #' @param X is an n x p1 matrix of n observations and p1 variables. The rows of
 #'             X into K clusters using the AWNCut method.
@@ -1344,6 +1347,14 @@ awncut <- function(X,
 #' @param Tau is a vector of tuning parameter tau in the objective function.
 #' @param B is the number of iterations in the simulated annealing algorithm.
 #' @param L is the temperature coefficient in the simulated annealing algorithm.
+#' #' @return  A list with the following components:
+#' \describe{
+#' \item{num}{is the position of the max DBI}
+#' \item{Table}{is the Table of the DBI for all possible combination of the parameters}
+#' \item{lam}{is the best choice of tuning parameter lambda}
+#' \item{tau}{is the best choice of tuning parameter lambda}
+#' \item{DBI}{is the max DBI}
+#' }
 #' @export
 awncut.selection <- function(X, Z, K, lambda, Tau, B=500, L=1000){
   out  <- awncut(X, Z, K, lambda, Tau, B, L=1000)
