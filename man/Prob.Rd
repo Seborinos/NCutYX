@@ -13,7 +13,12 @@ Prob(argu1, argu2, L, b)
 
 \item{argu2}{is the old value of the objective function}
 
+\item{L}{is the temperature parameter.}
+
 \item{b}{is the iteration times.}
+}
+\value{
+The output is the proobability to accept the updated result.
 }
 \description{
 This function calculates the probability to accept the updated result

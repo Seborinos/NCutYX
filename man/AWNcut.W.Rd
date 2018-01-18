@@ -13,6 +13,9 @@ AWNcut.W(X, Z, ws)
 
 \item{ws}{is a vector of weights for both X and Z datasets.}
 }
+\value{
+A list with where WX is the weighed dataset X and WZ is the weighed dataset Z.
+}
 \description{
 This function calculates the weighed datasets for the AWNCut method.
 }

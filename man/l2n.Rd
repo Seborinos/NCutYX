@@ -9,6 +9,9 @@ l2n(vec)
 \arguments{
 \item{vec}{is a vector.}
 }
+\value{
+The output is a standardized vector.
+}
 \description{
 This function standardize a vector
 }

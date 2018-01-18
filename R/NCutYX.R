@@ -57,7 +57,7 @@
 #' B=30,
 #' N=1000,
 #' dist='correlation',
-#' scale=T,
+#' scale=TRUE,
 #' q=0.2,
 #' sigma=0.1)
 #' Cx=Res[[2]]
@@ -73,7 +73,7 @@ ncut <- function(Y,
                  B     = 30,
                  N     = 500,
                  dist  = 'correlation',
-                 scale = T,
+                 scale = TRUE,
                  q     = 0.1,
                  sigma = 1){
   # This creates the weight matrix W
@@ -404,8 +404,8 @@ ancut <- function(Y,
 #'                 ncv      = 3,
 #'                 nlambdas = 20,
 #'                 sigma    = 10,
-#'                 scale    = T,
-#'                 model    = F,
+#'                 scale    = TRUE,
+#'                 model    = FALSE,
 #'                 gamma    = 0.1)
 #'
 #' A <- clust[[2]][,1]%*%t(clust[[2]][,1])+
@@ -427,8 +427,8 @@ muncut <- function(Z,
                    alpha    = 0.5,
                    ncv      = 3,
                    nlambdas = 100,
-                   scale    = F,
-                   model    = F,
+                   scale    = FALSE,
+                   model    = FALSE,
                    gamma    = 0.5,
                    sampling = 'equal',
                    dist     = 'gaussian',
@@ -813,18 +813,18 @@ muncut <- function(Z,
 #' Z3 <- rnorm(n,0,2)
 #'
 #' Y <- matrix(0,n,p)
-#' Y[ ,1:25]   <-  matrix(rnorm(n*25, 0, 2), n, 25) + matrix(Z1, n, 25, byrow=F)
-#' Y[ ,26:75]  <-  matrix(rnorm(n*50, 0, 2), n, 50) + matrix(Z1, n, 50, byrow=F) +
-#'                 matrix(Z2, n, 50, byrow=F) + matrix(Z3, n, 50, byrow=F)
-#' Y[ ,76:100] <-  matrix(rnorm(n*25, 0, 2), n, 25) + matrix(Z3, n, 25, byrow=F)
+#' Y[ ,1:25]   <-  matrix(rnorm(n*25, 0, 2), n, 25) + matrix(Z1, n, 25, byrow=FALSE)
+#' Y[ ,26:75]  <-  matrix(rnorm(n*50, 0, 2), n, 50) + matrix(Z1, n, 50, byrow=FALSE) +
+#'                 matrix(Z2, n, 50, byrow=FALSE) + matrix(Z3, n, 50, byrow=FALSE)
+#' Y[ ,76:100] <-  matrix(rnorm(n*25, 0, 2), n, 25) + matrix(Z3, n, 25, byrow=FALSE)
 #'
-#' trial <- swncut(Y,
+#' trial <- pwncut(Y,
 #'                 K       = 3,
 #'                 B       = 10000,
 #'                 L       = 1000,
 #'                 lambda  = 1.5,
 #'                 start   = 'default',
-#'                 scale   = T,
+#'                 scale   = TRUE,
 #'                 nstarts = 3,
 #'                 epsilon = 0,
 #'                 dist    = 'correlation',
@@ -844,7 +844,7 @@ pwncut <- function(X,
                    K       = 2,
                    B       = 3000,
                    L       = 1000,
-                   scale   = T,
+                   scale   = TRUE,
                    lambda  = 1,
                    epsilon = 0,
                    nstarts = 3,
@@ -1076,18 +1076,18 @@ pwncut <- function(X,
 #' Z[1:(n/2),]   <- Y[1:(n/2),]%*%B21+matrix(rnorm((n/2)*p,0,0.25),n/2,p)
 #' Z[(n/2+1):n,] <- Y[(n/2+1):n,]%*%B22+matrix(rnorm((n/2)*p,0,0.25),n/2,p)
 #'
-#' trial <- mlb(Z,
-#'              Y,
-#'              X,
-#'              K=4,
-#'              R=2,
-#'              B=40,
-#'              N=150,
-#'              dist='correlation',
-#'              q0=0.15,
-#'              scale=T,
-#'              sigmas=0.05,
-#'              sigmac=1)
+#' trial <- mlbncut(Z,
+#'                  Y,
+#'                  X,
+#'                  K=4,
+#'                  R=2,
+#'                  B=40,
+#'                  N=150,
+#'                  dist='correlation',
+#'                  q0=0.15,
+#'                  scale=TRUE,
+#'                  sigmas=0.05,
+#'                  sigmac=1)
 #'
 #' plot(trial[[1]],type='l')
 #' image.plot(trial[[2]])
@@ -1109,7 +1109,7 @@ mlbncut <- function(Z,
                 B      = 30,
                 N      = 500,
                 q0     = 0.25,
-                scale  = T,
+                scale  = TRUE,
                 dist   = 'gaussian',
                 sigmas = 1,
                 sigmac = 1){
@@ -1356,7 +1356,13 @@ awncut <- function(X,
 #' \item{DBI}{is the max DBI}
 #' }
 #' @export
-awncut.selection <- function(X, Z, K, lambda, Tau, B=500, L=1000){
+awncut.selection <- function(X,
+                             Z,
+                             K,
+                             lambda,
+                             Tau,
+                             B = 500,
+                             L = 1000){
   out  <- awncut(X, Z, K, lambda, Tau, B, L=1000)
   Para <- as.data.frame(cbind(rep(lambda,each=length(Tau)),rep(Tau,length(lambda))))
   dbi  <- NULL

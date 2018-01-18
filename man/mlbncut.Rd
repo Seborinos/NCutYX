@@ -5,7 +5,7 @@
 \title{Cluster the columns of Y into K groups using the NCut graph measure.}
 \usage{
 mlbncut(Z, Y, X, K = 2, R = 2, B = 30, N = 500, q0 = 0.25,
-  scale = T, dist = "gaussian", sigmas = 1, sigmac = 1)
+  scale = TRUE, dist = "gaussian", sigmas = 1, sigmac = 1)
 }
 \arguments{
 \item{Z}{is a n x q matrix of q variables and n observations.}
@@ -14,7 +14,9 @@ mlbncut(Z, Y, X, K = 2, R = 2, B = 30, N = 500, q0 = 0.25,
 
 \item{X}{is a n x r matrix of r variables and n observations.}
 
-\item{K}{is the number of clusters.}
+\item{K}{is the number of column clusters.}
+
+\item{R}{is the number of row clusters.}
 
 \item{B}{is the number of iterations.}
 
@@ -26,9 +28,9 @@ mlbncut(Z, Y, X, K = 2, R = 2, B = 30, N = 500, q0 = 0.25,
 
 \item{dist}{is the distance metric used.}
 
-\item{sigams}{is the tuning parameter of the Gaussian kernel of the samples.}
+\item{sigmas}{is the tuning parameter of the Gaussian kernel of the samples.}
 
-\item{sigamc}{is the tuning parameter of the Gaussian kernel of the variables.}
+\item{sigmac}{is the tuning parameter of the Gaussian kernel of the variables.}
 }
 \value{
 A list with the final value of the objective function and
@@ -111,18 +113,18 @@ Y[(n/2+1):n,] <- X[(n/2+1):n,]\%*\%B12+matrix(rnorm((n/2)*p,0,0.25),n/2,p)
 Z[1:(n/2),]   <- Y[1:(n/2),]\%*\%B21+matrix(rnorm((n/2)*p,0,0.25),n/2,p)
 Z[(n/2+1):n,] <- Y[(n/2+1):n,]\%*\%B22+matrix(rnorm((n/2)*p,0,0.25),n/2,p)
 
-trial <- mlb(Z,
-             Y,
-             X,
-             K=4,
-             R=2,
-             B=40,
-             N=150,
-             dist='correlation',
-             q0=0.15,
-             scale=T,
-             sigmas=0.05,
-             sigmac=1)
+trial <- mlbncut(Z,
+                 Y,
+                 X,
+                 K=4,
+                 R=2,
+                 B=40,
+                 N=150,
+                 dist='correlation',
+                 q0=0.15,
+                 scale=TRUE,
+                 sigmas=0.05,
+                 sigmac=1)
 
 plot(trial[[1]],type='l')
 image.plot(trial[[2]])

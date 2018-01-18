@@ -9,6 +9,9 @@ ErrorRate(X)
 \arguments{
 \item{X}{is a clustering result in matrix format.}
 }
+\value{
+err is the true error rate of a clustering result.
+}
 \description{
 This function calculates the true error rate of a clustering result.
 }

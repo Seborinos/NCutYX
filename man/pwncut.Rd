@@ -4,7 +4,7 @@
 \alias{pwncut}
 \title{Cluster the columns of X into K clusters by giving a weight for each cluster while remaining sparse.}
 \usage{
-pwncut(X, K = 2, B = 3000, L = 1000, scale = T, lambda = 1,
+pwncut(X, K = 2, B = 3000, L = 1000, scale = TRUE, lambda = 1,
   epsilon = 0, nstarts = 3, start = "default", dist = "gaussian",
   sigma = 0.1, beta = 1)
 }
@@ -66,18 +66,18 @@ Z2 <- rnorm(n,0,2)
 Z3 <- rnorm(n,0,2)
 
 Y <- matrix(0,n,p)
-Y[ ,1:25]   <-  matrix(rnorm(n*25, 0, 2), n, 25) + matrix(Z1, n, 25, byrow=F)
-Y[ ,26:75]  <-  matrix(rnorm(n*50, 0, 2), n, 50) + matrix(Z1, n, 50, byrow=F) +
-                matrix(Z2, n, 50, byrow=F) + matrix(Z3, n, 50, byrow=F)
-Y[ ,76:100] <-  matrix(rnorm(n*25, 0, 2), n, 25) + matrix(Z3, n, 25, byrow=F)
+Y[ ,1:25]   <-  matrix(rnorm(n*25, 0, 2), n, 25) + matrix(Z1, n, 25, byrow=FALSE)
+Y[ ,26:75]  <-  matrix(rnorm(n*50, 0, 2), n, 50) + matrix(Z1, n, 50, byrow=FALSE) +
+                matrix(Z2, n, 50, byrow=FALSE) + matrix(Z3, n, 50, byrow=FALSE)
+Y[ ,76:100] <-  matrix(rnorm(n*25, 0, 2), n, 25) + matrix(Z3, n, 25, byrow=FALSE)
 
-trial <- swncut(Y,
+trial <- pwncut(Y,
                 K       = 3,
                 B       = 10000,
                 L       = 1000,
                 lambda  = 1.5,
                 start   = 'default',
-                scale   = T,
+                scale   = TRUE,
                 nstarts = 3,
                 epsilon = 0,
                 dist    = 'correlation',

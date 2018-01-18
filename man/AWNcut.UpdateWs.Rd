@@ -25,6 +25,9 @@ AWNcut.UpdateWs(X, Z, K, WX, WZ, b, Cs, ws, tau)
 
 \item{tau}{is a vector of tuning parameter tau in the objective function.}
 }
+\value{
+The output is a vector of the standardized updated weights.
+}
 \description{
 This function updates the feature selection result of the AWNCut method.
 }

@@ -54,8 +54,7 @@ w.cor <- function(Z,
 }
 
 #' This function standardize a vector
-#' @value The output is a standardized vector.
-#'
+#' @return The output is a standardized vector.
 #' @param vec is a vector.
 l2n <- function(vec){
   return(sqrt(sum(vec^2)))
@@ -64,21 +63,19 @@ l2n <- function(vec){
 #' This function calculates the probability to accept the updated result
 #' when updated value of the objectove function is smaller than the old one.
 #' Note that argu2 must be greater than argu1.
-#' @value The output is the proobability to accept the updated result.
-#'
+#' @return The output is the proobability to accept the updated result.
 #' @param argu1 is the updates value of the objective function
 #' @param argu2 is the old value of the objective function
 #' @param b is the iteration times.
+#' @param L is the temperature parameter.
 Prob <- function(argu1, argu2, L, b)
 {
-  T <- L*log(b+1)
-  return(exp(-(argu2-argu1)/T))
+  T1 <- L*log(b+1)
+  return(exp(-(argu2-argu1)/T1))
 }
 
 #' This function calculates the weighed datasets for the AWNCut method.
-#' @value WX is the weighed dataset X
-#' @value WZ is the weighed dataset Z
-#'
+#' @return A list with where WX is the weighed dataset X and WZ is the weighed dataset Z.
 #' @param X is a n x p1 matrix
 #' @param Z is a n x p2 matrix
 #' @param ws is a vector of weights for both X and Z datasets.
@@ -96,13 +93,12 @@ AWNcut.W <- function(X, Z, ws){
 }
 
 #' This function calculate the value of the objective function for the AWNCut method.
-#' @value OP1 is the value of the NCut measure in X.
-#' @value OP2 is the value of the NCut measure in Z.
-#' @value TOP is the sum of the NCut measure in both X and Z.
-#' @value Cor.X is a vector of the average correlation for X.
-#' @value Cor.Z is a vector of the average correlation for Z.
-#' @value Cor.perfeature is a combination of the average correlation for X and Z.
-#'
+#' @return A list with where OP1 is the value of the NCut measure in X,
+#' OP2 is the value of the NCut measure in Z,
+#' TOP is the sum of the NCut measure in both X and Z,
+#' Cor.X is a vector of the average correlation for X,
+#' Cor.Z is a vector of the average correlation for Z and
+#' Cor.perfeature is a combination of the average correlation for X and Z.
 #' @param X is a n x p1 matrix.
 #' @param Z is a n x p2 matrix.
 #' @param WX is the weighed dataset X.
@@ -143,12 +139,16 @@ AWNcut.OP <- function(X, Z, WX, WZ, Cs, tau)
     Cor.X <- Cor.X+apply(abs(T),1,mean)
     Cor.Z <- Cor.Z+apply(abs(T),2,mean)
   }
-  return(list(OP1=sum(OP1), OP2=sum(OP2), TOP=sum(OP1)+tau*sum(OP2), Cor.X=Cor.X, Cor.Z=Cor.Z, Cor.perfeature=c(Cor.X,Cor.Z)))
+  return(list(OP1            = sum(OP1),
+              OP2            = sum(OP2),
+              TOP            = sum(OP1) + tau*sum(OP2),
+              Cor.X          = Cor.X,
+              Cor.Z          = Cor.Z,
+              Cor.perfeature = c(Cor.X,Cor.Z)))
 }
 
 #' This function updates the clustering result of the AWNCut method.
-#' @value Cs is the updated clustering result
-#'
+#' @return Cs is the updated clustering result
 #' @param WX is the weighed dataset X.
 #' @param WZ is the weighed dataset Z.
 #' @param K is the number of clusters.
@@ -188,8 +188,7 @@ AWNcut.UpdateCs <- function(WX, WZ, K, Cs)
 }
 
 #' This function updates the feature selection result of the AWNCut method.
-#' @value The output is a vector of the standardized updated weights.
-#'
+#' @return The output is a vector of the standardized updated weights.
 #' @param X is an n x p1 matrix.
 #' @param Z is an n x p2 matrix.
 #' @param K is the number of clusters.
@@ -227,8 +226,7 @@ AWNcut.UpdateWs <- function(X, Z, K, WX, WZ, b, Cs, ws, tau)
 }
 
 #' This function outputs the value of DBI for a clustering result.
-#' @value The output is the value of DBI for a clustering result.
-#'
+#' @return The output is the value of DBI for a clustering result.
 #' @param X is a n x p matrix with n observations and p variables.
 #' @param K is the number of clusters.
 #' @param Cs is a n x K matrix containing the clustering result of X. The entries
@@ -262,8 +260,7 @@ DBI <- function(X, K, Cs, ws){
 }
 
 #' This function calculates the true error rate of a clustering result.
-#' @value err is the true error rate of a clustering result.
-#'
+#' @return err is the true error rate of a clustering result.
 #' @param X is a clustering result in matrix format.
 ErrorRate <- function(X){
   n=nrow(X)
@@ -295,8 +292,7 @@ Kcs <- function(x){
 }
 
 #' This function calculates the stablility of the simulation result
-#' @value The output if the stability of the simulation result
-#'
+#' @return The output if the stability of the simulation result
 #' @param x is a 3 dimensional array.
 #'          The first dimension equals to sample size.
 #'          The second dimension equals to number og clusters.
@@ -312,6 +308,3 @@ Stability <- function(x){
   }
   return(sta/choose(N,2))
 }
-
-
-

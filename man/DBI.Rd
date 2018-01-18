@@ -17,6 +17,9 @@ otherwise, it equals to 0.}
 
 \item{ws}{is a vector of the weights for the p variables. the length of ws equals p.}
 }
+\value{
+The output is the value of DBI for a clustering result.
+}
 \description{
 This function outputs the value of DBI for a clustering result.
 }

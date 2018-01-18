@@ -12,6 +12,9 @@ The first dimension equals to sample size.
 The second dimension equals to number og clusters.
 The third dimension equals to the replication times.}
 }
+\value{
+The output if the stability of the simulation result
+}
 \description{
 This function calculates the stablility of the simulation result
 }

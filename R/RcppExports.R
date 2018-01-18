@@ -2,86 +2,86 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 NCutY3V1 <- function(Cys, Cy2s, Wys, Wxs) {
-    .Call('NCutYX_NCutY3V1', PACKAGE = 'NCutYX', Cys, Cy2s, Wys, Wxs)
+    .Call('_NCutYX_NCutY3V1', PACKAGE = 'NCutYX', Cys, Cy2s, Wys, Wxs)
 }
 
 NCut <- function(Cys, Wys) {
-    .Call('NCutYX_NCut', PACKAGE = 'NCutYX', Cys, Wys)
+    .Call('_NCutYX_NCut', PACKAGE = 'NCutYX', Cys, Wys)
 }
 
 WNCut <- function(Cys, Cy2s, Wys) {
-    .Call('NCutYX_WNCut', PACKAGE = 'NCutYX', Cys, Cy2s, Wys)
+    .Call('_NCutYX_WNCut', PACKAGE = 'NCutYX', Cys, Cy2s, Wys)
 }
 
 NCutLayer3V1 <- function(Cys, Cy2s, Wzs, Wys, Wxs, Wzyxs) {
-    .Call('NCutYX_NCutLayer3V1', PACKAGE = 'NCutYX', Cys, Cy2s, Wzs, Wys, Wxs, Wzyxs)
+    .Call('_NCutYX_NCutLayer3V1', PACKAGE = 'NCutYX', Cys, Cy2s, Wzs, Wys, Wxs, Wzyxs)
 }
 
 Penal <- function(Cys) {
-    .Call('NCutYX_Penal', PACKAGE = 'NCutYX', Cys)
+    .Call('_NCutYX_Penal', PACKAGE = 'NCutYX', Cys)
 }
 
 Ranking <- function(C) {
-    .Call('NCutYX_Ranking', PACKAGE = 'NCutYX', C)
+    .Call('_NCutYX_Ranking', PACKAGE = 'NCutYX', C)
 }
 
 oneMultinomCalt <- function(probs) {
-    .Call('NCutYX_oneMultinomCalt', PACKAGE = 'NCutYX', probs)
+    .Call('_NCutYX_oneMultinomCalt', PACKAGE = 'NCutYX', probs)
 }
 
 RandomMatrix <- function(p, K, P) {
-    .Call('NCutYX_RandomMatrix', PACKAGE = 'NCutYX', p, K, P)
+    .Call('_NCutYX_RandomMatrix', PACKAGE = 'NCutYX', p, K, P)
 }
 
 RandomMatrix2 <- function(p, K, P) {
-    .Call('NCutYX_RandomMatrix2', PACKAGE = 'NCutYX', p, K, P)
+    .Call('_NCutYX_RandomMatrix2', PACKAGE = 'NCutYX', p, K, P)
 }
 
 RandomUnifMatrix <- function(p, K, Pmin, Pmax) {
-    .Call('NCutYX_RandomUnifMatrix', PACKAGE = 'NCutYX', p, K, Pmin, Pmax)
+    .Call('_NCutYX_RandomUnifMatrix', PACKAGE = 'NCutYX', p, K, Pmin, Pmax)
 }
 
 COR <- function(X) {
-    .Call('NCutYX_COR', PACKAGE = 'NCutYX', X)
+    .Call('_NCutYX_COR', PACKAGE = 'NCutYX', X)
 }
 
 CORYX <- function(Zs, Ys, Xs) {
-    .Call('NCutYX_CORYX', PACKAGE = 'NCutYX', Zs, Ys, Xs)
+    .Call('_NCutYX_CORYX', PACKAGE = 'NCutYX', Zs, Ys, Xs)
 }
 
 CORYX2 <- function(Zs, Ys, Xs) {
-    .Call('NCutYX_CORYX2', PACKAGE = 'NCutYX', Zs, Ys, Xs)
+    .Call('_NCutYX_CORYX2', PACKAGE = 'NCutYX', Zs, Ys, Xs)
 }
 
 COR2 <- function(Xs) {
-    .Call('NCutYX_COR2', PACKAGE = 'NCutYX', Xs)
+    .Call('_NCutYX_COR2', PACKAGE = 'NCutYX', Xs)
 }
 
 matrixMAX <- function(A1, A2) {
-    .Call('NCutYX_matrixMAX', PACKAGE = 'NCutYX', A1, A2)
+    .Call('_NCutYX_matrixMAX', PACKAGE = 'NCutYX', A1, A2)
 }
 
 matrixMIN <- function(A1, A2) {
-    .Call('NCutYX_matrixMIN', PACKAGE = 'NCutYX', A1, A2)
+    .Call('_NCutYX_matrixMIN', PACKAGE = 'NCutYX', A1, A2)
 }
 
 samplingncut <- function(W, Prob, p, K, N) {
-    .Call('NCutYX_samplingncut', PACKAGE = 'NCutYX', W, Prob, p, K, N)
+    .Call('_NCutYX_samplingncut', PACKAGE = 'NCutYX', W, Prob, p, K, N)
 }
 
 cutoff <- function(loss, q0) {
-    .Call('NCutYX_cutoff', PACKAGE = 'NCutYX', loss, q0)
+    .Call('_NCutYX_cutoff', PACKAGE = 'NCutYX', loss, q0)
 }
 
 ProbAve <- function(Cs, Ind, p, K) {
-    .Call('NCutYX_ProbAve', PACKAGE = 'NCutYX', Cs, Ind, p, K)
+    .Call('_NCutYX_ProbAve', PACKAGE = 'NCutYX', Cs, Ind, p, K)
 }
 
 Indexing <- function(loss, qloss) {
-    .Call('NCutYX_Indexing', PACKAGE = 'NCutYX', loss, qloss)
+    .Call('_NCutYX_Indexing', PACKAGE = 'NCutYX', loss, qloss)
 }
 
 ncutcem <- function(W, p, K, N, B, q0, p0) {
-    .Call('NCutYX_ncutcem', PACKAGE = 'NCutYX', W, p, K, N, B, q0, p0)
+    .Call('_NCutYX_ncutcem', PACKAGE = 'NCutYX', W, p, K, N, B, q0, p0)
 }
 

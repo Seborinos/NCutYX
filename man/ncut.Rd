@@ -4,7 +4,7 @@
 \alias{ncut}
 \title{Cluster the columns of Y into K groups using the NCut graph measure.}
 \usage{
-ncut(Y, K = 2, B = 30, N = 500, dist = "correlation", scale = T,
+ncut(Y, K = 2, B = 30, N = 500, dist = "correlation", scale = TRUE,
   q = 0.1, sigma = 1)
 }
 \arguments{
@@ -71,7 +71,7 @@ K=2,
 B=30,
 N=1000,
 dist='correlation',
-scale=T,
+scale=TRUE,
 q=0.2,
 sigma=0.1)
 Cx=Res[[2]]

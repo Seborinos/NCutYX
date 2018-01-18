@@ -8,7 +8,7 @@ using namespace Rcpp;
 
 // NCutY3V1
 double NCutY3V1(const NumericMatrix& Cys, const NumericMatrix& Cy2s, const NumericMatrix& Wys, const NumericMatrix& Wxs);
-RcppExport SEXP NCutYX_NCutY3V1(SEXP CysSEXP, SEXP Cy2sSEXP, SEXP WysSEXP, SEXP WxsSEXP) {
+RcppExport SEXP _NCutYX_NCutY3V1(SEXP CysSEXP, SEXP Cy2sSEXP, SEXP WysSEXP, SEXP WxsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -22,7 +22,7 @@ END_RCPP
 }
 // NCut
 double NCut(const NumericMatrix& Cys, const NumericMatrix& Wys);
-RcppExport SEXP NCutYX_NCut(SEXP CysSEXP, SEXP WysSEXP) {
+RcppExport SEXP _NCutYX_NCut(SEXP CysSEXP, SEXP WysSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -34,7 +34,7 @@ END_RCPP
 }
 // WNCut
 double WNCut(const NumericMatrix& Cys, const NumericMatrix& Cy2s, const NumericMatrix& Wys);
-RcppExport SEXP NCutYX_WNCut(SEXP CysSEXP, SEXP Cy2sSEXP, SEXP WysSEXP) {
+RcppExport SEXP _NCutYX_WNCut(SEXP CysSEXP, SEXP Cy2sSEXP, SEXP WysSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -47,7 +47,7 @@ END_RCPP
 }
 // NCutLayer3V1
 double NCutLayer3V1(const NumericMatrix& Cys, const NumericMatrix& Cy2s, const NumericMatrix& Wzs, const NumericMatrix& Wys, const NumericMatrix& Wxs, const NumericMatrix& Wzyxs);
-RcppExport SEXP NCutYX_NCutLayer3V1(SEXP CysSEXP, SEXP Cy2sSEXP, SEXP WzsSEXP, SEXP WysSEXP, SEXP WxsSEXP, SEXP WzyxsSEXP) {
+RcppExport SEXP _NCutYX_NCutLayer3V1(SEXP CysSEXP, SEXP Cy2sSEXP, SEXP WzsSEXP, SEXP WysSEXP, SEXP WxsSEXP, SEXP WzyxsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -63,7 +63,7 @@ END_RCPP
 }
 // Penal
 NumericMatrix Penal(const NumericMatrix& Cys);
-RcppExport SEXP NCutYX_Penal(SEXP CysSEXP) {
+RcppExport SEXP _NCutYX_Penal(SEXP CysSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -74,7 +74,7 @@ END_RCPP
 }
 // Ranking
 double Ranking(const NumericMatrix& C);
-RcppExport SEXP NCutYX_Ranking(SEXP CSEXP) {
+RcppExport SEXP _NCutYX_Ranking(SEXP CSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -85,7 +85,7 @@ END_RCPP
 }
 // oneMultinomCalt
 IntegerVector oneMultinomCalt(NumericVector probs);
-RcppExport SEXP NCutYX_oneMultinomCalt(SEXP probsSEXP) {
+RcppExport SEXP _NCutYX_oneMultinomCalt(SEXP probsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -96,7 +96,7 @@ END_RCPP
 }
 // RandomMatrix
 IntegerMatrix RandomMatrix(const int& p, const int& K, const NumericMatrix& P);
-RcppExport SEXP NCutYX_RandomMatrix(SEXP pSEXP, SEXP KSEXP, SEXP PSEXP) {
+RcppExport SEXP _NCutYX_RandomMatrix(SEXP pSEXP, SEXP KSEXP, SEXP PSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -109,7 +109,7 @@ END_RCPP
 }
 // RandomMatrix2
 NumericMatrix RandomMatrix2(const int& p, const int& K, const NumericMatrix& P);
-RcppExport SEXP NCutYX_RandomMatrix2(SEXP pSEXP, SEXP KSEXP, SEXP PSEXP) {
+RcppExport SEXP _NCutYX_RandomMatrix2(SEXP pSEXP, SEXP KSEXP, SEXP PSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -122,7 +122,7 @@ END_RCPP
 }
 // RandomUnifMatrix
 NumericMatrix RandomUnifMatrix(const int& p, const int& K, const NumericMatrix& Pmin, const NumericMatrix& Pmax);
-RcppExport SEXP NCutYX_RandomUnifMatrix(SEXP pSEXP, SEXP KSEXP, SEXP PminSEXP, SEXP PmaxSEXP) {
+RcppExport SEXP _NCutYX_RandomUnifMatrix(SEXP pSEXP, SEXP KSEXP, SEXP PminSEXP, SEXP PmaxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -136,7 +136,7 @@ END_RCPP
 }
 // COR
 Eigen::MatrixXd COR(const Eigen::MatrixXd& X);
-RcppExport SEXP NCutYX_COR(SEXP XSEXP) {
+RcppExport SEXP _NCutYX_COR(SEXP XSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -147,7 +147,7 @@ END_RCPP
 }
 // CORYX
 NumericMatrix CORYX(const NumericMatrix& Zs, const NumericMatrix& Ys, const NumericMatrix& Xs);
-RcppExport SEXP NCutYX_CORYX(SEXP ZsSEXP, SEXP YsSEXP, SEXP XsSEXP) {
+RcppExport SEXP _NCutYX_CORYX(SEXP ZsSEXP, SEXP YsSEXP, SEXP XsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -160,7 +160,7 @@ END_RCPP
 }
 // CORYX2
 NumericMatrix CORYX2(const NumericMatrix& Zs, const NumericMatrix& Ys, const NumericMatrix& Xs);
-RcppExport SEXP NCutYX_CORYX2(SEXP ZsSEXP, SEXP YsSEXP, SEXP XsSEXP) {
+RcppExport SEXP _NCutYX_CORYX2(SEXP ZsSEXP, SEXP YsSEXP, SEXP XsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -173,7 +173,7 @@ END_RCPP
 }
 // COR2
 NumericMatrix COR2(const NumericMatrix& Xs);
-RcppExport SEXP NCutYX_COR2(SEXP XsSEXP) {
+RcppExport SEXP _NCutYX_COR2(SEXP XsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -184,7 +184,7 @@ END_RCPP
 }
 // matrixMAX
 NumericMatrix matrixMAX(const NumericMatrix& A1, const NumericMatrix& A2);
-RcppExport SEXP NCutYX_matrixMAX(SEXP A1SEXP, SEXP A2SEXP) {
+RcppExport SEXP _NCutYX_matrixMAX(SEXP A1SEXP, SEXP A2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -196,7 +196,7 @@ END_RCPP
 }
 // matrixMIN
 NumericMatrix matrixMIN(const NumericMatrix& A1, const NumericMatrix& A2);
-RcppExport SEXP NCutYX_matrixMIN(SEXP A1SEXP, SEXP A2SEXP) {
+RcppExport SEXP _NCutYX_matrixMIN(SEXP A1SEXP, SEXP A2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -208,7 +208,7 @@ END_RCPP
 }
 // samplingncut
 List samplingncut(const NumericMatrix& W, const NumericMatrix& Prob, const int& p, const int& K, const int& N);
-RcppExport SEXP NCutYX_samplingncut(SEXP WSEXP, SEXP ProbSEXP, SEXP pSEXP, SEXP KSEXP, SEXP NSEXP) {
+RcppExport SEXP _NCutYX_samplingncut(SEXP WSEXP, SEXP ProbSEXP, SEXP pSEXP, SEXP KSEXP, SEXP NSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -223,7 +223,7 @@ END_RCPP
 }
 // cutoff
 double cutoff(NumericVector& loss, const int& q0);
-RcppExport SEXP NCutYX_cutoff(SEXP lossSEXP, SEXP q0SEXP) {
+RcppExport SEXP _NCutYX_cutoff(SEXP lossSEXP, SEXP q0SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -235,7 +235,7 @@ END_RCPP
 }
 // ProbAve
 NumericMatrix ProbAve(List& Cs, IntegerVector& Ind, const int& p, const int& K);
-RcppExport SEXP NCutYX_ProbAve(SEXP CsSEXP, SEXP IndSEXP, SEXP pSEXP, SEXP KSEXP) {
+RcppExport SEXP _NCutYX_ProbAve(SEXP CsSEXP, SEXP IndSEXP, SEXP pSEXP, SEXP KSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -249,7 +249,7 @@ END_RCPP
 }
 // Indexing
 IntegerVector Indexing(NumericVector& loss, const double& qloss);
-RcppExport SEXP NCutYX_Indexing(SEXP lossSEXP, SEXP qlossSEXP) {
+RcppExport SEXP _NCutYX_Indexing(SEXP lossSEXP, SEXP qlossSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -261,7 +261,7 @@ END_RCPP
 }
 // ncutcem
 List ncutcem(const NumericMatrix& W, const int& p, const int& K, const int& N, const int& B, const int& q0, const double& p0);
-RcppExport SEXP NCutYX_ncutcem(SEXP WSEXP, SEXP pSEXP, SEXP KSEXP, SEXP NSEXP, SEXP BSEXP, SEXP q0SEXP, SEXP p0SEXP) {
+RcppExport SEXP _NCutYX_ncutcem(SEXP WSEXP, SEXP pSEXP, SEXP KSEXP, SEXP NSEXP, SEXP BSEXP, SEXP q0SEXP, SEXP p0SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -278,27 +278,27 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"NCutYX_NCutY3V1", (DL_FUNC) &NCutYX_NCutY3V1, 4},
-    {"NCutYX_NCut", (DL_FUNC) &NCutYX_NCut, 2},
-    {"NCutYX_WNCut", (DL_FUNC) &NCutYX_WNCut, 3},
-    {"NCutYX_NCutLayer3V1", (DL_FUNC) &NCutYX_NCutLayer3V1, 6},
-    {"NCutYX_Penal", (DL_FUNC) &NCutYX_Penal, 1},
-    {"NCutYX_Ranking", (DL_FUNC) &NCutYX_Ranking, 1},
-    {"NCutYX_oneMultinomCalt", (DL_FUNC) &NCutYX_oneMultinomCalt, 1},
-    {"NCutYX_RandomMatrix", (DL_FUNC) &NCutYX_RandomMatrix, 3},
-    {"NCutYX_RandomMatrix2", (DL_FUNC) &NCutYX_RandomMatrix2, 3},
-    {"NCutYX_RandomUnifMatrix", (DL_FUNC) &NCutYX_RandomUnifMatrix, 4},
-    {"NCutYX_COR", (DL_FUNC) &NCutYX_COR, 1},
-    {"NCutYX_CORYX", (DL_FUNC) &NCutYX_CORYX, 3},
-    {"NCutYX_CORYX2", (DL_FUNC) &NCutYX_CORYX2, 3},
-    {"NCutYX_COR2", (DL_FUNC) &NCutYX_COR2, 1},
-    {"NCutYX_matrixMAX", (DL_FUNC) &NCutYX_matrixMAX, 2},
-    {"NCutYX_matrixMIN", (DL_FUNC) &NCutYX_matrixMIN, 2},
-    {"NCutYX_samplingncut", (DL_FUNC) &NCutYX_samplingncut, 5},
-    {"NCutYX_cutoff", (DL_FUNC) &NCutYX_cutoff, 2},
-    {"NCutYX_ProbAve", (DL_FUNC) &NCutYX_ProbAve, 4},
-    {"NCutYX_Indexing", (DL_FUNC) &NCutYX_Indexing, 2},
-    {"NCutYX_ncutcem", (DL_FUNC) &NCutYX_ncutcem, 7},
+    {"_NCutYX_NCutY3V1", (DL_FUNC) &_NCutYX_NCutY3V1, 4},
+    {"_NCutYX_NCut", (DL_FUNC) &_NCutYX_NCut, 2},
+    {"_NCutYX_WNCut", (DL_FUNC) &_NCutYX_WNCut, 3},
+    {"_NCutYX_NCutLayer3V1", (DL_FUNC) &_NCutYX_NCutLayer3V1, 6},
+    {"_NCutYX_Penal", (DL_FUNC) &_NCutYX_Penal, 1},
+    {"_NCutYX_Ranking", (DL_FUNC) &_NCutYX_Ranking, 1},
+    {"_NCutYX_oneMultinomCalt", (DL_FUNC) &_NCutYX_oneMultinomCalt, 1},
+    {"_NCutYX_RandomMatrix", (DL_FUNC) &_NCutYX_RandomMatrix, 3},
+    {"_NCutYX_RandomMatrix2", (DL_FUNC) &_NCutYX_RandomMatrix2, 3},
+    {"_NCutYX_RandomUnifMatrix", (DL_FUNC) &_NCutYX_RandomUnifMatrix, 4},
+    {"_NCutYX_COR", (DL_FUNC) &_NCutYX_COR, 1},
+    {"_NCutYX_CORYX", (DL_FUNC) &_NCutYX_CORYX, 3},
+    {"_NCutYX_CORYX2", (DL_FUNC) &_NCutYX_CORYX2, 3},
+    {"_NCutYX_COR2", (DL_FUNC) &_NCutYX_COR2, 1},
+    {"_NCutYX_matrixMAX", (DL_FUNC) &_NCutYX_matrixMAX, 2},
+    {"_NCutYX_matrixMIN", (DL_FUNC) &_NCutYX_matrixMIN, 2},
+    {"_NCutYX_samplingncut", (DL_FUNC) &_NCutYX_samplingncut, 5},
+    {"_NCutYX_cutoff", (DL_FUNC) &_NCutYX_cutoff, 2},
+    {"_NCutYX_ProbAve", (DL_FUNC) &_NCutYX_ProbAve, 4},
+    {"_NCutYX_Indexing", (DL_FUNC) &_NCutYX_Indexing, 2},
+    {"_NCutYX_ncutcem", (DL_FUNC) &_NCutYX_ncutcem, 7},
     {NULL, NULL, 0}
 };
 

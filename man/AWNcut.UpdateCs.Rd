@@ -15,6 +15,9 @@ AWNcut.UpdateCs(WX, WZ, K, Cs)
 
 \item{Cs}{is the clustering result from the las iteration.}
 }
+\value{
+Cs is the updated clustering result
+}
 \description{
 This function updates the clustering result of the AWNCut method.
 }

@@ -19,6 +19,14 @@ AWNcut.OP(X, Z, WX, WZ, Cs, tau)
 
 \item{tau}{is tuning parameter in the objective function.}
 }
+\value{
+A list with where OP1 is the value of the NCut measure in X,
+OP2 is the value of the NCut measure in Z,
+TOP is the sum of the NCut measure in both X and Z,
+Cor.X is a vector of the average correlation for X,
+Cor.Z is a vector of the average correlation for Z and
+Cor.perfeature is a combination of the average correlation for X and Z.
+}
 \description{
 This function calculate the value of the objective function for the AWNCut method.
 }

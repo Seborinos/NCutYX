@@ -5,7 +5,7 @@
 \title{Cluster the columns of Z,Y and X into K channels.}
 \usage{
 muncut(Z, Y, X, K = 2, B = 3000, L = 1000, alpha = 0.5, ncv = 3,
-  nlambdas = 100, scale = F, model = F, gamma = 0.5,
+  nlambdas = 100, scale = FALSE, model = FALSE, gamma = 0.5,
   sampling = "equal", dist = "gaussian", sigma = 0.1)
 }
 \arguments{
@@ -14,6 +14,8 @@ muncut(Z, Y, X, K = 2, B = 3000, L = 1000, alpha = 0.5, ncv = 3,
 \item{Y}{is a n x p matrix of p variables and n observations.}
 
 \item{X}{is a n x r matrix of r variables and n observations.}
+
+\item{K}{is the number of column clusters.}
 
 \item{B}{is the number of iterations in the simulated annealing algorithm.}
 
@@ -33,6 +35,10 @@ with the elastic net. The predictions of Z, and Y from the models are used in th
 
 \item{gamma}{is the tuning parameter of the clustering penalty. Larger values give more importance to
 within layer effects and less to across layer effects.}
+
+\item{sampling}{if 'equal' then the sampling distribution is discrete uniform over the
+number of clusters, if 'size' the probabilities are inversely proportional to the size
+of each cluster.}
 
 \item{dist}{is the type of distance measure use in the similarity matrix.}
 
@@ -105,8 +111,8 @@ clust <- muncut(Z,
                 ncv      = 3,
                 nlambdas = 20,
                 sigma    = 10,
-                scale    = T,
-                model    = F,
+                scale    = TRUE,
+                model    = FALSE,
                 gamma    = 0.1)
 
 A <- clust[[2]][,1]\%*\%t(clust[[2]][,1])+
