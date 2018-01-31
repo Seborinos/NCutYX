@@ -144,8 +144,8 @@ ncut <- function(Y,
 #' #This sets up the initial parameters for the simulation.
 #' library(MASS)#for mvrnorm
 #' library(fields)
-#' n=100 #Sample size
-#' B=3000 #Number of iterations in the simulated annealing algorithm.
+#' n=30 #Sample size
+#' B=1000 #Number of iterations in the simulated annealing algorithm.
 #' L=10000 #Temperature coefficient.
 #' p=50 #Number of columns of Y.
 #' q=p #Number of columns of X.
@@ -352,8 +352,8 @@ ancut <- function(Y,
 #'
 #' #parameters#
 #' set.seed(777)
-#' n=100
-#' p=100
+#' n=50
+#' p=50
 #' h=0.5
 #' rho=0.5
 #'
@@ -825,7 +825,7 @@ muncut <- function(Z,
 #'                 lambda  = 1.5,
 #'                 start   = 'default',
 #'                 scale   = TRUE,
-#'                 nstarts = 3,
+#'                 nstarts = 1,
 #'                 epsilon = 0,
 #'                 dist    = 'correlation',
 #'                 sigma   = 10)
@@ -1081,8 +1081,8 @@ pwncut <- function(X,
 #'                  X,
 #'                  K=4,
 #'                  R=2,
-#'                  B=40,
-#'                  N=150,
+#'                  B=10,
+#'                  N=100,
 #'                  dist='correlation',
 #'                  q0=0.15,
 #'                  scale=TRUE,
@@ -1228,7 +1228,7 @@ mlbncut <- function(Z,
 #' Tau    <- seq(0.2,0.8,0.2) #Tuning parameter tau
 #'
 #' n=30; n1=10; n2=10; n3=n-n1-n2 #Sample size
-#' p1=30; p2=50; r1=28; r2=48; #Number of variables and noises in each dataset
+#' p1=30; p2=30; r1=28; r2=28; #Number of variables and noises in each dataset
 #'
 #' K=3; #Number of clusters
 #'
@@ -1259,8 +1259,8 @@ mlbncut <- function(Z,
 #' X <- cbind(X,ep1)
 #' Z <- cbind(Z,ep2)
 #' #our method
-#' Tune1         <- awncut.selection(X, Z, K, lambda, Tau, B=100, L=1000)
-#' awncut.result <- awncut(X,Z,3, Tune1$lam, Tune1$tau,B=300, L=1000)
+#' Tune1         <- awncut.selection(X, Z, K, lambda, Tau, B = 30, L = 1000)
+#' awncut.result <- awncut(X, Z, 3, Tune1$lam, Tune1$tau, B = 30, L = 1000)
 #' ErrorRate(awncut.result[[1]]$Cs, n1, n2)
 #' @export
 awncut <- function(X,

@@ -78,7 +78,7 @@ trial <- pwncut(Y,
                 lambda  = 1.5,
                 start   = 'default',
                 scale   = TRUE,
-                nstarts = 3,
+                nstarts = 1,
                 epsilon = 0,
                 dist    = 'correlation',
                 sigma   = 10)

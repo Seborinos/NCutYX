@@ -63,8 +63,8 @@ The external information of \code{X} is incorporated by using elastic net to pre
 #This sets up the initial parameters for the simulation.
 library(MASS)#for mvrnorm
 library(fields)
-n=100 #Sample size
-B=3000 #Number of iterations in the simulated annealing algorithm.
+n=30 #Sample size
+B=1000 #Number of iterations in the simulated annealing algorithm.
 L=10000 #Temperature coefficient.
 p=50 #Number of columns of Y.
 q=p #Number of columns of X.

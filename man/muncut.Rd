@@ -59,8 +59,8 @@ library(fields) #for image.plot
 
 #parameters#
 set.seed(777)
-n=100
-p=100
+n=50
+p=50
 h=0.5
 rho=0.5
 
