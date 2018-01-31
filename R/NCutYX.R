@@ -1261,7 +1261,7 @@ mlbncut <- function(Z,
 #' #our method
 #' Tune1         <- awncut.selection(X, Z, K, lambda, Tau, B=100, L=1000)
 #' awncut.result <- awncut(X,Z,3, Tune1$lam, Tune1$tau,B=300, L=1000)
-#' ErrorRate(awncut.result[[1]]$Cs)
+#' ErrorRate(awncut.result[[1]]$Cs, n1, n2)
 #' @export
 awncut <- function(X,
                    Z,
@@ -1376,4 +1376,27 @@ awncut.selection <- function(X,
               lam   = Para[which.max(dbi), 1],
               tau   = Para[which.max(dbi), 2],
               DBI   = max(dbi)))
+}
+
+#' This function calculates the true error rate of a clustering result,
+#' assuming that there are three clusters.
+#'
+#' @return err is the true error rate of a clustering result.
+#'
+#' @param X is a clustering result in matrix format.
+#' @param n1 is the size of the first cluster.
+#' @param n2 is the size of the second cluster.
+ErrorRate <- function(X, n1, n2){
+  n <- nrow(X)
+  Error <- matrix(1,n,n)
+  Error[1:n1,1:n1]<-0
+  Error[(1+n1):(n1+n2),(1+n1):(n1+n2)]<-0
+  Error[(1+n2+n1):n,(1+n2+n1):n] <- 0
+  Denum <- sum(Error)
+  err <- 0
+  for(i in 1:ncol(X)){
+    f <- matrix(X[,i],n,1)
+    err <- err+sum(f%*%t(f)*Error)/Denum
+  }
+  return(err)
 }

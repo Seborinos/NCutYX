@@ -81,7 +81,7 @@ Z <- cbind(Z,ep2)
 #our method
 Tune1         <- awncut.selection(X, Z, K, lambda, Tau, B=100, L=1000)
 awncut.result <- awncut(X,Z,3, Tune1$lam, Tune1$tau,B=300, L=1000)
-ErrorRate(awncut.result[[1]]$Cs)
+ErrorRate(awncut.result[[1]]$Cs, n1, n2)
 }
 \author{
 Ruofan Bie. Maintainer: Sebastian Jose Teran Hidalgo

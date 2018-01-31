@@ -12,7 +12,9 @@ Imports:
     Rcpp (>= 0.12.2),
     RcppEigen (>= 0.3.2.5.1),
     glmnet (>= 2.0-5),
-    MASS (>= 7.3-47)
+    MASS (>= 7.3-47),
+    mvtnorm (>= 1.0-6),
+    fields (>= 9.0)
 LinkingTo: Rcpp, RcppEigen
 RoxygenNote: 6.0.1
 URL: https://github.com/Seborinos/NCutYX

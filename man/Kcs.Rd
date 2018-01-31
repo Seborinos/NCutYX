@@ -9,6 +9,9 @@ Kcs(x)
 \arguments{
 \item{x}{is a clustering result in the vector format.}
 }
+\value{
+A clustering result in the matrix format.
+}
 \description{
 This function transfers a clustering result into a matrix format from a vector.
 }

@@ -6,13 +6,6 @@ sample.cluster <- function(x){
   return(J)
 }
 
-neovector <- function(Probs){
-  K <- length(Probs)
-  return(rbinom(K,1,prob=Probs))
-}
-
-
-#rewrite the function below in C++
 #Also maybe you need to scale the weights so that they equal 1
 w.gauss <- function(Z,Y,X,sigma=1){
   n <- dim(X)[1]
@@ -31,7 +24,6 @@ w.gauss <- function(Z,Y,X,sigma=1){
   D[(q+p+1):(q+p+r),(q+1):(q+p)] <- t(D[(q+1):(q+p),(q+p+1):(q+p+r)] )
   return(D)
 }
-
 
 #rewrite the function below in C++
 #Also maybe you need to scale the weights so that they equal 1
@@ -259,27 +251,8 @@ DBI <- function(X, K, Cs, ws){
   return(mean(DBI[DBI<Inf])) #When a clustering result contains two clusters that has only one observation, the value of DBI will be Inf.
 }
 
-#' This function calculates the true error rate of a clustering result.
-#' @return err is the true error rate of a clustering result.
-#' @param X is a clustering result in matrix format.
-ErrorRate <- function(X){
-  n=nrow(X)
-  Error <- matrix(1,n,n)
-  Error[1:n1,1:n1]<-0
-  Error[(1+n1):(n1+n2),(1+n1):(n1+n2)]<-0
-  Error[(1+n2+n1):n,(1+n2+n1):n] <- 0
-  Denum <- sum(Error)
-  err <- 0
-  for(i in 1:ncol(X)){
-    f <- matrix(X[,i],n,1)
-    err <- err+sum(f%*%t(f)*Error)/Denum
-  }
-  return(err)
-}
-
 #' This function transfers a clustering result into a matrix format from a vector.
-#' @value Kcs is a clustering result in the matrix format.
-#'
+#' @return A clustering result in the matrix format.
 #' @param x is a clustering result in the vector format.
 Kcs <- function(x){
   n <- length(x)

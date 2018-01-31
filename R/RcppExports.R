@@ -17,10 +17,6 @@ NCutLayer3V1 <- function(Cys, Cy2s, Wzs, Wys, Wxs, Wzyxs) {
     .Call('_NCutYX_NCutLayer3V1', PACKAGE = 'NCutYX', Cys, Cy2s, Wzs, Wys, Wxs, Wzyxs)
 }
 
-Penal <- function(Cys) {
-    .Call('_NCutYX_Penal', PACKAGE = 'NCutYX', Cys)
-}
-
 Ranking <- function(C) {
     .Call('_NCutYX_Ranking', PACKAGE = 'NCutYX', C)
 }
@@ -35,34 +31,6 @@ RandomMatrix <- function(p, K, P) {
 
 RandomMatrix2 <- function(p, K, P) {
     .Call('_NCutYX_RandomMatrix2', PACKAGE = 'NCutYX', p, K, P)
-}
-
-RandomUnifMatrix <- function(p, K, Pmin, Pmax) {
-    .Call('_NCutYX_RandomUnifMatrix', PACKAGE = 'NCutYX', p, K, Pmin, Pmax)
-}
-
-COR <- function(X) {
-    .Call('_NCutYX_COR', PACKAGE = 'NCutYX', X)
-}
-
-CORYX <- function(Zs, Ys, Xs) {
-    .Call('_NCutYX_CORYX', PACKAGE = 'NCutYX', Zs, Ys, Xs)
-}
-
-CORYX2 <- function(Zs, Ys, Xs) {
-    .Call('_NCutYX_CORYX2', PACKAGE = 'NCutYX', Zs, Ys, Xs)
-}
-
-COR2 <- function(Xs) {
-    .Call('_NCutYX_COR2', PACKAGE = 'NCutYX', Xs)
-}
-
-matrixMAX <- function(A1, A2) {
-    .Call('_NCutYX_matrixMAX', PACKAGE = 'NCutYX', A1, A2)
-}
-
-matrixMIN <- function(A1, A2) {
-    .Call('_NCutYX_matrixMIN', PACKAGE = 'NCutYX', A1, A2)
 }
 
 samplingncut <- function(W, Prob, p, K, N) {
