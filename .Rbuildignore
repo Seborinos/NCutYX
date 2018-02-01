@@ -1,2 +1,5 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^ancut\.png$
+^Rplot\.png$
+^BrcaAnalysis1\.png$

@@ -7,8 +7,7 @@
 awncut(X, Z, K, lambda, Tau, B = 500, L = 1000)
 }
 \arguments{
-\item{X}{is an n x p1 matrix of n observations and p1 variables. The rows of
-X into K clusters using the AWNCut method.}
+\item{X}{is an n x p1 matrix of n observations and p1 variables.}
 
 \item{Z}{is an n x p2 matrix of n observations and p2 variables. Z is the assistant dataset.}
 
@@ -16,7 +15,7 @@ X into K clusters using the AWNCut method.}
 
 \item{lambda}{is a vector of tuning parameter lambda in the objective function.}
 
-\item{Tau}{is a vector of tuning parameter tau in the objective function.}
+\item{Tau}{is a vector of tuning parameters tau to be used in the objective function.}
 
 \item{B}{is the number of iterations in the simulated annealing algorithm.}
 
@@ -33,7 +32,7 @@ A list with the following components:
 }
 }
 \description{
-Builds similarity matrices for the row of X and an assisted dataset Z.
+Builds similarity matrices for the rows of X and the rows of an assisted dataset Z.
 Clusters them into K groups while conducting feature selection based on the AWNCut method.
 }
 \details{
@@ -48,7 +47,7 @@ lambda <- seq(2,6,1) #Tuning parameter lambda
 Tau    <- seq(0.2,0.8,0.2) #Tuning parameter tau
 
 n=30; n1=10; n2=10; n3=n-n1-n2 #Sample size
-p1=30; p2=30; r1=28; r2=28; #Number of variables and noises in each dataset
+p1=10; p2=10; r1=8; r2=8; #Number of variables and noises in each dataset
 
 K=3; #Number of clusters
 
@@ -79,8 +78,8 @@ ep2   <- (matrix(rnorm(n*r2,0.5,1),n,r2)) #Generation of noises in Z
 X <- cbind(X,ep1)
 Z <- cbind(Z,ep2)
 #our method
-Tune1         <- awncut.selection(X, Z, K, lambda, Tau, B = 30, L = 1000)
-awncut.result <- awncut(X, Z, 3, Tune1$lam, Tune1$tau, B = 30, L = 1000)
+Tune1         <- awncut.selection(X, Z, K, lambda, Tau, B = 20, L = 1000)
+awncut.result <- awncut(X, Z, 3, Tune1$lam, Tune1$tau, B = 20, L = 1000)
 ErrorRate(awncut.result[[1]]$Cs, n1, n2)
 }
 \author{

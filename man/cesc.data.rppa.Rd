@@ -12,6 +12,6 @@
 cesc.data.rppa
 }
 \description{
-A dataset containing RPPAs from TCGA.
+A dataset containing protein measurements from TCGA.
 }
 \keyword{datasets}

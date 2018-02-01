@@ -2,7 +2,7 @@
 % Please edit documentation in R/NCutYX.R
 \name{ancut}
 \alias{ancut}
-\title{Cluster the columns of Y into K groups with the help of external features in X.}
+\title{Cluster the columns of Y into K groups with the help of external features X.}
 \usage{
 ancut(Y, X, K = 2, B = 3000, L = 1000, alpha = 0.5, nlambdas = 100,
   sampling = "equal", ncv = 5, dist = "correlation", sigma = 0.1)
@@ -29,7 +29,8 @@ the the sizes of the clusters in the current iterations.}
 
 \item{ncv}{is the number of cross-validations in the elastic net.}
 
-\item{dist}{is the distance matrix used.}
+\item{dist}{is the type of distance metric for the construction of the similarity matrix.
+Options are 'gaussian', 'euclidean' and 'correlation', the latter being the default.}
 
 \item{sigma}{is the parameter for the gaussian kernel distance which is ignored if 'gaussian' is
 not chosen as distance measure.}
@@ -49,7 +50,7 @@ predicting \code{Y} with \code{Y}.}
 }
 }
 \description{
-This function will output K clusters of  the columns of Y, using the help of
+This function will output K clusters of the columns of Y using the help of
 X.
 }
 \details{
@@ -64,7 +65,7 @@ The external information of \code{X} is incorporated by using elastic net to pre
 library(MASS)#for mvrnorm
 library(fields)
 n=30 #Sample size
-B=1000 #Number of iterations in the simulated annealing algorithm.
+B=100 #Number of iterations in the simulated annealing algorithm.
 L=10000 #Temperature coefficient.
 p=50 #Number of columns of Y.
 q=p #Number of columns of X.

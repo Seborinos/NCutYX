@@ -17,13 +17,14 @@ Y will be clustered into K groups using NCut.}
 
 \item{N}{is the number of samples per iterations.}
 
-\item{dist}{is the type of distance metric for the construction of the similarity matrix.}
+\item{dist}{is the type of distance metric for the construction of the similarity matrix.
+Options are 'gaussian', 'euclidean' and 'correlation', the latter being the default.}
 
 \item{scale}{equals TRUE if data Y is to be scaled with mean 0 and variance 1.}
 
 \item{q}{is the quantile used for the top results at each iterations.}
 
-\item{sigma}{is the bandwith parameter when the dist metric chosen is 'gaussian' (default=0.1).}
+\item{sigma}{is the bandwidth parameter when the dist metric chosen is 'gaussian' (default=0.1).}
 }
 \value{
 A list with the following components:
@@ -37,7 +38,7 @@ A list with the following components:
 }
 \description{
 Builds a similarity matrix for the columns of Y and clusters them into
-K groups based on the NCut graph measure. Correlation and Gaussian distances can be used
+K groups based on the NCut graph measure. Correlation, Euclidean and Gaussian distances can be used
 to construct the similarity matrix.
 }
 \details{

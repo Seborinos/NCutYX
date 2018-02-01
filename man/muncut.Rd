@@ -40,7 +40,8 @@ within layer effects and less to across layer effects.}
 number of clusters, if 'size' the probabilities are inversely proportional to the size
 of each cluster.}
 
-\item{dist}{is the type of distance measure use in the similarity matrix.}
+\item{dist}{is the type of distance measure use in the similarity matrix.
+Options are 'gaussian' and 'correlation', with 'gaussian' being the default.}
 
 \item{sigma}{is the bandwith parameter when the dist metric chosen is gaussian.}
 }

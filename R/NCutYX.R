@@ -1,7 +1,7 @@
 #' Cluster the columns of Y into K groups using the NCut graph measure.
 #'
 #' Builds a similarity matrix for the columns of Y and clusters them into
-#' K groups based on the NCut graph measure. Correlation and Gaussian distances can be used
+#' K groups based on the NCut graph measure. Correlation, Euclidean and Gaussian distances can be used
 #' to construct the similarity matrix.
 #' @param Y is a n x p matrix of p variables and n observations. The p columns of
 #' Y will be clustered into K groups using NCut.
@@ -9,9 +9,10 @@
 #' @param B is the number of iterations.
 #' @param N is the number of samples per iterations.
 #' @param dist is the type of distance metric for the construction of the similarity matrix.
+#' Options are 'gaussian', 'euclidean' and 'correlation', the latter being the default.
 #' @param scale equals TRUE if data Y is to be scaled with mean 0 and variance 1.
 #' @param q is the quantile used for the top results at each iterations.
-#' @param sigma is the bandwith parameter when the dist metric chosen is 'gaussian' (default=0.1).
+#' @param sigma is the bandwidth parameter when the dist metric chosen is 'gaussian' (default=0.1).
 #' @return A list with the following components:
 #' \describe{
 #' \item{quantile}{a vector of length \code{N} which contains the quantiles
@@ -100,9 +101,9 @@ ncut <- function(Y,
   return(ncutcem(Wyy,p,K,N,B,q0,p0))
 }
 
-#' Cluster the columns of Y into K groups with the help of external features in X.
+#' Cluster the columns of Y into K groups with the help of external features X.
 #'
-#' This function will output K clusters of  the columns of Y, using the help of
+#' This function will output K clusters of the columns of Y using the help of
 #' X.
 #' @param Y is a n x p matrix of p variables and n observations. The columns of
 #' Y will be clustered into K groups.
@@ -116,7 +117,8 @@ ncut <- function(Y,
 #' @param alpha is the coefficient of the elastic net penalty.
 #' @param nlambdas is the number of tunning parameters in the elastic net.
 #' @param ncv is the number of cross-validations in the elastic net.
-#' @param dist is the distance matrix used.
+#' @param dist is the type of distance metric for the construction of the similarity matrix.
+#' Options are 'gaussian', 'euclidean' and 'correlation', the latter being the default.
 #' @param sigma is the parameter for the gaussian kernel distance which is ignored if 'gaussian' is
 #' not chosen as distance measure.
 #' @return A list with the final value of the objective function,
@@ -145,7 +147,7 @@ ncut <- function(Y,
 #' library(MASS)#for mvrnorm
 #' library(fields)
 #' n=30 #Sample size
-#' B=1000 #Number of iterations in the simulated annealing algorithm.
+#' B=100 #Number of iterations in the simulated annealing algorithm.
 #' L=10000 #Temperature coefficient.
 #' p=50 #Number of columns of Y.
 #' q=p #Number of columns of X.
@@ -340,6 +342,7 @@ ancut <- function(Y,
 #' number of clusters, if 'size' the probabilities are inversely proportional to the size
 #' of each cluster.
 #' @param dist is the type of distance measure use in the similarity matrix.
+#' Options are 'gaussian' and 'correlation', with 'gaussian' being the default.
 #' @param sigma is the bandwith parameter when the dist metric chosen is gaussian.
 #' @details
 #' The algorithm minimizes a modified version of NCut through simulated annealing.
@@ -769,7 +772,8 @@ muncut <- function(Z,
   return(Res)
 }
 
-#' Cluster the columns of X into K clusters by giving a weight for each cluster while remaining sparse.
+#' Cluster the columns of X into K clusters by giving a weight for each cluster while inducing similarity
+#' across weights.
 #'
 #' This function will output K channels of variables.
 #' @param X is a n x p matrix of p variables and n observations.
@@ -999,7 +1003,8 @@ pwncut <- function(X,
 #' @param q0 is the quantiles in the cross entropy method.
 #' @param sigmas is the tuning parameter of the Gaussian kernel of the samples.
 #' @param sigmac is the tuning parameter of the Gaussian kernel of the variables.
-#' @param dist is the distance metric used.
+#' @param dist is the type of distance measure use in the similarity matrix.
+#' Options are 'gaussian' and 'correlation', with 'gaussian' being the default.
 #' @param scale equals TRUE if data Y is to be scaled with mean 0 and variance 1.
 #' @return A list with the final value of the objective function and
 #' the clusters.
@@ -1195,15 +1200,14 @@ mlbncut <- function(Z,
 
 #' Cluster the rows of X into K clusters using the AWNCut method.
 #'
-#' Builds similarity matrices for the row of X and an assisted dataset Z.
+#' Builds similarity matrices for the rows of X and the rows of an assisted dataset Z.
 #' Clusters them into K groups while conducting feature selection based on the AWNCut method.
 #'
-#' @param X is an n x p1 matrix of n observations and p1 variables. The rows of
-#'         X into K clusters using the AWNCut method.
+#' @param X is an n x p1 matrix of n observations and p1 variables.
 #' @param Z is an n x p2 matrix of n observations and p2 variables. Z is the assistant dataset.
 #' @param K is the number of clusters.
 #' @param lambda is a vector of tuning parameter lambda in the objective function.
-#' @param Tau is a vector of tuning parameter tau in the objective function.
+#' @param Tau is a vector of tuning parameters tau to be used in the objective function.
 #' @param B is the number of iterations in the simulated annealing algorithm.
 #' @param L is the temperature coefficient in the simulated annealing algorithm.
 #' @return  A list with the following components:
@@ -1228,7 +1232,7 @@ mlbncut <- function(Z,
 #' Tau    <- seq(0.2,0.8,0.2) #Tuning parameter tau
 #'
 #' n=30; n1=10; n2=10; n3=n-n1-n2 #Sample size
-#' p1=30; p2=30; r1=28; r2=28; #Number of variables and noises in each dataset
+#' p1=10; p2=10; r1=8; r2=8; #Number of variables and noises in each dataset
 #'
 #' K=3; #Number of clusters
 #'
@@ -1259,8 +1263,8 @@ mlbncut <- function(Z,
 #' X <- cbind(X,ep1)
 #' Z <- cbind(Z,ep2)
 #' #our method
-#' Tune1         <- awncut.selection(X, Z, K, lambda, Tau, B = 30, L = 1000)
-#' awncut.result <- awncut(X, Z, 3, Tune1$lam, Tune1$tau, B = 30, L = 1000)
+#' Tune1         <- awncut.selection(X, Z, K, lambda, Tau, B = 20, L = 1000)
+#' awncut.result <- awncut(X, Z, 3, Tune1$lam, Tune1$tau, B = 20, L = 1000)
 #' ErrorRate(awncut.result[[1]]$Cs, n1, n2)
 #' @export
 awncut <- function(X,
@@ -1339,8 +1343,7 @@ awncut <- function(X,
 
 #' This function outputs the selection of tuning parameters for the AWNCut method.
 #'
-#' @param X is an n x p1 matrix of n observations and p1 variables. The rows of
-#'             X into K clusters using the AWNCut method.
+#' @param X is an n x p1 matrix of n observations and p1 variables.
 #' @param Z is an n x p2 matrix of n observations and p2 variables. Z is the assistant dataset.
 #' @param K is the number of clusters.
 #' @param lambda is a vector of tuning parameter lambda in the objective function.
@@ -1363,7 +1366,7 @@ awncut <- function(X,
 #' Tau    <- seq(0.2,0.8,0.2) #Tuning parameter tau
 #'
 #' n=30; n1=10; n2=10; n3=n-n1-n2 #Sample size
-#' p1=30; p2=30; r1=28; r2=28; #Number of variables and noises in each dataset
+#' p1=10; p2=10; r1=8; r2=8; #Number of variables and noises in each dataset
 #'
 #' K=3; #Number of clusters
 #'
@@ -1394,8 +1397,8 @@ awncut <- function(X,
 #' X <- cbind(X,ep1)
 #' Z <- cbind(Z,ep2)
 #' #our method
-#' Tune1         <- awncut.selection(X, Z, K, lambda, Tau, B = 30, L = 1000)
-#' awncut.result <- awncut(X, Z, 3, Tune1$lam, Tune1$tau, B = 30, L = 1000)
+#' Tune1         <- awncut.selection(X, Z, K, lambda, Tau, B = 20, L = 1000)
+#' awncut.result <- awncut(X, Z, 3, Tune1$lam, Tune1$tau, B = 20, L = 1000)
 #' ErrorRate(awncut.result[[1]]$Cs, n1, n2)
 #' @export
 awncut.selection <- function(X,
@@ -1436,7 +1439,7 @@ awncut.selection <- function(X,
 #' Tau    <- seq(0.2,0.8,0.2) #Tuning parameter tau
 #'
 #' n=30; n1=10; n2=10; n3=n-n1-n2 #Sample size
-#' p1=30; p2=30; r1=28; r2=28; #Number of variables and noises in each dataset
+#' p1=10; p2=10; r1=8; r2=8; #Number of variables and noises in each dataset
 #'
 #' K=3; #Number of clusters
 #'
@@ -1467,8 +1470,8 @@ awncut.selection <- function(X,
 #' X <- cbind(X,ep1)
 #' Z <- cbind(Z,ep2)
 #' #our method
-#' Tune1         <- awncut.selection(X, Z, K, lambda, Tau, B = 30, L = 1000)
-#' awncut.result <- awncut(X, Z, 3, Tune1$lam, Tune1$tau, B = 30, L = 1000)
+#' Tune1         <- awncut.selection(X, Z, K, lambda, Tau, B = 20, L = 1000)
+#' awncut.result <- awncut(X, Z, 3, Tune1$lam, Tune1$tau, B = 20, L = 1000)
 #' ErrorRate(awncut.result[[1]]$Cs, n1, n2)
 #' @export
 ErrorRate <- function(X, n1, n2){

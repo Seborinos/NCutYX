@@ -2,7 +2,8 @@
 % Please edit documentation in R/NCutYX.R
 \name{pwncut}
 \alias{pwncut}
-\title{Cluster the columns of X into K clusters by giving a weight for each cluster while remaining sparse.}
+\title{Cluster the columns of X into K clusters by giving a weight for each cluster while inducing similarity
+across weights.}
 \usage{
 pwncut(X, K = 2, B = 3000, L = 1000, scale = TRUE, lambda = 1,
   epsilon = 0, nstarts = 3, start = "default", dist = "gaussian",

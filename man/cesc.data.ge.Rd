@@ -12,6 +12,6 @@
 cesc.data.ge
 }
 \description{
-A dataset containing GEs from TCGA.
+A dataset containing gene expression measurements from TCGA.
 }
 \keyword{datasets}

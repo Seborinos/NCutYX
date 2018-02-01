@@ -26,7 +26,8 @@ mlbncut(Z, Y, X, K = 2, R = 2, B = 30, N = 500, q0 = 0.25,
 
 \item{scale}{equals TRUE if data Y is to be scaled with mean 0 and variance 1.}
 
-\item{dist}{is the distance metric used.}
+\item{dist}{is the type of distance measure use in the similarity matrix.
+Options are 'gaussian' and 'correlation', with 'gaussian' being the default.}
 
 \item{sigmas}{is the tuning parameter of the Gaussian kernel of the samples.}
 

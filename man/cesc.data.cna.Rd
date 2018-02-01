@@ -12,6 +12,6 @@
 cesc.data.cna
 }
 \description{
-A dataset containing CNAs from TCGA.
+A dataset containing copy number aberrations from TCGA.
 }
 \keyword{datasets}

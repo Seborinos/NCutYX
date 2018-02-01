@@ -12,6 +12,6 @@
 brca.data.cna
 }
 \description{
-A dataset containing CNAs from TCGA.
+A dataset containing copy number aberrations measurements from TCGA.
 }
 \keyword{datasets}
