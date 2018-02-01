@@ -21,6 +21,9 @@ To install:
     1. install and load package devtools
     2. `install_github("Seborinos/NCutYX")`
 
+## NCut <a name="ncut"></a>
+
+
 ## Assisted clustering of gene expression data using ANCut <a name="ancut"></a>
 
 This example shows how to use the ancut function. ancut clusters the columns of a data set Y into K groups with the help of an external data set X.First we define some of the simulation parameters below.
@@ -157,4 +160,8 @@ This example shows how to use the ancut function. ancut clusters the columns of 
 
 ![](BrcaAnalysis1.png) 
 
-## SpaWN
+## PWNCut
+
+## MLBNCut
+
+## AWNCut
