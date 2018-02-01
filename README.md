@@ -23,7 +23,7 @@ To install:
 
 ## Assisted clustering of gene expression data using ANCut <a name="ancut"></a>
 
-This example shows how to use the ANCut function. ANCut clusters the columns of a data set Y into K groups with the help of an external data set X.First we define some of the simulation parameters below.
+This example shows how to use the ancut function. ancut clusters the columns of a data set Y into K groups with the help of an external data set X.First we define some of the simulation parameters below.
 ```{r}
  n=200 #Sample size
  B=5000 #Number of iterations in the simulated annealing algorithm.
@@ -97,7 +97,9 @@ image.plot(Cx)
 
  
 
-## MuNCut
+## Clustering Multilayer Omics Data using MuNCut <a name="muncut"></a>
+
+This example shows how to use the ancut function. ancut clusters the columns of a data set Y into K groups with the help of an external data set X.First we define some of the simulation parameters below.
 
 ```{r}
   #parameters#
