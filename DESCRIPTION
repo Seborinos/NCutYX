@@ -1,7 +1,7 @@
 Package: NCutYX
 Type: Package
 Title: Clusters variables in Y into K groups with the help of variables in X
-Version: 1.0
+Version: 0.1.0
 Author: Sebastian J Teran Hidalgo, Shuangge Ma
 Maintainer: Sebastian J Teran Hidalgo <sebastianteranhidalgo@gmail.com>
 Description: Clusters the columns of Y into K groups with the help of

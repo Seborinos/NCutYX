@@ -1,12 +1,4 @@
-sample.cluster <- function(x){
-  K <- length(x)
-  J <- matrix(0,K,1)
-  s1 <- sample(K,1,prob=x)
-  J[s1,] <- 1
-  return(J)
-}
 
-#Also maybe you need to scale the weights so that they equal 1
 w.gauss <- function(Z,Y,X,sigma=1){
   n <- dim(X)[1]
   q <- dim(Z)[2]
@@ -45,32 +37,16 @@ w.cor <- function(Z,
   return(D)
 }
 
-#' This function standardize a vector
-#' @return The output is a standardized vector.
-#' @param vec is a vector.
 l2n <- function(vec){
   return(sqrt(sum(vec^2)))
 }
 
-#' This function calculates the probability to accept the updated result
-#' when updated value of the objectove function is smaller than the old one.
-#' Note that argu2 must be greater than argu1.
-#' @return The output is the proobability to accept the updated result.
-#' @param argu1 is the updates value of the objective function
-#' @param argu2 is the old value of the objective function
-#' @param b is the iteration times.
-#' @param L is the temperature parameter.
 Prob <- function(argu1, argu2, L, b)
 {
   T1 <- L*log(b+1)
   return(exp(-(argu2-argu1)/T1))
 }
 
-#' This function calculates the weighed datasets for the AWNCut method.
-#' @return A list with where WX is the weighed dataset X and WZ is the weighed dataset Z.
-#' @param X is a n x p1 matrix
-#' @param Z is a n x p2 matrix
-#' @param ws is a vector of weights for both X and Z datasets.
 AWNcut.W <- function(X, Z, ws){
   p1 <- ncol(X)
   p2 <- ncol(Z)
@@ -84,19 +60,6 @@ AWNcut.W <- function(X, Z, ws){
   return(list(WX, WZ))
 }
 
-#' This function calculate the value of the objective function for the AWNCut method.
-#' @return A list with where OP1 is the value of the NCut measure in X,
-#' OP2 is the value of the NCut measure in Z,
-#' TOP is the sum of the NCut measure in both X and Z,
-#' Cor.X is a vector of the average correlation for X,
-#' Cor.Z is a vector of the average correlation for Z and
-#' Cor.perfeature is a combination of the average correlation for X and Z.
-#' @param X is a n x p1 matrix.
-#' @param Z is a n x p2 matrix.
-#' @param WX is the weighed dataset X.
-#' @param WZ is the weighed dataset Z.
-#' @param Cs is clustering result.
-#' @param tau is tuning parameter in the objective function.
 AWNcut.OP <- function(X, Z, WX, WZ, Cs, tau)
 {
   n <- nrow(X)
@@ -139,12 +102,6 @@ AWNcut.OP <- function(X, Z, WX, WZ, Cs, tau)
               Cor.perfeature = c(Cor.X,Cor.Z)))
 }
 
-#' This function updates the clustering result of the AWNCut method.
-#' @return Cs is the updated clustering result
-#' @param WX is the weighed dataset X.
-#' @param WZ is the weighed dataset Z.
-#' @param K is the number of clusters.
-#' @param Cs is the clustering result from the las iteration.
 AWNcut.UpdateCs <- function(WX, WZ, K, Cs)
 {
   P <- NULL
@@ -179,17 +136,6 @@ AWNcut.UpdateCs <- function(WX, WZ, K, Cs)
   }
 }
 
-#' This function updates the feature selection result of the AWNCut method.
-#' @return The output is a vector of the standardized updated weights.
-#' @param X is an n x p1 matrix.
-#' @param Z is an n x p2 matrix.
-#' @param K is the number of clusters.
-#' @param WX is the weighed dataset X.
-#' @param WZ is the weighed dataset Z.
-#' @param b is the iteration times.
-#' @param Cs is the old clustering result.
-#' @param ws is the old feature selection result.
-#' @param tau is a vector of tuning parameter tau in the objective function.
 AWNcut.UpdateWs <- function(X, Z, K, WX, WZ, b, Cs, ws, tau)
 {
   n <- nrow(X)
@@ -217,14 +163,6 @@ AWNcut.UpdateWs <- function(X, Z, K, WX, WZ, b, Cs, ws, tau)
   return(c(ws.new[1:p1]/l2n(ws.new[1:p1]),ws.new[(p1+1):(p1+p2)]/l2n(ws.new[(p1+1):(p1+p2)])))
 }
 
-#' This function outputs the value of DBI for a clustering result.
-#' @return The output is the value of DBI for a clustering result.
-#' @param X is a n x p matrix with n observations and p variables.
-#' @param K is the number of clusters.
-#' @param Cs is a n x K matrix containing the clustering result of X. The entries
-#'        in Cs is either 1 or 0. If the ith observation is in the kth cluster, then Cs(i,k)=1,
-#'        otherwise, it equals to 0.
-#' @param ws is a vector of the weights for the p variables. the length of ws equals p.
 DBI <- function(X, K, Cs, ws){
   X <- scale(X)
   p1 <- ncol(X)
@@ -251,9 +189,6 @@ DBI <- function(X, K, Cs, ws){
   return(mean(DBI[DBI<Inf])) #When a clustering result contains two clusters that has only one observation, the value of DBI will be Inf.
 }
 
-#' This function transfers a clustering result into a matrix format from a vector.
-#' @return A clustering result in the matrix format.
-#' @param x is a clustering result in the vector format.
 Kcs <- function(x){
   n <- length(x)
   K <- length(unique(x))
@@ -264,12 +199,6 @@ Kcs <- function(x){
   return(Kcs)
 }
 
-#' This function calculates the stablility of the simulation result
-#' @return The output if the stability of the simulation result
-#' @param x is a 3 dimensional array.
-#'          The first dimension equals to sample size.
-#'          The second dimension equals to number og clusters.
-#'          The third dimension equals to the replication times.
 Stability <- function(x){
   N <- dim(x)[3]
   n <- dim(x)[1]
