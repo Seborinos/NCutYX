@@ -52,7 +52,7 @@
 #' Denum=sum(W0)
 #'
 #' Y=mvrnorm(n, mu, S)
-#' # Our method
+#' # NCut
 #' Res=ncut(Y,
 #' K=2,
 #' B=30,

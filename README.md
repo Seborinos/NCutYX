@@ -3,9 +3,12 @@
 
 # Table of contents
 1. [Description](#description)
-2. [Assisted clustering of gene expression data using ANCut](#ancut)
-3. [MuNCut](#muncut)
-4. [SpaWN](#spawn)
+2. [NCut](#ncut)
+3. [Assisted clustering of gene expression data using ANCut](#ancut)
+4. [MuNCut](#muncut)
+5. [PWNCut](#pwncut)
+6. [AWNCut](#awncut)
+
 
 ## Description
 
@@ -23,6 +26,49 @@ To install:
 
 ## NCut <a name="ncut"></a>
 
+Cluster the columns of Y into K groups using the NCut graph measure. Builds a similarity matrix for the columns of Y and clusters them into K groups based on the NCut graph measure. Correlation, Euclidean and Gaussian distances can be used to construct the similarity matrix. The NCut measure is minimized using the cross entropy method, a monte carlo optimization technique. An example follows. First, we set up the simulation parameters:
+
+```{r}
+library(MASS)
+n=100 # Sample size
+B=30 # Number of iterations in the simulated annealing algorithm.
+p=50 # Number of columns of Y.
+```
+To sample some data we do:
+```{r}
+S=matrix(0.2,p,p)
+S[1:(p/2),(p/2+1):p]=0
+S[(p/2+1):p,1:(p/2)]=0
+S=S-diag(diag(S))+diag(p)
+mu=rep(0,p)
+
+W0=matrix(1,p,p)
+W0[1:(p/2),1:(p/2)]=0
+W0[(p/2+1):p,(p/2+1):p]=0
+Denum=sum(W0)
+
+Y=mvrnorm(n, mu, S)
+```
+
+Below we run ncut and calculate the estimation error of the clusters:
+```{r}
+Res <- ncut(Y,
+            K     = 2,
+            B     = 30,
+            N     = 1000,
+            dist  = 'correlation',
+            scale = TRUE,
+            q     = 0.2,
+            sigma = 0.1)
+            
+Cx=Res[[2]]
+f11=matrix(Cx[,1],p,1)
+f12=matrix(Cx[,2],p,1)
+
+errorL <- sum((f11%*%t(f11))*W0)/Denum+sum((f12%*%t(f12))*W0)/Denum
+#' # This is the true error of the clustering solution.
+errorL
+```
 
 ## Assisted clustering of gene expression data using ANCut <a name="ancut"></a>
 
