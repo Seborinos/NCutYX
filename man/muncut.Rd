@@ -2,7 +2,7 @@
 % Please edit documentation in R/NCutYX.R
 \name{muncut}
 \alias{muncut}
-\title{Cluster the columns of Z,Y and X into K channels.}
+\title{MuNCut clusters the columns of data from 3 different sources.}
 \usage{
 muncut(Z, Y, X, K = 2, B = 3000, L = 1000, alpha = 0.5, ncv = 3,
   nlambdas = 100, scale = FALSE, model = FALSE, gamma = 0.5,
@@ -46,6 +46,9 @@ Options are 'gaussian' and 'correlation', with 'gaussian' being the default.}
 \item{sigma}{is the bandwith parameter when the dist metric chosen is gaussian.}
 }
 \description{
+It clusters the columns of Z,Y and X into K clusters by representing each data type as one network layer.
+It represents the Z layer depending on Y, and the Y layer depending on X. Elastic net can be used before the clustering
+procedure by using the predictions of Z and Y instead of the actual values to improve the cluster results.
 This function will output K channels of variables.
 }
 \details{

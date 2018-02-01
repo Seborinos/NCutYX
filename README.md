@@ -30,24 +30,24 @@ Cluster the columns of Y into K groups using the NCut graph measure. Builds a si
 
 ```{r}
 library(MASS)
-n=100 # Sample size
-B=30 # Number of iterations in the simulated annealing algorithm.
-p=50 # Number of columns of Y.
+n <- 100 # Sample size
+B <- 30 # Number of iterations in the simulated annealing algorithm.
+p <- 50 # Number of columns of Y.
 ```
 To sample some data we do:
 ```{r}
-S=matrix(0.2,p,p)
-S[1:(p/2),(p/2+1):p]=0
-S[(p/2+1):p,1:(p/2)]=0
-S=S-diag(diag(S))+diag(p)
-mu=rep(0,p)
+S <- matrix(0.2,p,p)
+S[1:(p/2),(p/2+1):p] <- 0
+S[(p/2+1):p,1:(p/2)] <- 0
+S <- S-diag(diag(S)) + diag(p)
+mu <- rep(0,p)
 
-W0=matrix(1,p,p)
-W0[1:(p/2),1:(p/2)]=0
-W0[(p/2+1):p,(p/2+1):p]=0
-Denum=sum(W0)
+W0 <- matrix(1,p,p)
+W0[1:(p/2),1:(p/2)] <- 0
+W0[(p/2+1):p,(p/2+1):p] <- 0
+Denum <- sum(W0)
 
-Y=mvrnorm(n, mu, S)
+Y <- mvrnorm(n, mu, S)
 ```
 
 Below we run ncut and calculate the estimation error of the clusters:
@@ -61,77 +61,77 @@ Res <- ncut(Y,
             q     = 0.2,
             sigma = 0.1)
             
-Cx=Res[[2]]
-f11=matrix(Cx[,1],p,1)
-f12=matrix(Cx[,2],p,1)
+Cx  <- Res[[2]]
+f11 <- matrix(Cx[,1],p,1)
+f12 <- matrix(Cx[,2],p,1)
 
 errorL <- sum((f11%*%t(f11))*W0)/Denum+sum((f12%*%t(f12))*W0)/Denum
-#' # This is the true error of the clustering solution.
+# This is the true error of the clustering solution.
 errorL
 ```
 
 ## Assisted clustering of gene expression data using ANCut <a name="ancut"></a>
 
-This example shows how to use the ancut function. ancut clusters the columns of a data set Y into K groups with the help of an external data set X.First we define some of the simulation parameters below.
+This example shows how to use the ancut function. ANcut clusters the columns of a data set Y into K groups with the help of an external data set X. First we define some of the simulation parameters below.
 ```{r}
- n=200 #Sample size
- B=5000 #Number of iterations in the simulated annealing algorithm.
- L=10000 #Temperature coefficient.
- p=200 #Number of columns of Y.
- q=p #Number of columns of X.
- h1=0.05 #Lower bound for the coefficiens in Y=X*B+e.
- h2=0.15 #Upper bound for the coefficients in the model Y=X*B+e.
+n  <- 200 # Sample size
+B  <- 5000 # Number of iterations in the simulated annealing algorithm.
+L  <- 10000 # Temperature coefficient.
+p  <- 200 # Number of columns of Y.
+q  <- p # Number of columns of X.
+h1 <- 0.05 # Lower bound for the coefficiens in Y=X*B+e.
+h2 <- 0.15 # Upper bound for the coefficients in the model Y=X*B+e.
 ```
  
 The data will be simulated as Y=X*B+e where X will be normal and a convariance matrix S with 2 blocks of correlated variables. This induces the correlation among the Y's as well. W0 is a matrix that will be used to calculate the error of the procedure.
 
 ```{r}
- S=matrix(0.2,q,q)
- S[1:(q/2),(q/2+1):q]=0
- S[(q/2+1):q,1:(q/2)]=0
- S=S-diag(diag(S))+diag(q)
+ S <- matrix(0.2,q,q)
+ S[1:(q/2),(q/2+1):q] <- 0
+ S[(q/2+1):q,1:(q/2)] <- 0
+ S <- S - diag(diag(S)) + diag(q)
  
- mu=rep(0,q)
+ mu <- rep(0,q)
 
- W0=matrix(1,p,p)
- W0[1:(p/2),1:(p/2)]=0
- W0[(p/2+1):p,(p/2+1):p]=0
+ W0 <- matrix(1,p,p)
+ W0[1:(p/2),1:(p/2)] <- 0
+ W0[(p/2+1):p,(p/2+1):p] <- 0
 
- B=matrix(0,q,p)
+ B <- matrix(0,q,p)
  for (i in 1:(p/2)){
-    B[1:(q/2),i]=runif(q/2,h1,h2)
-    in1=sample.int(q/2,6)
-    B[-in1,i]=0#This makes B sparse.
+    B[1:(q/2),i] <- runif(q/2,h1,h2)
+    in1          <- sample.int(q/2,6)
+    B[-in1,i]    <- 0#This makes B sparse.
  }
 
  for (i in (p/2+1):p){
-    B[(q/2+1):q,i]=runif(q/2,h1,h2)
-    in2=sample(seq(q/2+1,q),6)
-    B[-in2,i]=0#This makes B sparse.
+    B[(q/2+1):q,i] <- runif(q/2,h1,h2)
+    in2            <- sample(seq(q/2+1,q),6)
+    B[-in2,i]      <- 0 # This makes B sparse.
  }
 
- X=mvrnorm(n, mu, S)
- Z=X%*%B
- Y=Z+matrix(rnorm(n*p,0,2),n,p)
+ X <- mvrnorm(n, mu, S)
+ Z <- X%*%B
+ Y <- Z + matrix(rnorm(n*p,0,2),n,p)
 ```
 We apply the function ANCut to Y which will cluster the columns into K=2 groups. It uses the help of X. First, it creates a model of Y=XB+e using the elastic net. You can choose the number of cross-validations with ncv and the parameter alpha in the penalty of the elastic net. 
 
 ```{r}
- #Our method
- Res=anut(Y,X,B,L,K=2,alpha=0,ncv=5)
- Cx=Res[[2]]
- f11=matrix(Cx[,1],p,1)
- f12=matrix(Cx[,2],p,1)
+# ANCut method
+Res <- anut(Y, X, B, L, K=2, alpha = 0, ncv = 5)
+Cx  <- Res[[2]]
+f11 <- matrix(Cx[,1],p,1)
+f12 <- matrix(Cx[,2],p,1)
 
- errorL=sum((f11%*%t(f11))*W0)/Denum+sum((f12%*%t(f12))*W0)/p^2
- #This is the true error of the clustering solution.
- errorL
+errorL <- sum((f11%*%t(f11))*W0)/Denum+sum((f12%*%t(f12))*W0)/p^2
+# This is the true error of the clustering solution.
+errorL
 ```
  
  If you wish to plot the results you can do:
 ```{r}
- #Below is a plot of the simulated annealing path.
-plot(Res[[1]],type='l')
+# Below is a plot of the simulated annealing path.
+plot(Res[[1]], type='l')
 #Cluster found by ANCut
 image.plot(Cx)
 ```
@@ -148,7 +148,7 @@ image.plot(Cx)
 
 ## Clustering Multilayer Omics Data using MuNCut <a name="muncut"></a>
 
-This example shows how to use the ancut function. ancut clusters the columns of a data set Y into K groups with the help of an external data set X.First we define some of the simulation parameters below.
+This example shows how to use the muncut function. MuNCut clusters the columns of data from 3 different sources. It clusters the columns of Z, Y and X into K clusters by representing each data type as one network layer. It represents the Z layer depending on Y, and the Y layer depending on X. Elastic net can be used before the clustering procedure by using the predictions of Z and Y instead of the actual values to improve the cluster results. The function muncut will output K clusters of columns of Z, Y and X.
 
 ```{r}
   #parameters#
@@ -205,6 +205,9 @@ This example shows how to use the ancut function. ancut clusters the columns of 
 ```
 
 ![](BrcaAnalysis1.png) 
+# References:
+
+* [Hidalgo, Sebastian J. Teran and Shuangge Ma. "Clustering Multilayer Omics Data using MuNCut." *Submitted* ]
 
 ## PWNCut
 
