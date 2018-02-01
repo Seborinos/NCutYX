@@ -151,11 +151,11 @@ image.plot(Cx)
 This example shows how to use the muncut function. MuNCut clusters the columns of data from 3 different sources. It clusters the columns of Z, Y and X into K clusters by representing each data type as one network layer. It represents the Z layer depending on Y, and the Y layer depending on X. Elastic net can be used before the clustering procedure by using the predictions of Z and Y instead of the actual values to improve the cluster results. The function muncut will output K clusters of columns of Z, Y and X.
 
 ```{r}
-  #parameters#
-  n=200#number of samples
-  p=400#number of variables
-  h=0.15#This should be fine. In the previous paper I did h=0.15,0.25
-  rho=0.2#0.20 and 0.40 
+# Parameters
+n   <- 200  # Number of samples
+p   <- 400  # Number of variables
+h   <- 0.15 # This should be fine. In the previous paper I did h=0.15,0.25
+rho <- 0.2  # 0.20 and 0.40 
 
   W0=matrix(1,p,p)
   W0[1:(p/5),1:(p/5)]=0
@@ -164,7 +164,9 @@ This example shows how to use the muncut function. MuNCut clusters the columns o
   W0[(4*p/5+1):p,(4*p/5+1):p]=0
   W0=cbind(W0,W0,W0)
   W0=rbind(W0,W0,W0)
+```  
 
+```{r}
   #Simulating the data
   Y=matrix(0,n,p)
   Z=matrix(0,n,p)
@@ -207,7 +209,7 @@ This example shows how to use the muncut function. MuNCut clusters the columns o
 ![](BrcaAnalysis1.png) 
 # References:
 
-* [Hidalgo, Sebastian J. Teran and Shuangge Ma. "Clustering Multilayer Omics Data using MuNCut." *Submitted* ]
+* Sebastian J. Teran Hidalgo and Shuangge Ma. "Clustering Multilayer Omics Data using MuNCut." *Submitted* 
 
 ## PWNCut
 
