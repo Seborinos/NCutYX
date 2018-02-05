@@ -24,7 +24,7 @@ To install:
     1. install and load package devtools
     2. `install_github("Seborinos/NCutYX")`
 
-## NCut <a name="ncut"></a>
+## NCut
 
 Cluster the columns of Y into K groups using the NCut graph measure. Builds a similarity matrix for the columns of Y and clusters them into K groups based on the NCut graph measure. Correlation, Euclidean and Gaussian distances can be used to construct the similarity matrix. The NCut measure is minimized using the cross entropy method, a monte carlo optimization technique. An example follows. First, we set up the simulation parameters:
 
