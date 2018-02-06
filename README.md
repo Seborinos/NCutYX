@@ -184,6 +184,8 @@ MuNCut
 
 This example shows how to use the muncut function. MuNCut clusters the columns of data from 3 different sources. It clusters the columns of Z, Y and X into K clusters by representing each data type as one network layer. It represents the Z layer depending on Y, and the Y layer depending on X. Elastic net can be used before the clustering procedure by using the predictions of Z and Y instead of the actual values to improve the cluster results. The function muncut will output K clusters of columns of Z, Y and X.
 
+<img src="multilayer_all.png" height="275" />
+
 Simulation Example
 ------------------
 
@@ -243,8 +245,6 @@ W0=rbind(W0,W0,W0)
   errorK=sum((trial1[[2]][,1]%*%t(trial1[[2]][,1])+trial1[[2]][,2]%*%t(trial1[[2]][,2])+trial1[[2]][,3]%*%t(trial1[[2]][,3])+
                    trial1[[2]][,4]%*%t(trial1[[2]][,4]))*W0)/(3*p)^2
 ```
-
-![](BrcaAnalysis1.png)
 
 ### References:
 

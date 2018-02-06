@@ -388,6 +388,7 @@ p <- 100 # Number of columns of Y.
 K <- 3
 ```
 
+This simulates the data:
 ```{r}
 C0            <- matrix(0,p,K)
 C0[1:25,1]    <- matrix(1,25,1)
@@ -409,6 +410,7 @@ Y[ ,26:75]  <-  matrix(rnorm(n*50, 0, 2), n, 50) + matrix(Z1, n, 50, byrow=FALSE
 Y[ ,76:100] <-  matrix(rnorm(n*25, 0, 2), n, 25) + matrix(Z3, n, 25, byrow=FALSE)
 ```
 
+To use PWNCut use the function `pwncut`.
 ```{r}
 trial <- pwncut(Y,
                 K       = 3,
