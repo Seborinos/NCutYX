@@ -1,6 +1,6 @@
 ---
-title: "Vignette Title"
-author: "Vignette Author"
+title: "The NCutYX package"
+author: "Sebastian Jose Teran Hidalgo"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
@@ -16,9 +16,6 @@ knitr::opts_chunk$set(
 )
 ```
 
-# The NCutYX package
-# Sebastian Jose Teran Hidalgo
-
 # Table of contents
 1. [Description](#description)
 2. [NCut](#ncut)
@@ -32,9 +29,12 @@ knitr::opts_chunk$set(
 
 The NCutYX package includes functions on clustering genomic data using graph theory. 
 
-* The function ncut clusters the columns of a data set using the classical NCut measure from graph theory. 
-* The current version contains the function ancut that clusters one type of data genomic data, say gene expressions, with the help of a second type of data, like copy number aberrations. 
-* The function LNCut clusters a three-layered graph into K different channels of 3 types of of genomic data. 
+* The ncut function clusters the columns of a data set using the classical normalized cut (NCut) measure from graph theory. 
+* The ancut function clusters one type of data, say gene expressions, with the help of a second type of data, like copy number aberrations.
+* The muncut function clusters a three-layered graph into K different clusters of 3 different data types, say gene expression, copy number aberrations and proteins. 
+* The pwncut function clusters the columns of X into K clusters by giving a weight for each cluster while penalizing them to be similar to each other.
+* The awncut builds similarity matrices for the row of X and an assisted dataset Z. Clusters them into K groups while conducting feature selection based on the AWNCut method.
+
 
 To install:
 
@@ -44,7 +44,24 @@ To install:
 
 # NCut
 
-Cluster the columns of Y into K groups using the NCut graph measure. Builds a similarity matrix for the columns of Y and clusters them into K groups based on the NCut graph measure. Correlation, Euclidean and Gaussian distances can be used to construct the similarity matrix. The NCut measure is minimized using the cross entropy method, a monte carlo optimization technique. 
+The Normalized Cut (NCut) clusters the columns of Y into K groups using the NCut graph measure. Builds a similarity matrix for the columns of Y and clusters them into K groups based on the NCut graph measure. Correlation, Euclidean and Gaussian distances can be used to construct the similarity matrix. The NCut measure is minimized using the cross entropy method, a Monte Carlo optimization technique. 
+
+## Method
+
+Consider a dataset with $n$ iid samples. For the $i$th sample, assume that measurements are available on $p$ variables, denoted as $Y_i = (Y_{i1}, Y_{i2}, \cdots, Y_{ip})'$. Define the weight matrix $\mathbf{W}=(w_{jl})_{p\times p}$, where the non-negative element $w_{jl}$ measures the similarity between columns $j$ and $l$ of $\mathbf{Y}$. We can define $w_{jl}$ to be equal the Gaussian kernel, the absolute value of the sample correlation or the inverse of their Euclidean distance. Denote $A=\{A_1, \ldots, A_K\}$ as a partition of $\{1, \ldots, p \}$ which leads to $K$ disjoint clusters. For a set $A_k$, denote $A_k^c$ as its complement. Then, the NCut measure is defined as
+\[
+\text{NCut}(A)=\sum \limits_{k=1}^{K}\frac{\text{cut}(A_k,A_k^c;\mathbf{W})}
+{\text{cutvol}(A_k;\mathbf{W} )},
+\]
+where
+\[
+	\text{cut}(A_k,A_k^c;\mathbf{W})=\sum \limits_{j\in A_k,l \in A_k^c} w_{jl},
+\]
+and
+\[
+	\text{cutvol}(A_k; \mathbf{W})=\sum \limits_{j,l \in A_k} w_{jl}.
+\]
+With a fixed $K$, the optimal clustering minimizes the NCut measure. The minimization is done with the cross entropy method, a Monte Carlo optimization approach.
 
 ## Example
 
@@ -92,9 +109,14 @@ errorL <- sum((f11%*%t(f11))*W0)/Denum + sum((f12%*%t(f12))*W0)/Denum
 errorL
 ```
 
+## References:
+
+* [Von Luxburg, Ulrike. "A tutorial on spectral clustering." *Statistics and computing* 17.4 (2007): 395-416.](http://www.kyb.mpg.de/fileadmin/user_upload/files/publications/attachments/Luxburg07_tutorial_4488%5b0%5d.pdf)
+
+
 # ANCut
 
-Assisted NCut (ANcut) clusters the columns of a data set $Y$ into $K$ groups with the help of an external data set $X$. 
+The Assisted NCut (ANcut) clusters the columns of a data set $Y$ into $K$ groups with the help of an external data set $X$, which is associated linearly with $Y$. 
 
 ## Method
 
@@ -110,13 +132,13 @@ where $\mathbf{\beta}$ is the matrix of unknown regression coefficients, and $\e
 \]
 where $\mathbf{Y}$ and $\mathbf{X}$ are matrices consisting of $Y_i$'s and $X_i$'s, and $\lambda>0$ and $0\leq \alpha \leq 1$ are data-dependent tuning parameters. The penalization approach is adopted to accommodate the high data dimensionality and for selection: a specific $Y$ is expected to be affected by only a few $X$'s, and a $X$ is expected to affect only a few $Y$'s. The elastic net (Enet) penalty is adopted for its simplicity and to accommodate (possibly high) correlations among $X$'s. This estimation is effectively realized using R package $glmnet$. The two tuning parameters $\lambda$ and $\alpha$ are selected using V-fold cross validation.
 
-With the estimate $\widehat{\mathbf{\beta}}$, denote the ``predicted'' $Y$ values as $\widehat{\mathbf{Y}}=\widehat{\mathbf{\beta}} \mathbf{X}$, which describe the component of GE directly regulated by the regulators. Accordingly, $\mathbf{Y}^c= \mathbf{Y} \setminus \widehat{\mathbf{Y}}$ describes the levels of GEs regulated by other regulators (that are not included in $\mathbf{X}$) as well as affected by other mechanisms. This {\it decomposition} strategy for GEs has been developed in the literature [ref] and shown to provide additional insights into GEs. More discussions are also provided in the next section.
+With the estimate $\widehat{\mathbf{\beta}}$, denote the ``predicted'' $Y$ values as $\widehat{\mathbf{Y}}=\widehat{\mathbf{\beta}} \mathbf{X}$, which describe the component of GE directly regulated by the regulators. Accordingly, $\mathbf{Y}^c= \mathbf{Y} \setminus \widehat{\mathbf{Y}}$ describes the levels of GEs regulated by other regulators (that are not included in $\mathbf{X}$) as well as affected by other mechanisms.
 
 For GEs, consider the weight matrix $\mathbf{W}=(w_{jl})_{p\times p}$, where the non-negative element $w_{jl}$ measures the similarity between gene $j$ and $l$. For a pair of the original GE measurements (as included in $\mathbf{Y}$), we define $w_{jl}$ equal to the inverse of their Euclidean distance. Note that there are multiple ways of defining the similarity. This definition is adopted because of its simplicity. It shares the same spirit as the popular K-means approach. Further, we define $\widehat{\mathbf{W}}$, which is defined in a similar way as $\mathbf{W}$ but using $\widehat{\mathbf{Y}}$, the regulated component of GEs.
 
-Denote $A_1, \ldots, A_K$ as a partition of $\{1, \ldots, p \}$ which leads to $K$ disjoint clusters. For a set $A_k$, denote $A_k^c$ as its complement. We propose the ANCut (Assisted NCut) measure as
+Denote $A=\{A_1, \ldots, A_K\}$ as a partition of $\{1, \ldots, p \}$ which leads to $K$ disjoint clusters. For a set $A_k$, denote $A_k^c$ as its complement. We propose the ANCut (Assisted NCut) measure as
 \[
-\text{ANCut}(A_1,\dots,A_K)=\sum \limits_{k=1}^{K}\frac{\text{cut}(A_k,A_k^c;\mathbf{W})}
+\text{ANCut}(A)=\sum \limits_{k=1}^{K}\frac{\text{cut}(A_k,A_k^c;\mathbf{W})}
 {\text{cutvol}(A_k;\widehat{\mathbf{W}} )},
 \]
 where
@@ -142,7 +164,7 @@ h1 <- 0.05 # Lower bound for the B coefficiens in Y = X*B+e.
 h2 <- 0.15 # Upper bound for the B coefficients in the model Y = X*B+e.
 ```
  
-The data will be simulated as Y = X*B+e where X will be normal with a convariance matrix S with 2 blocks of correlated variables. This induces the correlation among the Y's as well. W0 is an incidence matrix that will be used to calculate the error of the procedure.
+The data will be simulated as Y = X*B + e where X will be normal with a convariance matrix S with 2 blocks of correlated variables. This induces the correlation among the Y's as well. W0 is an incidence matrix that will be used to calculate the error of the procedure.
 ```{r eval=FALSE}
  S <- matrix(0.2,q,q)
  S[1:(q/2),(q/2+1):q] <- 0
@@ -157,20 +179,20 @@ The data will be simulated as Y = X*B+e where X will be normal with a convarianc
 
  B <- matrix(0,q,p)
  for (i in 1:(p/2)){
-    B[1:(q/2),i] <- runif(q/2,h1,h2)
-    in1          <- sample.int(q/2,6)
+    B[1:(q/2),i] <- runif(q/2, h1, h2)
+    in1          <- sample.int(q/2, 6)
     B[-in1,i]    <- 0#This makes B sparse.
  }
 
  for (i in (p/2+1):p){
-    B[(q/2+1):q,i] <- runif(q/2,h1,h2)
-    in2            <- sample(seq(q/2+1,q),6)
+    B[(q/2+1):q,i] <- runif(q/2, h1, h2)
+    in2            <- sample(seq(q/2+1,q), 6)
     B[-in2,i]      <- 0 # This makes B sparse.
  }
 
  X <- mvrnorm(n, mu, S)
  Z <- X%*%B
- Y <- Z + matrix(rnorm(n*p,0,2),n,p)
+ Y <- Z + matrix(rnorm(n*p,0,2), n, p)
 ```
 We apply the function ANCut to Y which will cluster the columns into K=2 groups. It uses the help of X. First, it creates a model of Y=XB+e using the elastic net. You can choose the number of cross-validations with ncv and the parameter alpha in the penalty of the elastic net. 
 
@@ -178,8 +200,8 @@ We apply the function ANCut to Y which will cluster the columns into K=2 groups.
 # ANCut method
 Res <- anut(Y, X, B, L, K=2, alpha = 0, ncv = 5)
 Cx  <- Res[[2]]
-f11 <- matrix(Cx[,1],p,1)
-f12 <- matrix(Cx[,2],p,1)
+f11 <- matrix(Cx[ ,1], p, 1)
+f12 <- matrix(Cx[ ,2], p, 1)
 
 errorL <- sum((f11%*%t(f11))*W0)/Denum+sum((f12%*%t(f12))*W0)/p^2
 # This is the true error of the clustering solution.
@@ -204,7 +226,7 @@ image.plot(Cx)
 
 # MuNCut
 
-This example shows how to use the muncut function. MuNCut clusters the columns of data from 3 different sources. It clusters the columns of Z, Y and X into K clusters by representing each data type as one network layer. It represents the Z layer depending on Y, and the Y layer depending on X. Elastic net can be used before the clustering procedure by using the predictions of Z and Y instead of the actual values to improve the cluster results. The function muncut will output K clusters of columns of Z, Y and X.
+This example shows how to use the muncut function. The Multilayer NCut (MuNCut) clusters the columns of data from 3 different sources. It clusters the columns of $Z$, $Y$ and $X$ into $K$ clusters by representing each data type as one network layer. It represents the $Z$ layer depending on $Y$, and the $Y$ layer depending on $X$. Elastic net can be used before the clustering procedure by using the predictions of $Z$ and $Y$ instead of the actual values to improve the cluster results. The function muncut will output $K$ clusters of columns of $Z$, $Y$ and $X$.
 
 ## Method 
 
@@ -268,6 +290,12 @@ With a fixed $K$, let $A=\{A_1, \ldots, A_K \}$ denotes a disjoint partition of 
 \mbox{MuNCut}(A)=\mbox{NCut}_{multi}+\gamma \times \mbox{NCut}_{single},
 \end{eqnarray}
 where $\mbox{NCut}_{multi}$ and $\mbox{NCut}_{single}$ are as defined above, and $\gamma\geq 0$ is a tuning parameter. The optimal clustering is defined as the one that minimizes $\mbox{MuNCut}(A)$.
+
+## Toy Example
+
+Three data types are considered: proteins in the upper layer; gene expressions in the middle layer; and CNVs in the lower layer. One dot represents one variable. Two dots are connected by a line if the corresponding variables are interconnected. Left panel: the true data structure with four clusters. Middle panel: MuNCut clustering. Right panel: K-means clustering. For K-means and MuNCut, different clusters are represented using different colors.
+
+![](multilayer_all.png){width=275px, height=275px}
 
 ## Simulation Example
 
