@@ -87,8 +87,9 @@ errorL
 Von Luxburg, Ulrike. "A tutorial on spectral clustering."
 Statistics and computing 17.4 (2007): 395-416.
 
-Kroese, Dirk P., et al. "Cross-entropy method."
-Encyclopedia of Operations Research and Management Science. Springer US, 2013. 326-333
+Kroese, D. P., Rubinstein, R. Y., Cohen, I., Porotsky, S., & Taimre, T. (2013).
+"Cross-entropy method."
+In Encyclopedia of Operations Research and Management Science (pp. 326-333). Springer US.
 }
 \author{
 Sebastian Jose Teran Hidalgo. Maintainer: Sebastian Jose Teran Hidalgo

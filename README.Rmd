@@ -31,7 +31,7 @@ Cluster the columns of Y into K groups using the NCut graph measure. Builds a si
 ## Example
 
 First, we set up the simulation parameters.
-```{r}
+```{r eval=FALSE}
 library(MASS)
 n <- 100 # Sample size
 B <- 30 # Number of iterations in the simulated annealing algorithm.
@@ -39,7 +39,7 @@ p <- 50 # Number of columns of Y.
 ```
 
 We define the covariance matrix, the true incidence function and sample the data.
-```{r}
+```{r eval=FALSE}
 S <- matrix(0.2, p, p)
 S[1:(p/2),(p/2+1):p] <- 0
 S[(p/2+1):p,1:(p/2)] <- 0
@@ -55,7 +55,7 @@ Y <- mvrnorm(n, mu, S)
 ```
 
 Apply ncut to the data Y and calculate the estimation error of the clusters.
-```{r}
+```{r eval=FALSE}
 Res <- ncut(Y,
             K     = 2,
             B     = 30,
@@ -81,7 +81,7 @@ Assisted NCut (ANcut) clusters the columns of a data set Y into K groups with th
 ## Simulation Example
 
 First we define some of the simulation parameters below.
-```{r}
+```{r eval=FALSE}
 n  <- 200 # Sample size
 B  <- 5000 # Number of iterations in the simulated annealing algorithm.
 L  <- 10000 # Temperature coefficient.
@@ -92,7 +92,7 @@ h2 <- 0.15 # Upper bound for the B coefficients in the model Y = X*B+e.
 ```
  
 The data will be simulated as Y = X*B+e where X will be normal with a convariance matrix S with 2 blocks of correlated variables. This induces the correlation among the Y's as well. W0 is an incidence matrix that will be used to calculate the error of the procedure.
-```{r}
+```{r eval=FALSE}
  S <- matrix(0.2,q,q)
  S[1:(q/2),(q/2+1):q] <- 0
  S[(q/2+1):q,1:(q/2)] <- 0
@@ -123,7 +123,7 @@ The data will be simulated as Y = X*B+e where X will be normal with a convarianc
 ```
 We apply the function ANCut to Y which will cluster the columns into K=2 groups. It uses the help of X. First, it creates a model of Y=XB+e using the elastic net. You can choose the number of cross-validations with ncv and the parameter alpha in the penalty of the elastic net. 
 
-```{r}
+```{r eval=FALSE}
 # ANCut method
 Res <- anut(Y, X, B, L, K=2, alpha = 0, ncv = 5)
 Cx  <- Res[[2]]
@@ -135,8 +135,8 @@ errorL <- sum((f11%*%t(f11))*W0)/Denum+sum((f12%*%t(f12))*W0)/p^2
 errorL
 ```
  
- If you wish to plot the results you can do:
-```{r}
+If you wish to plot the results you can do:
+```{r eval=FALSE}
 # Below is a plot of the simulated annealing path.
 plot(Res[[1]], type='l')
 #Cluster found by ANCut
@@ -157,24 +157,24 @@ This example shows how to use the muncut function. MuNCut clusters the columns o
 
 ## Simulation Example
 
-```{r}
+```{r eval=FALSE}
 n   <- 200  # Number of samples
 p   <- 400  # Number of variables
 h   <- 0.15 # This should be fine. In the previous paper I did h=0.15,0.25
 rho <- 0.2  # 0.20 and 0.40 
 ```
 
-```{r}
-  W0=matrix(1,p,p)
-  W0[1:(p/5),1:(p/5)]=0
-  W0[(p/5+1):(3*p/5),(p/5+1):(3*p/5)]=0
-  W0[(3*p/5+1):(4*p/5),(3*p/5+1):(4*p/5)]=0
-  W0[(4*p/5+1):p,(4*p/5+1):p]=0
-  W0=cbind(W0,W0,W0)
-  W0=rbind(W0,W0,W0)
+```{r eval=FALSE}
+W0=matrix(1,p,p)
+W0[1:(p/5),1:(p/5)]=0
+W0[(p/5+1):(3*p/5),(p/5+1):(3*p/5)]=0
+W0[(3*p/5+1):(4*p/5),(3*p/5+1):(4*p/5)]=0
+W0[(4*p/5+1):p,(4*p/5+1):p]=0
+W0=cbind(W0,W0,W0)
+W0=rbind(W0,W0,W0)
 ```  
 
-```{r}
+```{r eval=FALSE}
   #Simulating the data
   Y=matrix(0,n,p)
   Z=matrix(0,n,p)

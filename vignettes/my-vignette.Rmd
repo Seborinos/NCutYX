@@ -27,7 +27,7 @@ knitr::opts_chunk$set(
 
 # Description
 
-The NCutYX package includes functions on clustering genomic data using graph theory. 
+The NCutYX package includes functions on clustering genomic data using graph theory. Each function in this package is a variation on the NCut measure used to cluster vertices in a graph. The running theme is to used data sets from different sources and types to improve the clustering results.
 
 * The ncut function clusters the columns of a data set using the classical normalized cut (NCut) measure from graph theory. 
 * The ancut function clusters one type of data, say gene expressions, with the help of a second type of data, like copy number aberrations.
@@ -113,6 +113,8 @@ errorL
 
 * [Von Luxburg, Ulrike. "A tutorial on spectral clustering." *Statistics and computing* 17.4 (2007): 395-416.](http://www.kyb.mpg.de/fileadmin/user_upload/files/publications/attachments/Luxburg07_tutorial_4488%5b0%5d.pdf)
 
+* [Kroese, D. P., Rubinstein, R. Y., Cohen, I., Porotsky, S., & Taimre, T. (2013). *Cross-entropy method* 
+  In Encyclopedia of Operations Research and Management Science (pp. 326-333). Springer US.](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.399.7005&rep=rep1&type=pdf)
 
 # ANCut
 
@@ -210,9 +212,9 @@ errorL
  
  If you wish to plot the results you can do:
 ```{r eval=FALSE}
-# Below is a plot of the simulated annealing path.
+# Below is a plot of the simulated annealing path
 plot(Res[[1]], type='l')
-#Cluster found by ANCut
+# Clusters found by ANCut
 image.plot(Cx)
 ```
  On the left panel we see the path of the objective function as it is minimized through simulated annealing. On the right are represented the clusters. The perfect solution is a perfect checker board panel and the ANCut solution misses slightly. As n or h2 are increased, the solution will get closer to the true cluster structure of the data.
@@ -230,11 +232,11 @@ This example shows how to use the muncut function. The Multilayer NCut (MuNCut) 
 
 ## Method 
 
-Denote $Z=(Z_1, \ldots, Z_q)$, $Y=(Y_1, \ldots, Y_p)$, and $X=(X_1, \ldots, X_r)$ as the length $q$, $p$, and $r$ vectors of proteins, GEs, and CNVs, respectively. Assume that data have been properly processed. With multilayer data, as described above, both within- and across-layer connections need to be considered.
+Denote $Z=(Z_1, \ldots, Z_q)$, $Y=(Y_1, \ldots, Y_p)$, and $X=(X_1, \ldots, X_r)$ as the length $q$, $p$, and $r$ vectors of proteins, GEs, and CNVs, respectively. With multilayer data both within- and across-layer connections need to be considered.
 
 ## NCut clustering within the same layers
 
-First consider CNVs. Denote $\mathbf{W}_{C}=(w_{jl,c})_{r \times r}$ as the weight matrix, where the non-negative element $w_{jl,c}$ measures the similarity between CNVs $j$ and $l$. Following published studies \cite{von2007tutorial,lanckriet2004statistical}, we set $w_{jl,c}$ equal to the Gaussian kernel. In the literature, multiple similarity measures have been proposed. We adopt this specific definition because of its simplicity and effectiveness demonstrated in published studies. Denote $A_{1,C}, \ldots, A_{K,C}$ as a partition of $\{1, \ldots, r \}$ which leads to $K$ disjoint CNV clusters. Here in the subscript, ``$C$'' is used to represent CNV. For $A_{k,C}$, denote $A_{k,C}^c$ as its complement set. Consider the NCut measure
+First consider one data type or one layer, for example CNVs. Denote $\mathbf{W}_{C}=(w_{jl,c})_{r \times r}$ as the weight matrix, where the non-negative element $w_{jl,c}$ measures the similarity between CNVs $j$ and $l$. We set $w_{jl,c}$ equal to the Gaussian kernel. Denote $A_{1,C}, \ldots, A_{K,C}$ as a partition of $\{1, \ldots, r \}$ which leads to $K$ disjoint CNV clusters. Here in the subscript, ``$C$'' is used to represent CNV. For $A_{k,C}$, denote $A_{k,C}^c$ as its complement set. Consider the NCut measure
 \begin{eqnarray}\label{eq:ncut.cnv}
 \mbox{NCut}_C=
 \sum \limits_{k=1}^{K}\frac{\text{cut}(A_{k,C},A_{k,C}^c;\mathbf{W}_C)}
@@ -298,63 +300,77 @@ Three data types are considered: proteins in the upper layer; gene expressions i
 ![](multilayer_all.png){width=275px, height=275px}
 
 ## Simulation Example
-
+First, we define the simulation parameters, including the covariance matrix S of the $X$'s.
 ```{r eval=FALSE}
-n   <- 200  # Number of samples
-p   <- 400  # Number of variables
-h   <- 0.15 # This should be fine. In the previous paper I did h=0.15,0.25
-rho <- 0.2  # 0.20 and 0.40 
+n   <- 50
+p   <- 50
+h   <- 0.5
+rho <- 0.5
+
+Sigma <- matrix(rho,p,p)
+Sigma[1:(p/5),1:(p/5)] <- 2*rho
+Sigma[(p/5+1):(3*p/5),(p/5+1):(3*p/5)] <- 2*rho
+Sigma[(3*p/5+1):(4*p/5),(3*p/5+1):(4*p/5)] <- 2*rho
+Sigma <- Sigma - diag(diag(Sigma))
+Sigma <- Sigma + diag(p)
 ```
 
+The matrix W0 will be used to evaluate how close the estimate is to the true cluster structure.
 ```{r eval=FALSE}
-  W0=matrix(1,p,p)
-  W0[1:(p/5),1:(p/5)]=0
-  W0[(p/5+1):(3*p/5),(p/5+1):(3*p/5)]=0
-  W0[(3*p/5+1):(4*p/5),(3*p/5+1):(4*p/5)]=0
-  W0[(4*p/5+1):p,(4*p/5+1):p]=0
-  W0=cbind(W0,W0,W0)
-  W0=rbind(W0,W0,W0)
-```  
-
-```{r eval=FALSE}
-  #Simulating the data
-  Y=matrix(0,n,p)
-  Z=matrix(0,n,p)
-  Sigma=matrix(0,p,p)
-  Sigma[1:(p/5),1:(p/5)]=rho
-  Sigma[(p/5+1):(3*p/5),(p/5+1):(3*p/5)]=rho
-  Sigma[(3*p/5+1):(4*p/5),(3*p/5+1):(4*p/5)]=rho
-  Sigma=Sigma-diag(diag(Sigma))
-  Sigma=Sigma+diag(p)
-  Sigma=matrix(rho,p,p)
-  Sigma[1:(p/5),1:(p/5)]=2*rho
-  Sigma[(p/5+1):(3*p/5),(p/5+1):(3*p/5)]=2*rho
-  Sigma[(3*p/5+1):(4*p/5),(3*p/5+1):(4*p/5)]=2*rho
-  Sigma=Sigma-diag(diag(Sigma))
-  Sigma=Sigma+diag(p)  
-  X=mvrnorm(n,rep(0,p),Sigma)
-  B1=matrix(0,p,p)
-  B2=matrix(0,p,p)
-  
-  B1[1:(p/5),1:(p/5)]=runif((p/5)^2,h/2,h)*rbinom((p/5)^2,1,0.2)
-  B1[(p/5+1):(3*p/5),(p/5+1):(3*p/5)]=runif((2*p/5)^2,h/2,h)*rbinom((2*p/5)^2,1,0.2)
-  B1[(3*p/5+1):(4*p/5),(3*p/5+1):(4*p/5)]=runif((p/5)^2,h/2,h)*rbinom((p/5)^2,1,0.2)
-  #
-  B2[1:(p/5),1:(p/5)]=runif((p/5)^2,h/2,h)*rbinom((p/5)^2,1,0.2)
-  B2[(p/5+1):(3*p/5),(p/5+1):(3*p/5)]=runif((2*p/5)^2,h/2,h)*rbinom((2*p/5)^2,1,0.2)
-  B2[(3*p/5+1):(4*p/5),(3*p/5+1):(4*p/5)]=runif((p/5)^2,h/2,h)*rbinom((p/5)^2,1,0.2)
-  
-  Y=X%*%B1+matrix(rnorm(n*p,0,0.5),n,p)
-  Y2=X%*%B1
-  
-  Z=Y%*%B2+matrix(rnorm(n*p,0,0.5),n,p)
-  Z2=Y%*%B2
-  
-  #Computing LayerNCut
-  clust<-LayerNCut(Z,Y,X,K=4,B=10000,L=10000,alpha=0,ncv=3,nlambdas=30,scale=F,model=F,gamma=0.5)
-  errorK=sum((trial1[[2]][,1]%*%t(trial1[[2]][,1])+trial1[[2]][,2]%*%t(trial1[[2]][,2])+trial1[[2]][,3]%*%t(trial1[[2]][,3])+
-                   trial1[[2]][,4]%*%t(trial1[[2]][,4]))*W0)/(3*p)^2
+W0 <- matrix(1,p,p)
+W0[1:(p/5),1:(p/5)] <- 0
+W0[(p/5+1):(3*p/5),(p/5+1):(3*p/5)] <- 0
+W0[(3*p/5+1):(4*p/5),(3*p/5+1):(4*p/5)] <- 0
+W0[(4*p/5+1):p,(4*p/5+1):p] <- 0
+W0 <- cbind(W0,W0,W0)
+W0 <- rbind(W0,W0,W0)
 ```
+
+The code below shows how to sample the data from three layers. The multilayer network is such that $\mathbf{X}$ is the base layer, $\mathbf{Y}$ is the second layer which depends on $\mathbf{X}$, and $\mathbf{Z}$ is the third layer which depends on $\mathbf{Y}$.
+```{r eval=FALSE}
+Y <- matrix(0, n, p)
+Z <- matrix(0, n, p)
+
+X  <- mvrnorm(n, rep(0, p), Sigma)
+B1 <- matrix(0, p, p)
+B2 <- matrix(0, p, p)
+
+B1[1:(p/5),1:(p/5)]                     <- runif((p/5)^2, h/2, h)*rbinom((p/5)^2, 1, 0.2)
+B1[(p/5+1):(3*p/5),(p/5+1):(3*p/5)]     <- runif((2*p/5)^2, h/2, h)*rbinom((2*p/5)^2, 1, 0.2)
+B1[(3*p/5+1):(4*p/5),(3*p/5+1):(4*p/5)] <- runif((p/5)^2, h/2, h)*rbinom((p/5)^2, 1, 0.2)
+
+B2[1:(p/5),1:(p/5)]                     <- runif((p/5)^2, h/2, h)*rbinom((p/5)^2, 1, 0.2)
+B2[(p/5+1):(3*p/5),(p/5+1):(3*p/5)]     <- runif((2*p/5)^2, h/2, h)*rbinom((2*p/5)^2, 1, 0.2)
+B2[(3*p/5+1):(4*p/5),(3*p/5+1):(4*p/5)] <- runif((p/5)^2, h/2, h)*rbinom((p/5)^2, 1, 0.2)
+
+Y <- X%*%B1 + matrix(rnorm(n*p, 0, 0.5), n, p)
+Z <- Y%*%B2 + matrix(rnorm(n*p, 0, 0.5), n, p)
+```
+
+The code below computes clusters using the MuNCut measure. With `model = FALSE` the raw data $\mathbf{Y}$ and $\mathbf{Z}$ are used. If `model = TRUE`, the predictions $\widehat{\mathbf{Y}}$ and $\widehat{\mathbf{Z}}$ are used instead of $\mathbf{Y}$ and $\mathbf{Z}$, respectively.
+```{r eval=FALSE}
+clust <- muncut(Z,
+                Y,
+                X,
+                K        = 4,
+                B        = 15000,
+                L        = 500,
+                sampling = 'size',
+                alpha    = 0.5,
+                ncv      = 3,
+                nlambdas = 20,
+                sigma    = 10,
+                scale    = TRUE,
+                model    = FALSE,
+                gamma    = 0.1)
+
+A <- clust[[2]][ ,1]%*%t(clust[[2]][ ,1]) + clust[[2]][ ,2]%*%t(clust[[2]][ ,2]) +
+     clust[[2]][ ,3]%*%t(clust[[2]][ ,3]) + clust[[2]][ ,4]%*%t(clust[[2]][ ,4])
+
+errorK <- sum(A*W0)/(3*p)^2
+errorK
+```
+
 
 ### References:
 
@@ -362,6 +378,77 @@ rho <- 0.2  # 0.20 and 0.40
 
 ## PWNCut
 
+The Penalized Weighted NCut (PWNCut) clusters the columns of $X$ into $K$ clusters by giving a weighted cluster membership while shrinking weights towards each other.
+
+### Simulation Example
+This sets up the initial parameters for the simulation.
+```{r}
+n <- 100 # Sample size
+p <- 100 # Number of columns of Y.
+K <- 3
+```
+
+```{r}
+C0            <- matrix(0,p,K)
+C0[1:25,1]    <- matrix(1,25,1)
+C0[26:75,1:3] <- matrix(1/3,50,3)
+C0[76:100,3]  <- matrix(1,25,1)
+
+A0 <- C0[ ,1]%*%t(C0[ ,1]) + C0[ ,2]%*%t(C0[ ,2]) +
+      C0[ ,3]%*%t(C0[ ,3])
+A0 <- A0 - diag(diag(A0)) + diag(p)
+
+Z1 <- rnorm(n,0,2)
+Z2 <- rnorm(n,0,2)
+Z3 <- rnorm(n,0,2)
+
+Y <- matrix(0,n,p)
+Y[ ,1:25]   <-  matrix(rnorm(n*25, 0, 2), n, 25) + matrix(Z1, n, 25, byrow=FALSE)
+Y[ ,26:75]  <-  matrix(rnorm(n*50, 0, 2), n, 50) + matrix(Z1, n, 50, byrow=FALSE) +
+                matrix(Z2, n, 50, byrow=FALSE) + matrix(Z3, n, 50, byrow=FALSE)
+Y[ ,76:100] <-  matrix(rnorm(n*25, 0, 2), n, 25) + matrix(Z3, n, 25, byrow=FALSE)
+```
+
+```{r}
+trial <- pwncut(Y,
+                K       = 3,
+                B       = 10000,
+                L       = 1000,
+                lambda  = 1.5,
+                start   = 'default',
+                scale   = TRUE,
+                nstarts = 1,
+                epsilon = 0,
+                dist    = 'correlation',
+                sigma   = 10)
+
+A1 <- trial[[2]][ ,1]%*%t(trial[[2]][ ,1]) +
+      trial[[2]][ ,2]%*%t(trial[[2]][ ,2]) +
+      trial[[2]][ ,3]%*%t(trial[[2]][ ,3])
+
+A1 <- A1 - diag(diag(A1)) + diag(p)
+
+plot(trial[[1]], type='l')
+errorL <- sum(abs(A0-A1))/p^2
+errorL
+```
+
+### References: 
+
+* Sebastian J. Teran Hidalgo, Mengyun Wu and Shuangge Ma. "Penalized and weighted clustering of gene expression data using PWNCut." *Submitted.* 
+
 ## MLBNCut
 
+### Simulation Example
+
+### References: 
+
+* Sebastian J. Teran Hidalgo and Shuangge Ma. "Multilayer Biclustering of Omics Data using MLBNCut." *Work in progress.* 
+
 ## AWNCut
+
+### Simulation Example
+
+### References: 
+
+* Li, Yang; Bie, Ruofan; Teran Hidalgo, Sebastian; Qin, Yinchen; Wu, Mengyun; Ma, Shuangge. "Assisted gene expression-based clustering with AWNCut." *Submitted.* 

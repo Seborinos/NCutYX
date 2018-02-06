@@ -31,8 +31,9 @@
 #' @references Von Luxburg, Ulrike. "A tutorial on spectral clustering."
 #' Statistics and computing 17.4 (2007): 395-416.
 #'
-#' Kroese, Dirk P., et al. "Cross-entropy method."
-#' Encyclopedia of Operations Research and Management Science. Springer US, 2013. 326-333
+#' Kroese, D. P., Rubinstein, R. Y., Cohen, I., Porotsky, S., & Taimre, T. (2013).
+#' "Cross-entropy method."
+#' In Encyclopedia of Operations Research and Management Science (pp. 326-333). Springer US.
 #' @examples
 #' # This sets up the initial parameters for the simulation.
 #' library(MASS)
@@ -775,8 +776,8 @@ muncut <- function(Z,
   return(Res)
 }
 
-#' Cluster the columns of X into K clusters by giving a weight for each cluster while inducing similarity
-#' across weights.
+#' Cluster the columns of X into K clusters by giving a weighted cluster membership while shrinking
+#' weights towards each other.
 #'
 #' This function will output K channels of variables.
 #' @param X is a n x p matrix of p variables and n observations.

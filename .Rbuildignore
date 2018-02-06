@@ -3,3 +3,5 @@
 ^ancut\.png$
 ^Rplot\.png$
 ^BrcaAnalysis1\.png$
+^README\.Rmd$
+^README-.*\.png$
