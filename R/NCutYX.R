@@ -800,7 +800,7 @@ muncut <- function(Z,
 #' similarity matrix.
 #' @details
 #' The algorithm minimizes a modified version of NCut through simulated annealing.
-#' The clusers correspond to partitions that minimize this objective function.
+#' The clusters correspond to partitions that minimize this objective function.
 #' @examples
 #' # This sets up the initial parameters for the simulation.
 #' n <- 100 # Sample size
