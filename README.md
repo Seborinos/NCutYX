@@ -1,22 +1,19 @@
-[![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip) [![Licence](https://img.shields.io/badge/licence-GPL--3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.en.html)
+The NCutYX package
+================
 
-------------------------------------------------------------------------
-
-[![minimal R version](https://img.shields.io/badge/R%3E%3D-NA-6666ff.svg)](https://cran.r-project.org/) [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/NCutYX)](https://cran.r-project.org/package=NCutYX) [![packageversion](https://img.shields.io/badge/Package%20version-0.1.0-orange.svg?style=flat-square)](commits/master)
-
-------------------------------------------------------------------------
-
+[![Project Status: WIP – Initial development is in progress, but there
+has not yet been a stable, usable release suitable for the
+public.](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip)
+[![Licence](https://img.shields.io/badge/licence-GPL--3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.en.html)
+[![minimal R
+version](https://img.shields.io/badge/R%3E%3D-NA-6666ff.svg)](https://cran.r-project.org/)
+[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/NCutYX)](https://cran.r-project.org/package=NCutYX)
+[![packageversion](https://img.shields.io/badge/Package%20version-0.1.0-orange.svg?style=flat-square)](commits/master)
 [![Last-changedate](https://img.shields.io/badge/last%20change-2018--02--07-yellowgreen.svg)](/commits/master)
 
-<!-- README.md is generated from README.Rmd. Please edit that file -->
-The NCutYX package
-==================
+# Sebastian Jose Teran Hidalgo
 
-Sebastian Jose Teran Hidalgo
-============================
-
-Table of contents
-=================
+# Table of contents
 
 1.  [Description](#description)
 2.  [NCut](#ncut)
@@ -26,31 +23,47 @@ Table of contents
 6.  [MLBNCut](#mlbncut)
 7.  [AWNCut](#awncut)
 
-Description
-===========
+# Description
 
-The NCutYX package includes functions for clustering genomic data using graph theory. Each function in this package is a variation on the NCut measure used to cluster vertices in a graph. The running theme is to use data sets from different sources and types to improve the clustering results.
+The NCutYX package includes functions for clustering genomic data using
+graph theory. Each function in this package is a variation on the NCut
+measure used to cluster vertices in a graph. The running theme is to use
+data sets from different sources and types to improve the clustering
+results.
 
--   The ncut function clusters the columns of a data set using the classical normalized cut measure from graph theory.
--   The ancut function clusters one type of data, say gene expressions, with the help of a second type of data, like copy number aberrations.
--   The muncut function clusters a three-layered graph into K different clusters of 3 different data types, say gene expression, copy number aberrations and proteins.
--   The pwncut function clusters the columns of X into K clusters by giving a weight for each cluster while penalizing them to be similar to each other.
--   The mlbncut function works similarly to muncut but it also clusters samples into R clusters.
--   The awncut builds similarity matrices for the row of X and an assisted dataset Z. Clusters them into K groups while conducting feature selection based on the AWNCut method.
+  - The ncut function clusters the columns of a data set using the
+    classical normalized cut measure from graph theory.
+  - The ancut function clusters one type of data, say gene expressions,
+    with the help of a second type of data, like copy number
+    aberrations.
+  - The muncut function clusters a three-layered graph into K different
+    clusters of 3 different data types, say gene expression, copy number
+    aberrations and proteins.
+  - The pwncut function clusters the columns of X into K clusters by
+    giving a weight for each cluster while penalizing them to be similar
+    to each other.
+  - The mlbncut function works similarly to muncut but it also clusters
+    samples into R clusters.
+  - The awncut builds similarity matrices for the row of X and an
+    assisted dataset Z. Clusters them into K groups while conducting
+    feature selection based on the AWNCut method.
 
 To install:
 
--   latest development version:
+  - latest development version:
     1.  install and load package devtools
     2.  `install_github("Seborinos/NCutYX")`
 
-NCut
-====
+# NCut
 
-The Normalized Cut (NCut) clusters the columns of Y into K groups using the NCut graph measure. Builds a similarity matrix for the columns of Y and clusters them into K groups based on the NCut graph measure. Correlation, Euclidean and Gaussian distances can be used to construct the similarity matrix. The NCut measure is minimized using the cross entropy method, a Monte Carlo optimization technique.
+The Normalized Cut (NCut) clusters the columns of Y into K groups using
+the NCut graph measure. Builds a similarity matrix for the columns of Y
+and clusters them into K groups based on the NCut graph measure.
+Correlation, Euclidean and Gaussian distances can be used to construct
+the similarity matrix. The NCut measure is minimized using the cross
+entropy method, a Monte Carlo optimization technique.
 
-Example
--------
+## Example
 
 First, we set up the simulation parameters.
 
@@ -61,7 +74,8 @@ B <- 30 # Number of iterations in the simulated annealing algorithm.
 p <- 50 # Number of columns of Y.
 ```
 
-We define the covariance matrix, the true incidence function and sample the data.
+We define the covariance matrix, the true incidence function and sample
+the data.
 
 ``` r
 S <- matrix(0.2, p, p)
@@ -78,7 +92,8 @@ Denum <- sum(W0)
 Y <- mvrnorm(n, mu, S)
 ```
 
-Apply ncut to the data Y and calculate the estimation error of the clusters.
+Apply ncut to the data Y and calculate the estimation error of the
+clusters.
 
 ``` r
 Res <- ncut(Y,
@@ -99,13 +114,13 @@ errorL <- sum((f11%*%t(f11))*W0)/Denum + sum((f12%*%t(f12))*W0)/Denum
 errorL
 ```
 
-ANCut
-=====
+# ANCut
 
-The Assisted NCut (ANcut) clusters the columns of a data set Y into K groups with the help of an external data set X, which is associated linearly with Y.
+The Assisted NCut (ANcut) clusters the columns of a data set Y into K
+groups with the help of an external data set X, which is associated
+linearly with Y.
 
-Simulation Example
-------------------
+## Simulation Example
 
 First we define some of the simulation parameters below.
 
@@ -119,7 +134,10 @@ h1 <- 0.05 # Lower bound for the B coefficiens in Y = X*B+e.
 h2 <- 0.15 # Upper bound for the B coefficients in the model Y = X*B+e.
 ```
 
-The data will be simulated as `Y = X*B + e` where X will be normal with a convariance matrix S with 2 blocks of correlated variables. This induces the correlation among the Y's as well. `W0` is an incidence matrix that will be used to calculate the error of the procedure.
+The data will be simulated as `Y = X*B + e` where X will be normal with
+a convariance matrix S with 2 blocks of correlated variables. This
+induces the correlation among the Y’s as well. `W0` is an incidence
+matrix that will be used to calculate the error of the procedure.
 
 ``` r
  S <- matrix(0.2,q,q)
@@ -151,7 +169,10 @@ The data will be simulated as `Y = X*B + e` where X will be normal with a convar
  Y <- Z + matrix(rnorm(n*p,0,2),n,p)
 ```
 
-We apply the function ANCut to Y which will cluster the columns into K=2 groups. It uses the help of X. First, it creates a model of Y=XB+e using the elastic net. You can choose the number of cross-validations with ncv and the parameter alpha in the penalty of the elastic net.
+We apply the function ANCut to Y which will cluster the columns into K=2
+groups. It uses the help of X. First, it creates a model of Y=XB+e using
+the elastic net. You can choose the number of cross-validations with ncv
+and the parameter alpha in the penalty of the elastic net.
 
 ``` r
 # ANCut method
@@ -174,26 +195,37 @@ plot(Res[[1]], type='l')
 image.plot(Cx)
 ```
 
-On the left panel we see the path of the objective function as it is minimized through simulated annealing. On the right are represented the clusters. The perfect solution is a perfect checker board panel and the ANCut solution misses slightly. As n or h2 are increased, the solution will get closer to the true cluster structure of the data.
+On the left panel we see the path of the objective function as it is
+minimized through simulated annealing. On the right are represented the
+clusters. The perfect solution is a perfect checker board panel and the
+ANCut solution misses slightly. As n or h2 are increased, the solution
+will get closer to the true cluster structure of the data.
 
 ![](ancut.png)
 
-References:
------------
+## References:
 
--   [Hidalgo, Sebastian J. Teran, Mengyun Wu, and Shuangge Ma. "Assisted clustering of gene expression data using ANCut." *BMC genomics* 18.1 (2017): 623.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5559859/)
+  - [Hidalgo, Sebastian J. Teran, Mengyun Wu, and Shuangge Ma. “Assisted
+    clustering of gene expression data using ANCut.” *BMC genomics* 18.1
+    (2017): 623.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5559859/)
 
-MuNCut
-======
+# MuNCut
 
-This example shows how to use the muncut function. MuNCut clusters the columns of data from 3 different sources. It clusters the columns of Z, Y and X into K clusters by representing each data type as one network layer. It represents the Z layer depending on Y, and the Y layer depending on X. Elastic net can be used before the clustering procedure by using the predictions of Z and Y instead of the actual values to improve the cluster results. The function muncut will output K clusters of columns of Z, Y and X.
+This example shows how to use the muncut function. MuNCut clusters the
+columns of data from 3 different sources. It clusters the columns of Z,
+Y and X into K clusters by representing each data type as one network
+layer. It represents the Z layer depending on Y, and the Y layer
+depending on X. Elastic net can be used before the clustering procedure
+by using the predictions of Z and Y instead of the actual values to
+improve the cluster results. The function muncut will output K clusters
+of columns of Z, Y and X.
 
-<img src="multilayer_all.png" height="275" />
+![](multilayer_all.png)
 
-Simulation Example
-------------------
+## Simulation Example
 
-First, we define the simulation parameters, including the covariance matrix S of the X's.
+First, we define the simulation parameters, including the covariance
+matrix S of the X’s.
 
 ``` r
 n   <- 50
@@ -209,7 +241,8 @@ Sigma <- Sigma - diag(diag(Sigma))
 Sigma <- Sigma + diag(p)
 ```
 
-The matrix W0 will be used to evaluate how close the estimate is to the true cluster structure.
+The matrix W0 will be used to evaluate how close the estimate is to the
+true cluster structure.
 
 ``` r
 W0 <- matrix(1,p,p)
@@ -221,7 +254,9 @@ W0 <- cbind(W0,W0,W0)
 W0 <- rbind(W0,W0,W0)
 ```
 
-The code below shows how to sample the data from three layers. The multilayer network is such that **X** is the base layer, **Y** is the second layer which depends on **X**, and **Z** is the third layer which depends on **Y**.
+The code below shows how to sample the data from three layers. The
+multilayer network is such that X is the base layer, Y is the second
+layer which depends on X, and Z is the third layer which depends on Y.
 
 ``` r
 Y <- matrix(0, n, p)
@@ -243,7 +278,9 @@ Y <- X%*%B1 + matrix(rnorm(n*p, 0, 0.5), n, p)
 Z <- Y%*%B2 + matrix(rnorm(n*p, 0, 0.5), n, p)
 ```
 
-The code below computes clusters using the MuNCut measure. With `model = FALSE` the raw data **Y** and **Z** are used. If `model = TRUE`, the predictions $\\widehat{\\mathbf{Y}}$ and $\\widehat{\\mathbf{Z}}$ are used instead of **Y** and **Z**, respectively.
+The code below computes clusters using the MuNCut measure. With `model =
+FALSE` the raw data Y and Z are used. If `model = TRUE`, the predictions
+Y and Z are used instead of Y and Z, respectively.
 
 ``` r
 clust <- muncut(Z,
@@ -270,12 +307,14 @@ errorK
 
 ### References:
 
--   Sebastian J. Teran Hidalgo and Shuangge Ma. "Clustering Multilayer Omics Data using MuNCut." *Revise and resubmit.*
+  - Sebastian J. Teran Hidalgo and Shuangge Ma. “Clustering Multilayer
+    Omics Data using MuNCut.” *Revise and resubmit.*
 
-PWNCut
-------
+## PWNCut
 
-The Penalized Weighted NCut (PWNCut) clusters the columns of X into K clusters by giving a weighted cluster membership while shrinking weights towards each other.
+The Penalized Weighted NCut (PWNCut) clusters the columns of X into K
+clusters by giving a weighted cluster membership while shrinking weights
+towards each other.
 
 ### Simulation Example
 
@@ -338,12 +377,19 @@ errorL
 
 ### References:
 
--   Sebastian J. Teran Hidalgo, Mengyun Wu and Shuangge Ma. "Penalized and weighted clustering of gene expression data using PWNCut." *Submitted.*
+  - Sebastian J. Teran Hidalgo, Mengyun Wu and Shuangge Ma. “Penalized
+    and weighted clustering of gene expression data using PWNCut.”
+    *Submitted.*
 
-MLBNCut
--------
+## MLBNCut
 
-The Multilayer Biclustering NCut (MLBNCut) clusters the columns and the rows simultaneously of data from 3 different sources. It clusters the columns of Z,Y and X into K clusters and the samples into R clusters by representing each data type as one network layer. It represents the Z layer depending on Y, and the Y layer depending on X. This function will output K clusters of columns of Z, Y and X and R clusters of the samples.
+The Multilayer Biclustering NCut (MLBNCut) clusters the columns and the
+rows simultaneously of data from 3 different sources. It clusters the
+columns of Z,Y and X into K clusters and the samples into R clusters by
+representing each data type as one network layer. It represents the Z
+layer depending on Y, and the Y layer depending on X. This function will
+output K clusters of columns of Z, Y and X and R clusters of the
+samples.
 
 ### Simulation Example
 
@@ -448,12 +494,14 @@ errorK
 
 ### References:
 
--   Sebastian J. Teran Hidalgo and Shuangge Ma. "Multilayer Biclustering of Omics Data using MLBNCut." *Work in progress.*
+  - Sebastian J. Teran Hidalgo and Shuangge Ma. “Multilayer Biclustering
+    of Omics Data using MLBNCut.” *Work in progress.*
 
-AWNCut
-------
+## AWNCut
 
-The Assisted Weighted NCut builds the similarity matrices for the rows of X and an assisted dataset Z. Clusters them into K groups while conducting feature selection based on the AWNCut method.
+The Assisted Weighted NCut builds the similarity matrices for the rows
+of X and an assisted dataset Z. Clusters them into K groups while
+conducting feature selection based on the AWNCut method.
 
 ### Simulation Example
 
@@ -506,4 +554,6 @@ ErrorRate(awncut.resu
 
 ### References:
 
--   Li, Yang; Bie, Ruofan; Teran Hidalgo, Sebastian; Qin, Yinchen; Wu, Mengyun; Ma, Shuangge. "Assisted gene expression-based clustering with AWNCut." *Submitted.*
+  - Li, Yang; Bie, Ruofan; Teran Hidalgo, Sebastian; Qin, Yinchen; Wu,
+    Mengyun; Ma, Shuangge. “Assisted gene expression-based clustering
+    with AWNCut.” *Submitted.*

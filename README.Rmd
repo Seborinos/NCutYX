@@ -1,32 +1,23 @@
 ---
-output:
-  md_document:
-    variant: markdown_github
+title: 'The NCutYX package'
+output: github_document
 ---
-[![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip)
-[![Licence](https://img.shields.io/badge/licence-GPL--3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.en.html)
- 
----
- 
-[![minimal R version](https://img.shields.io/badge/R%3E%3D-NA-6666ff.svg)](https://cran.r-project.org/)
-[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/NCutYX)](https://cran.r-project.org/package=NCutYX)
-[![packageversion](https://img.shields.io/badge/Package%20version-0.1.0-orange.svg?style=flat-square)](commits/master)
- 
----
- 
-[![Last-changedate](https://img.shields.io/badge/last%20change-`r gsub('-', '--', Sys.Date())`-yellowgreen.svg)](/commits/master)
-
-<!-- README.md is generated from README.Rmd. Please edit that file -->
 
 ```{r, echo = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  fig.path = "README-"
+  fig.path = "/man/figures"
 )
 ```
 
-# The NCutYX package
+[![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip)
+[![Licence](https://img.shields.io/badge/licence-GPL--3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.en.html)
+[![minimal R version](https://img.shields.io/badge/R%3E%3D-NA-6666ff.svg)](https://cran.r-project.org/)
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/NCutYX)](https://cran.r-project.org/package=NCutYX)
+[![packageversion](https://img.shields.io/badge/Package%20version-0.1.0-orange.svg?style=flat-square)](commits/master)
+[![Last-changedate](https://img.shields.io/badge/last%20change-`r gsub('-', '--', Sys.Date())`-yellowgreen.svg)](/commits/master)
+
 # Sebastian Jose Teran Hidalgo
 
 # Table of contents
@@ -218,7 +209,7 @@ W0 <- cbind(W0,W0,W0)
 W0 <- rbind(W0,W0,W0)
 ```
 
-The code below shows how to sample the data from three layers. The multilayer network is such that $\mathbf{X}$ is the base layer, $\mathbf{Y}$ is the second layer which depends on $\mathbf{X}$, and $\mathbf{Z}$ is the third layer which depends on $\mathbf{Y}$.
+The code below shows how to sample the data from three layers. The multilayer network is such that X is the base layer, Y is the second layer which depends on X, and Z is the third layer which depends on Y.
 ```{r eval=FALSE}
 Y <- matrix(0, n, p)
 Z <- matrix(0, n, p)
@@ -239,7 +230,7 @@ Y <- X%*%B1 + matrix(rnorm(n*p, 0, 0.5), n, p)
 Z <- Y%*%B2 + matrix(rnorm(n*p, 0, 0.5), n, p)
 ```
 
-The code below computes clusters using the MuNCut measure. With `model = FALSE` the raw data $\mathbf{Y}$ and $\mathbf{Z}$ are used. If `model = TRUE`, the predictions $\widehat{\mathbf{Y}}$ and $\widehat{\mathbf{Z}}$ are used instead of $\mathbf{Y}$ and $\mathbf{Z}$, respectively.
+The code below computes clusters using the MuNCut measure. With `model = FALSE` the raw data Y and Z are used. If `model = TRUE`, the predictions Y and Z are used instead of Y and Z, respectively.
 ```{r eval=FALSE}
 clust <- muncut(Z,
                 Y,

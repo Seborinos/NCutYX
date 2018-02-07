@@ -7,7 +7,10 @@
 
 0 errors | 0 warnings | 1 note
 
-* This is a new release.
+* checking CRAN incoming feasibility ... NOTE
+Maintainer: 'Sebastian J. Teran Hidalgo <sebastianteranhidalgo@gmail.com>'
+
+This is a new submission.
 
 ## Reverse dependencies
 
@@ -18,5 +21,13 @@ This is a new release, so there are no reverse dependencies.
 * I have run R CMD check on the NUMBER downstream dependencies.
   
 * FAILURE SUMMARY
+
+In the previous submission I had the following problem:
+
+  * checking DESCRIPTION meta-information ... WARNING
+    Dependence on R version '3.4.2' not with patchlevel 0
+    
+I changed R (>= 3.4.2) to R (>= 3.4) in the DESCRIPTION.
+
 
 * All revdep maintainers were notified of the release on RELEASE DATE.
