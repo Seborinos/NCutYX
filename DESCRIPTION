@@ -7,7 +7,7 @@ Maintainer: Sebastian J. Teran Hidalgo <sebastianteranhidalgo@gmail.com>
 Description: Clusters the columns of Y into K groups with the help of
     variables in X.
 License: GPL-3
-Depends: R (>= 3.4.3)
+Depends: R (>= 3.4.2)
 Imports:
     Rcpp (>= 0.12.2),
     glmnet (>= 2.0-5),

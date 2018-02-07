@@ -1,3 +1,21 @@
+[![Licence](https://img.shields.io/badge/licence-GPL--3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.en.html)
+
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+
+[![Licence](https://img.shields.io/badge/licence-GPL--3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.en.html)
+
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+
+[![Licence](https://img.shields.io/badge/licence-GPL--3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.en.html)
+
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+
 [![Licence](https://img.shields.io/badge/licence-GPL--3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.en.html) [![Build Status](https://travis-ci.org/yourgithubname/yourpackagename.svg?branch=master)](https://travis-ci.org/yourgithubname/yourpackagename)
 
 ------------------------------------------------------------------------
