@@ -2,7 +2,7 @@
 % Please edit documentation in R/NCutYX.R
 \name{awncut}
 \alias{awncut}
-\title{Cluster the rows of X into K clusters using the AWNCut method.}
+\title{Cluster the Rows of X into K Clusters Using the AWNCut Method.}
 \usage{
 awncut(X, Z, K, lambda, Tau, B = 500, L = 1000)
 }

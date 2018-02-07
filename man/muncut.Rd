@@ -2,7 +2,7 @@
 % Please edit documentation in R/NCutYX.R
 \name{muncut}
 \alias{muncut}
-\title{MuNCut clusters the columns of data from 3 different sources.}
+\title{MuNCut Clusters the Columns of Data from 3 Different Sources.}
 \usage{
 muncut(Z, Y, X, K = 2, B = 3000, L = 1000, alpha = 0.5, ncv = 3,
   nlambdas = 100, scale = FALSE, model = FALSE, gamma = 0.5,

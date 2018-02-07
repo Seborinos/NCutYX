@@ -2,8 +2,8 @@
 % Please edit documentation in R/NCutYX.R
 \name{pwncut}
 \alias{pwncut}
-\title{Cluster the columns of X into K clusters by giving a weighted cluster membership while shrinking
-weights towards each other.}
+\title{Cluster the Columns of X into K Clusters by Giving a Weighted Cluster Membership while shrinking
+Weights Towards Each Other.}
 \usage{
 pwncut(X, K = 2, B = 3000, L = 1000, scale = TRUE, lambda = 1,
   epsilon = 0, nstarts = 3, start = "default", dist = "gaussian",

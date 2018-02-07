@@ -1,4 +1,4 @@
-#' Cluster the columns of Y into K groups using the NCut graph measure.
+#' Cluster the Columns of Y into K Groups Using the NCut Graph Measure.
 #'
 #' Builds a similarity matrix for the columns of Y and clusters them into
 #' K groups based on the NCut graph measure. Correlation, Euclidean and Gaussian distances can be used
@@ -102,7 +102,7 @@ ncut <- function(Y,
   return(ncutcem(Wyy,p,K,N,B,q0,p0))
 }
 
-#' Cluster the columns of Y into K groups with the help of external features X.
+#' Cluster the Columns of Y into K Groups with the Help of External Features X.
 #'
 #' This function will output K clusters of the columns of Y using the help of
 #' X.
@@ -321,7 +321,7 @@ ancut <- function(Y,
   return(Res)
 }
 
-#' MuNCut clusters the columns of data from 3 different sources.
+#' MuNCut Clusters the Columns of Data from 3 Different Sources.
 #'
 #' It clusters the columns of Z,Y and X into K clusters by representing each data type as one network layer.
 #' It represents the Z layer depending on Y, and the Y layer depending on X. Elastic net can be used before the clustering
@@ -776,8 +776,8 @@ muncut <- function(Z,
   return(Res)
 }
 
-#' Cluster the columns of X into K clusters by giving a weighted cluster membership while shrinking
-#' weights towards each other.
+#' Cluster the Columns of X into K Clusters by Giving a Weighted Cluster Membership while shrinking
+#' Weights Towards Each Other.
 #'
 #' This function will output K channels of variables.
 #' @param X is a n x p matrix of p variables and n observations.
@@ -994,7 +994,7 @@ pwncut <- function(X,
   return(Rfinal)
 }
 
-#' The MLBNCut clusters the columns and the rows simultaneously of data from 3 different sources.
+#' The MLBNCut Clusters the Columns and the Rows Simultaneously of Data from 3 Different Sources.
 #'
 #' It clusters the columns of Z,Y and X into K clusters and the samples into R clusters by representing
 #' each data type as one network layer.
@@ -1206,7 +1206,7 @@ mlbncut <- function(Z,
   return(Res)
 }
 
-#' Cluster the rows of X into K clusters using the AWNCut method.
+#' Cluster the Rows of X into K Clusters Using the AWNCut Method.
 #'
 #' Builds similarity matrices for the rows of X and the rows of an assisted dataset Z.
 #' Clusters them into K groups while conducting feature selection based on the AWNCut method.
@@ -1349,7 +1349,7 @@ awncut <- function(X,
   return(out)
 }
 
-#' This function outputs the selection of tuning parameters for the AWNCut method.
+#' This Function Outputs the Selection of Tuning Parameters for the AWNCut Method.
 #'
 #' @param X is an n x p1 matrix of n observations and p1 variables.
 #' @param Z is an n x p2 matrix of n observations and p2 variables. Z is the assistant dataset.
@@ -1431,8 +1431,8 @@ awncut.selection <- function(X,
               DBI   = max(dbi)))
 }
 
-#' This function calculates the true error rate of a clustering result,
-#' assuming that there are three clusters.
+#' This Function Calculates the True Error Rate of a Clustering Result,
+#' Assuming that There are Three Clusters.
 #'
 #' @return err is the true error rate of a clustering result.
 #'

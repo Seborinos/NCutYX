@@ -2,7 +2,7 @@
 % Please edit documentation in R/NCutYX.R
 \name{mlbncut}
 \alias{mlbncut}
-\title{The MLBNCut clusters the columns and the rows simultaneously of data from 3 different sources.}
+\title{The MLBNCut Clusters the Columns and the Rows Simultaneously of Data from 3 Different Sources.}
 \usage{
 mlbncut(Z, Y, X, K = 2, R = 2, B = 30, N = 500, q0 = 0.25,
   scale = TRUE, dist = "gaussian", sigmas = 1, sigmac = 1)

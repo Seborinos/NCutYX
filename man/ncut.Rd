@@ -2,7 +2,7 @@
 % Please edit documentation in R/NCutYX.R
 \name{ncut}
 \alias{ncut}
-\title{Cluster the columns of Y into K groups using the NCut graph measure.}
+\title{Cluster the Columns of Y into K Groups Using the NCut Graph Measure.}
 \usage{
 ncut(Y, K = 2, B = 30, N = 500, dist = "correlation", scale = TRUE,
   q = 0.1, sigma = 1)

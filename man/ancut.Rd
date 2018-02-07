@@ -2,7 +2,7 @@
 % Please edit documentation in R/NCutYX.R
 \name{ancut}
 \alias{ancut}
-\title{Cluster the columns of Y into K groups with the help of external features X.}
+\title{Cluster the Columns of Y into K Groups with the Help of External Features X.}
 \usage{
 ancut(Y, X, K = 2, B = 3000, L = 1000, alpha = 0.5, nlambdas = 100,
   sampling = "equal", ncv = 5, dist = "correlation", sigma = 0.1)

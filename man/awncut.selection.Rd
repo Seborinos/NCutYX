@@ -2,7 +2,7 @@
 % Please edit documentation in R/NCutYX.R
 \name{awncut.selection}
 \alias{awncut.selection}
-\title{This function outputs the selection of tuning parameters for the AWNCut method.}
+\title{This Function Outputs the Selection of Tuning Parameters for the AWNCut Method.}
 \usage{
 awncut.selection(X, Z, K, lambda, Tau, B = 500, L = 1000)
 }
@@ -30,7 +30,7 @@ awncut.selection(X, Z, K, lambda, Tau, B = 500, L = 1000)
 }}
 }
 \description{
-This function outputs the selection of tuning parameters for the AWNCut method.
+This Function Outputs the Selection of Tuning Parameters for the AWNCut Method.
 }
 \examples{
 set.seed(123456)

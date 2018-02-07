@@ -2,8 +2,8 @@
 % Please edit documentation in R/NCutYX.R
 \name{ErrorRate}
 \alias{ErrorRate}
-\title{This function calculates the true error rate of a clustering result,
-assuming that there are three clusters.}
+\title{This Function Calculates the True Error Rate of a Clustering Result,
+Assuming that There are Three Clusters.}
 \usage{
 ErrorRate(X, n1, n2)
 }
@@ -18,8 +18,8 @@ ErrorRate(X, n1, n2)
 err is the true error rate of a clustering result.
 }
 \description{
-This function calculates the true error rate of a clustering result,
-assuming that there are three clusters.
+This Function Calculates the True Error Rate of a Clustering Result,
+Assuming that There are Three Clusters.
 }
 \examples{
 set.seed(123456)
