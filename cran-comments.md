@@ -12,6 +12,20 @@ Maintainer: 'Sebastian J. Teran Hidalgo <sebastianteranhidalgo@gmail.com>'
 
 This is a new submission.
 
+* checking DESCRIPTION meta-information ... WARNING 
+  Dependence on R version '3.4.2' not with patchlevel 0
+    
+I changed R (>= 3.4.2) to R (>= 3.4) in the DESCRIPTION.
+
+* checking top-level files ... WARNING
+Conversion of ‘README.md’ failed:
+[WARNING] This document format requires a nonempty <title> element.
+  Please specify either ‘title’ or ‘pagetitle’ in the metadata.
+  Falling back to ‘README’
+  
+This WARNING I believe to the spurios because README.rmd, README.md
+an README.html all have titles.
+
 ## Reverse dependencies
 
 This is a new release, so there are no reverse dependencies.
@@ -21,13 +35,5 @@ This is a new release, so there are no reverse dependencies.
 * I have run R CMD check on the NUMBER downstream dependencies.
   
 * FAILURE SUMMARY
-
-In the previous submission I had the following problem:
-
-  * checking DESCRIPTION meta-information ... WARNING
-    Dependence on R version '3.4.2' not with patchlevel 0
-    
-I changed R (>= 3.4.2) to R (>= 3.4) in the DESCRIPTION.
-
 
 * All revdep maintainers were notified of the release on RELEASE DATE.
