@@ -1,5 +1,6 @@
+<!-- README.md is generated from README.Rmd. Please edit that file -->
 The NCutYX package
-================
+==================
 
 [![Project Status: WIP – Initial development is in progress, but there
 has not yet been a stable, usable release suitable for the
@@ -11,9 +12,11 @@ version](https://img.shields.io/badge/R%3E%3D-NA-6666ff.svg)](https://cran.r-pro
 [![packageversion](https://img.shields.io/badge/Package%20version-0.1.0-orange.svg?style=flat-square)](commits/master)
 [![Last-changedate](https://img.shields.io/badge/last%20change-2018--02--07-yellowgreen.svg)](/commits/master)
 
-# Sebastian Jose Teran Hidalgo
+Sebastian Jose Teran Hidalgo
+============================
 
-# Table of contents
+Table of contents
+=================
 
 1.  [Description](#description)
 2.  [NCut](#ncut)
@@ -23,7 +26,8 @@ version](https://img.shields.io/badge/R%3E%3D-NA-6666ff.svg)](https://cran.r-pro
 6.  [MLBNCut](#mlbncut)
 7.  [AWNCut](#awncut)
 
-# Description
+Description
+===========
 
 The NCutYX package includes functions for clustering genomic data using
 graph theory. Each function in this package is a variation on the NCut
@@ -31,30 +35,31 @@ measure used to cluster vertices in a graph. The running theme is to use
 data sets from different sources and types to improve the clustering
 results.
 
-  - The ncut function clusters the columns of a data set using the
+-   The ncut function clusters the columns of a data set using the
     classical normalized cut measure from graph theory.
-  - The ancut function clusters one type of data, say gene expressions,
+-   The ancut function clusters one type of data, say gene expressions,
     with the help of a second type of data, like copy number
     aberrations.
-  - The muncut function clusters a three-layered graph into K different
+-   The muncut function clusters a three-layered graph into K different
     clusters of 3 different data types, say gene expression, copy number
     aberrations and proteins.
-  - The pwncut function clusters the columns of X into K clusters by
+-   The pwncut function clusters the columns of X into K clusters by
     giving a weight for each cluster while penalizing them to be similar
     to each other.
-  - The mlbncut function works similarly to muncut but it also clusters
+-   The mlbncut function works similarly to muncut but it also clusters
     samples into R clusters.
-  - The awncut builds similarity matrices for the row of X and an
+-   The awncut builds similarity matrices for the row of X and an
     assisted dataset Z. Clusters them into K groups while conducting
     feature selection based on the AWNCut method.
 
 To install:
 
-  - latest development version:
+-   latest development version:
     1.  install and load package devtools
     2.  `install_github("Seborinos/NCutYX")`
 
-# NCut
+NCut
+====
 
 The Normalized Cut (NCut) clusters the columns of Y into K groups using
 the NCut graph measure. Builds a similarity matrix for the columns of Y
@@ -63,7 +68,8 @@ Correlation, Euclidean and Gaussian distances can be used to construct
 the similarity matrix. The NCut measure is minimized using the cross
 entropy method, a Monte Carlo optimization technique.
 
-## Example
+Example
+-------
 
 First, we set up the simulation parameters.
 
@@ -114,13 +120,15 @@ errorL <- sum((f11%*%t(f11))*W0)/Denum + sum((f12%*%t(f12))*W0)/Denum
 errorL
 ```
 
-# ANCut
+ANCut
+=====
 
 The Assisted NCut (ANcut) clusters the columns of a data set Y into K
 groups with the help of an external data set X, which is associated
 linearly with Y.
 
-## Simulation Example
+Simulation Example
+------------------
 
 First we define some of the simulation parameters below.
 
@@ -203,13 +211,15 @@ will get closer to the true cluster structure of the data.
 
 ![](ancut.png)
 
-## References:
+References:
+-----------
 
-  - [Hidalgo, Sebastian J. Teran, Mengyun Wu, and Shuangge Ma. “Assisted
+-   [Hidalgo, Sebastian J. Teran, Mengyun Wu, and Shuangge Ma. “Assisted
     clustering of gene expression data using ANCut.” *BMC genomics* 18.1
     (2017): 623.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5559859/)
 
-# MuNCut
+MuNCut
+======
 
 This example shows how to use the muncut function. MuNCut clusters the
 columns of data from 3 different sources. It clusters the columns of Z,
@@ -220,9 +230,10 @@ by using the predictions of Z and Y instead of the actual values to
 improve the cluster results. The function muncut will output K clusters
 of columns of Z, Y and X.
 
-![](multilayer_all.png)
+<img src="multilayer_all.png" height="275" />
 
-## Simulation Example
+Simulation Example
+------------------
 
 First, we define the simulation parameters, including the covariance
 matrix S of the X’s.
@@ -278,9 +289,9 @@ Y <- X%*%B1 + matrix(rnorm(n*p, 0, 0.5), n, p)
 Z <- Y%*%B2 + matrix(rnorm(n*p, 0, 0.5), n, p)
 ```
 
-The code below computes clusters using the MuNCut measure. With `model =
-FALSE` the raw data Y and Z are used. If `model = TRUE`, the predictions
-Y and Z are used instead of Y and Z, respectively.
+The code below computes clusters using the MuNCut measure. With
+`model = FALSE` the raw data Y and Z are used. If `model = TRUE`, the
+predictions Y and Z are used instead of Y and Z, respectively.
 
 ``` r
 clust <- muncut(Z,
@@ -307,10 +318,11 @@ errorK
 
 ### References:
 
-  - Sebastian J. Teran Hidalgo and Shuangge Ma. “Clustering Multilayer
+-   Sebastian J. Teran Hidalgo and Shuangge Ma. “Clustering Multilayer
     Omics Data using MuNCut.” *Revise and resubmit.*
 
-## PWNCut
+PWNCut
+------
 
 The Penalized Weighted NCut (PWNCut) clusters the columns of X into K
 clusters by giving a weighted cluster membership while shrinking weights
@@ -377,11 +389,12 @@ errorL
 
 ### References:
 
-  - Sebastian J. Teran Hidalgo, Mengyun Wu and Shuangge Ma. “Penalized
+-   Sebastian J. Teran Hidalgo, Mengyun Wu and Shuangge Ma. “Penalized
     and weighted clustering of gene expression data using PWNCut.”
     *Submitted.*
 
-## MLBNCut
+MLBNCut
+-------
 
 The Multilayer Biclustering NCut (MLBNCut) clusters the columns and the
 rows simultaneously of data from 3 different sources. It clusters the
@@ -494,10 +507,11 @@ errorK
 
 ### References:
 
-  - Sebastian J. Teran Hidalgo and Shuangge Ma. “Multilayer Biclustering
+-   Sebastian J. Teran Hidalgo and Shuangge Ma. “Multilayer Biclustering
     of Omics Data using MLBNCut.” *Work in progress.*
 
-## AWNCut
+AWNCut
+------
 
 The Assisted Weighted NCut builds the similarity matrices for the rows
 of X and an assisted dataset Z. Clusters them into K groups while
@@ -554,6 +568,6 @@ ErrorRate(awncut.resu
 
 ### References:
 
-  - Li, Yang; Bie, Ruofan; Teran Hidalgo, Sebastian; Qin, Yinchen; Wu,
+-   Li, Yang; Bie, Ruofan; Teran Hidalgo, Sebastian; Qin, Yinchen; Wu,
     Mengyun; Ma, Shuangge. “Assisted gene expression-based clustering
     with AWNCut.” *Submitted.*
