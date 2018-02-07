@@ -35,7 +35,7 @@ per variable.}
 \item{dist}{specifies the distance metric used for constructing the similarity matrix.
 Options are 'gaussian', 'correlation' and 'euclidean' (default = 'gaussian').}
 
-\item{sigma}{is the bandwith parameter when the dist metric chosen is 'gaussian' (default = 0.1).}
+\item{sigma}{is the bandwidth parameter when the dist metric chosen is 'gaussian' (default = 0.1).}
 
 \item{beta}{when dist='correlation', beta is the exponent applied to each entry of the
 similarity matrix.}

@@ -21,7 +21,7 @@ Y will be clustered into K groups.}
 
 \item{alpha}{is the coefficient of the elastic net penalty.}
 
-\item{nlambdas}{is the number of tunning parameters in the elastic net.}
+\item{nlambdas}{is the number of tuning parameters in the elastic net.}
 
 \item{sampling}{if 'equal' then the sampling probabilities is the same during
 the simulated annealing algorithm, if 'size' the probabilites are proportional

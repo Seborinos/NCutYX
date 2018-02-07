@@ -116,7 +116,7 @@ ncut <- function(Y,
 #' @param B is the number of iterations in the simulated annealing algorithm.
 #' @param L is the temperature coefficient in the simulated annealing algorithm.
 #' @param alpha is the coefficient of the elastic net penalty.
-#' @param nlambdas is the number of tunning parameters in the elastic net.
+#' @param nlambdas is the number of tuning parameters in the elastic net.
 #' @param ncv is the number of cross-validations in the elastic net.
 #' @param dist is the type of distance metric for the construction of the similarity matrix.
 #' Options are 'gaussian', 'euclidean' and 'correlation', the latter being the default.
@@ -335,10 +335,10 @@ ancut <- function(Y,
 #' @param L is the temperature coefficient in the simulated annealing algorithm.
 #' @param alpha is the tuning parameter in the elastic net penalty, only used when model=T.
 #' @param ncv is the number of cross-validations used to choose the tuning parameter lambda in the
-#' elastic net penatly, only used when model=T.
+#' elastic net penalty, only used when model=T.
 #' @param nlambdas number of tuning parameters lambda used during cross-validation, only when model=T.
 #' @param scale when TRUE the Z, Y and X are scaled with mean 0 and standard deviation equal 1.
-#' @param model when TRUE the the relationship between Z and Y, and between Y and X are modelled
+#' @param model when TRUE the the relationship between Z and Y, and between Y and X are modeled
 #' with the elastic net. The predictions of Z, and Y from the models are used in the clustering algorithm.
 #' @param gamma is the tuning parameter of the clustering penalty. Larger values give more importance to
 #' within layer effects and less to across layer effects.
@@ -347,10 +347,10 @@ ancut <- function(Y,
 #' of each cluster.
 #' @param dist is the type of distance measure use in the similarity matrix.
 #' Options are 'gaussian' and 'correlation', with 'gaussian' being the default.
-#' @param sigma is the bandwith parameter when the dist metric chosen is gaussian.
+#' @param sigma is the bandwidth parameter when the dist metric chosen is gaussian.
 #' @details
 #' The algorithm minimizes a modified version of NCut through simulated annealing.
-#' The clusers correspond to partitions that minimize this objective function.
+#' The clusters correspond to partitions that minimize this objective function.
 #' The external information of X is incorporated by using ridge regression to predict Y.
 #' @examples
 #' library(NCutYX)
@@ -795,7 +795,7 @@ muncut <- function(Z,
 #' @param dist specifies the distance metric used for constructing the similarity matrix.
 #' Options are 'gaussian', 'correlation' and 'euclidean' (default = 'gaussian').
 #' @param epsilon values in the similarity matrix less than epsilon are set to 0 (default = 0).
-#' @param sigma is the bandwith parameter when the dist metric chosen is 'gaussian' (default = 0.1).
+#' @param sigma is the bandwidth parameter when the dist metric chosen is 'gaussian' (default = 0.1).
 #' @param beta when dist='correlation', beta is the exponent applied to each entry of the
 #' similarity matrix.
 #' @details
@@ -1140,7 +1140,7 @@ mlbncut <- function(Z,
   dimx <- dim(X)[2]
   n    <- dim(X)[1]
   m    <- dimz + dimy + dimx
-  #vector with the probabilites for clustering samples and columns
+  #vector with the probabilities for clustering samples and columns
   #Initialize step in the algorithm
   Ps     <- matrix(1/R,n,R)
   Pc     <- matrix(1/K,m,K)

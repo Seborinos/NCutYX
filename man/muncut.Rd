@@ -24,13 +24,13 @@ muncut(Z, Y, X, K = 2, B = 3000, L = 1000, alpha = 0.5, ncv = 3,
 \item{alpha}{is the tuning parameter in the elastic net penalty, only used when model=T.}
 
 \item{ncv}{is the number of cross-validations used to choose the tuning parameter lambda in the
-elastic net penatly, only used when model=T.}
+elastic net penalty, only used when model=T.}
 
 \item{nlambdas}{number of tuning parameters lambda used during cross-validation, only when model=T.}
 
 \item{scale}{when TRUE the Z, Y and X are scaled with mean 0 and standard deviation equal 1.}
 
-\item{model}{when TRUE the the relationship between Z and Y, and between Y and X are modelled
+\item{model}{when TRUE the the relationship between Z and Y, and between Y and X are modeled
 with the elastic net. The predictions of Z, and Y from the models are used in the clustering algorithm.}
 
 \item{gamma}{is the tuning parameter of the clustering penalty. Larger values give more importance to
@@ -43,7 +43,7 @@ of each cluster.}
 \item{dist}{is the type of distance measure use in the similarity matrix.
 Options are 'gaussian' and 'correlation', with 'gaussian' being the default.}
 
-\item{sigma}{is the bandwith parameter when the dist metric chosen is gaussian.}
+\item{sigma}{is the bandwidth parameter when the dist metric chosen is gaussian.}
 }
 \description{
 It clusters the columns of Z,Y and X into K clusters by representing each data type as one network layer.
@@ -53,7 +53,7 @@ This function will output K clusters of columns of Z, Y and X.
 }
 \details{
 The algorithm minimizes a modified version of NCut through simulated annealing.
-The clusers correspond to partitions that minimize this objective function.
+The clusters correspond to partitions that minimize this objective function.
 The external information of X is incorporated by using ridge regression to predict Y.
 }
 \examples{
