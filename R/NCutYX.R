@@ -184,7 +184,7 @@ ncut <- function(Y,
 #' Z=X%*%B2
 #' Y=Z+matrix(rnorm(n*p,0,1),n,p)
 #' #Our method
-#' Res=ancut(Y=Y,X=X,B=B,L=L,alpha=0,ncv=5)
+#' Res=ancut(Y=Y,X=X,B=B,L=L,alpha=0,ncv=3)
 #' Cx=Res[[2]]
 #' f11=matrix(Cx[,1],p,1)
 #' f12=matrix(Cx[,2],p,1)
