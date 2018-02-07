@@ -2,7 +2,7 @@
 % Please edit documentation in R/NCutYX.R
 \name{mlbncut}
 \alias{mlbncut}
-\title{Cluster the columns of Y into K groups using the NCut graph measure.}
+\title{The MLBNCut clusters the columns and the rows simultaneously of data from 3 different sources.}
 \usage{
 mlbncut(Z, Y, X, K = 2, R = 2, B = 30, N = 500, q0 = 0.25,
   scale = TRUE, dist = "gaussian", sigmas = 1, sigmac = 1)
@@ -38,9 +38,14 @@ A list with the final value of the objective function and
 the clusters.
 }
 \description{
-This function will output K clusters of the columns of Y.
+It clusters the columns of Z,Y and X into K clusters and the samples into R clusters by representing
+each data type as one network layer.
+It represents the Z layer depending on Y, and the Y layer depending on X.
 }
 \details{
+This function will output K clusters of columns of Z, Y and X and R clusters of the samples.
+
+
 The algorithm minimizes the NCut through the cross entropy method.
 The clusters correspond to partitions that minimize this objective function.
 }

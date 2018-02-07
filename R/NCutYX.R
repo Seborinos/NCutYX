@@ -994,9 +994,13 @@ pwncut <- function(X,
   return(Rfinal)
 }
 
-#' Cluster the columns of Y into K groups using the NCut graph measure.
+#' The MLBNCut clusters the columns and the rows simultaneously of data from 3 different sources.
 #'
-#' This function will output K clusters of the columns of Y.
+#' It clusters the columns of Z,Y and X into K clusters and the samples into R clusters by representing
+#' each data type as one network layer.
+#' It represents the Z layer depending on Y, and the Y layer depending on X.
+#'
+#' This function will output K clusters of columns of Z, Y and X and R clusters of the samples.
 #' @param Z is a n x q matrix of q variables and n observations.
 #' @param Y is a n x p matrix of p variables and n observations.
 #' @param X is a n x r matrix of r variables and n observations.
