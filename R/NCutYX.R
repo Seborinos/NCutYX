@@ -148,7 +148,7 @@ ncut <- function(Y,
 #' library(MASS)#for mvrnorm
 #' library(fields)
 #' n=30 #Sample size
-#' B=100 #Number of iterations in the simulated annealing algorithm.
+#' B=50 #Number of iterations in the simulated annealing algorithm.
 #' L=10000 #Temperature coefficient.
 #' p=50 #Number of columns of Y.
 #' q=p #Number of columns of X.
@@ -404,7 +404,7 @@ ancut <- function(Y,
 #'                 Y,
 #'                 X,
 #'                 K        = 4,
-#'                 B        = 15000,
+#'                 B        = 10000,
 #'                 L        = 500,
 #'                 sampling = 'size',
 #'                 alpha    = 0.5,
