@@ -41,12 +41,14 @@ knitr::opts_chunk$set(
 
 # Description
 
-The NCutYX package includes functions on clustering genomic data using graph theory. Each function in this package is a variation on the NCut measure used to cluster vertices in a graph. The running theme is to used data sets from different sources and types to improve the clustering results.
+The NCutYX package includes functions for clustering genomic data using graph theory. Each function in this package is a variation on the NCut measure used to cluster vertices in a graph. The running theme is to use data sets from different sources and types to improve the clustering results.
 
-* The ncut function clusters the columns of a data set using the classical normalized cut (NCut) measure from graph theory. 
+* The ncut function clusters the columns of a data set using the classical normalized cut measure from graph theory. 
 * The ancut function clusters one type of data, say gene expressions, with the help of a second type of data, like copy number aberrations.
 * The muncut function clusters a three-layered graph into K different clusters of 3 different data types, say gene expression, copy number aberrations and proteins. 
 * The pwncut function clusters the columns of X into K clusters by giving a weight for each cluster while penalizing them to be similar to each other.
+* The mlbncut function works similarly to muncut but it also clusters samples 
+into R clusters.
 * The awncut builds similarity matrices for the row of X and an assisted dataset Z. Clusters them into K groups while conducting feature selection based on the AWNCut method.
 
 
@@ -108,7 +110,7 @@ errorL
 
 # ANCut
 
-Assisted NCut (ANcut) clusters the columns of a data set Y into K groups with the help of an external data set X. 
+The Assisted NCut (ANcut) clusters the columns of a data set Y into K groups with the help of an external data set X, which is associated linearly with Y.  
 
 ## Simulation Example
 
@@ -123,7 +125,7 @@ h1 <- 0.05 # Lower bound for the B coefficiens in Y = X*B+e.
 h2 <- 0.15 # Upper bound for the B coefficients in the model Y = X*B+e.
 ```
  
-The data will be simulated as Y = X*B + e where X will be normal with a convariance matrix S with 2 blocks of correlated variables. This induces the correlation among the Y's as well. W0 is an incidence matrix that will be used to calculate the error of the procedure.
+The data will be simulated as `Y = X*B + e` where X will be normal with a convariance matrix S with 2 blocks of correlated variables. This induces the correlation among the Y's as well. `W0` is an incidence matrix that will be used to calculate the error of the procedure.
 ```{r eval=FALSE}
  S <- matrix(0.2,q,q)
  S[1:(q/2),(q/2+1):q] <- 0
@@ -439,7 +441,7 @@ errorK
 
 ## AWNCut
 
-The Assisted Weighted NCut builds the similarity matrices for the row of X and an assisted dataset Z. Clusters them into K groups while conducting feature selection based on the AWNCut method.
+The Assisted Weighted NCut builds the similarity matrices for the rows of X and an assisted dataset Z. Clusters them into K groups while conducting feature selection based on the AWNCut method.
 
 ### Simulation Example
 

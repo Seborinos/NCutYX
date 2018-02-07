@@ -3,5 +3,7 @@
 ^ancut\.png$
 ^Rplot\.png$
 ^BrcaAnalysis1\.png$
+^multilayer_all\.png$
 ^README\.Rmd$
+^README\.html$
 ^README-.*\.png$
