@@ -18,13 +18,10 @@ This is a new submission.
 I changed R (>= 3.4.2) to R (>= 3.4) in the DESCRIPTION.
 
 * checking top-level files ... WARNING
-Conversion of ‘README.md’ failed:
-[WARNING] This document format requires a nonempty <title> element.
-  Please specify either ‘title’ or ‘pagetitle’ in the metadata.
-  Falling back to ‘README’
+Conversion of 'README.md' failed:
+pandoc.exe: Could not fetch ancut.png
   
-This WARNING I believe to the spurios because README.rmd, README.md
-an README.html all have titles.
+I have simplified the README file and now it runs.
 
 ## Reverse dependencies
 
