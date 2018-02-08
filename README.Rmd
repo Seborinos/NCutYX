@@ -12,7 +12,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# The NCutYX package
+# The NCutYX Package
 
 [![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip)
 [![Licence](https://img.shields.io/badge/licence-GPL--3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.en.html)
@@ -21,9 +21,8 @@ knitr::opts_chunk$set(
 [![packageversion](https://img.shields.io/badge/Package%20version-0.1.0-orange.svg?style=flat-square)](commits/master)
 [![Last-changedate](https://img.shields.io/badge/last%20change-`r gsub('-', '--', Sys.Date())`-yellowgreen.svg)](/commits/master)
 
-# Sebastian Jose Teran Hidalgo
+## Table of Contents
 
-# Table of contents
 1. [Description](#description)
 2. [NCut](#ncut)
 3. [ANCut](#ancut)
@@ -32,8 +31,7 @@ knitr::opts_chunk$set(
 6. [MLBNCut](#mlbncut)
 7. [AWNCut](#awncut)
 
-
-# Description
+## Description
 
 The NCutYX package includes functions for clustering genomic data using graph theory. Each function in this package is a variation on the NCut measure used to cluster vertices in a graph. The running theme is to use data sets from different sources and types to improve the clustering results.
 
@@ -52,11 +50,11 @@ To install:
     1. install and load package devtools
     2. `install_github("Seborinos/NCutYX")`
 
-# NCut
+## NCut
 
 The Normalized Cut (NCut) clusters the columns of Y into K groups using the NCut graph measure. Builds a similarity matrix for the columns of Y and clusters them into K groups based on the NCut graph measure. Correlation, Euclidean and Gaussian distances can be used to construct the similarity matrix. The NCut measure is minimized using the cross entropy method, a Monte Carlo optimization technique. 
 
-## Example
+### Example
 
 First, we set up the simulation parameters.
 ```{r eval=FALSE}
@@ -102,11 +100,11 @@ errorL <- sum((f11%*%t(f11))*W0)/Denum + sum((f12%*%t(f12))*W0)/Denum
 errorL
 ```
 
-# ANCut
+## ANCut
 
 The Assisted NCut (ANcut) clusters the columns of a data set Y into K groups with the help of an external data set X, which is associated linearly with Y.  
 
-## Simulation Example
+### Simulation Example
 
 First we define some of the simulation parameters below.
 ```{r eval=FALSE}
@@ -175,17 +173,17 @@ image.plot(Cx)
 ![](ancut.png)
 
 
-## References:
+### References:
 
 * [Hidalgo, Sebastian J. Teran, Mengyun Wu, and Shuangge Ma. "Assisted clustering of gene expression data using ANCut." *BMC genomics* 18.1 (2017): 623.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5559859/)
 
-# MuNCut
+## MuNCut
 
 This example shows how to use the muncut function. MuNCut clusters the columns of data from 3 different sources. It clusters the columns of Z, Y and X into K clusters by representing each data type as one network layer. It represents the Z layer depending on Y, and the Y layer depending on X. Elastic net can be used before the clustering procedure by using the predictions of Z and Y instead of the actual values to improve the cluster results. The function muncut will output K clusters of columns of Z, Y and X.
 
 ![](multilayer_all.png){width=275px, height=275px}
 
-## Simulation Example
+### Simulation Example
 First, we define the simulation parameters, including the covariance matrix S of the X's.
 ```{r eval=FALSE}
 n   <- 50

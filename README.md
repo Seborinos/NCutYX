@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# The NCutYX package
+# The NCutYX Package
 
 [![Project Status: WIP – Initial development is in progress, but there
 has not yet been a stable, usable release suitable for the
@@ -13,9 +13,7 @@ version](https://img.shields.io/badge/R%3E%3D-NA-6666ff.svg)](https://cran.r-pro
 [![packageversion](https://img.shields.io/badge/Package%20version-0.1.0-orange.svg?style=flat-square)](commits/master)
 [![Last-changedate](https://img.shields.io/badge/last%20change-2018--02--08-yellowgreen.svg)](/commits/master)
 
-# Sebastian Jose Teran Hidalgo
-
-# Table of contents
+## Table of Contents
 
 1.  [Description](#description)
 2.  [NCut](#ncut)
@@ -25,7 +23,7 @@ version](https://img.shields.io/badge/R%3E%3D-NA-6666ff.svg)](https://cran.r-pro
 6.  [MLBNCut](#mlbncut)
 7.  [AWNCut](#awncut)
 
-# Description
+## Description
 
 The NCutYX package includes functions for clustering genomic data using
 graph theory. Each function in this package is a variation on the NCut
@@ -56,7 +54,7 @@ To install:
     1.  install and load package devtools
     2.  `install_github("Seborinos/NCutYX")`
 
-# NCut
+## NCut
 
 The Normalized Cut (NCut) clusters the columns of Y into K groups using
 the NCut graph measure. Builds a similarity matrix for the columns of Y
@@ -65,7 +63,7 @@ Correlation, Euclidean and Gaussian distances can be used to construct
 the similarity matrix. The NCut measure is minimized using the cross
 entropy method, a Monte Carlo optimization technique.
 
-## Example
+### Example
 
 First, we set up the simulation parameters.
 
@@ -116,13 +114,13 @@ errorL <- sum((f11%*%t(f11))*W0)/Denum + sum((f12%*%t(f12))*W0)/Denum
 errorL
 ```
 
-# ANCut
+## ANCut
 
 The Assisted NCut (ANcut) clusters the columns of a data set Y into K
 groups with the help of an external data set X, which is associated
 linearly with Y.
 
-## Simulation Example
+### Simulation Example
 
 First we define some of the simulation parameters below.
 
@@ -205,13 +203,13 @@ will get closer to the true cluster structure of the data.
 
 ![](ancut.png)
 
-## References:
+### References:
 
   - [Hidalgo, Sebastian J. Teran, Mengyun Wu, and Shuangge Ma. “Assisted
     clustering of gene expression data using ANCut.” *BMC genomics* 18.1
     (2017): 623.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5559859/)
 
-# MuNCut
+## MuNCut
 
 This example shows how to use the muncut function. MuNCut clusters the
 columns of data from 3 different sources. It clusters the columns of Z,
@@ -224,7 +222,7 @@ of columns of Z, Y and X.
 
 ![](multilayer_all.png)
 
-## Simulation Example
+### Simulation Example
 
 First, we define the simulation parameters, including the covariance
 matrix S of the X’s.
