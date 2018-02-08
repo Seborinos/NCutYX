@@ -1,11 +1,10 @@
 Package: NCutYX
 Type: Package
-Title: The NCutYX Package
+Title: Clustering of Omics Data of Multiple Types with a Multilayer Network Representation
 Version: 0.1.0
 Author: Sebastian J. Teran Hidalgo, Shuangge Ma, Ruofan Bie
 Maintainer: Sebastian J. Teran Hidalgo <sebastianteranhidalgo@gmail.com>
-Description: Clusters the columns of Y into K groups with the help of
-    variables in X.
+Description: Omics data come in different forms: gene expression, methylation, copy number, protein measurements and more. 'NCutYX' allows clustering of variables, of samples, and both variables and samples (biclustering), while incorporating the dependencies across multiple types of Omics data. 
 License: GPL-3
 Depends: R (>= 3.4)
 Imports:

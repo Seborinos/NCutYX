@@ -12,16 +12,19 @@ Maintainer: 'Sebastian J. Teran Hidalgo <sebastianteranhidalgo@gmail.com>'
 
 This is a new submission.
 
-* checking DESCRIPTION meta-information ... WARNING 
-  Dependence on R version '3.4.2' not with patchlevel 0
-    
-I changed R (>= 3.4.2) to R (>= 3.4) in the DESCRIPTION.
+## Comments by CRAN
 
-* checking top-level files ... WARNING
-Conversion of 'README.md' failed:
-pandoc.exe: Could not fetch ancut.png
-  
-I have simplified the README file and now it runs.
+* Thanks, please choose a more appropriate title.
+
+I have modified the title per your request.
+
+*Please elaborate in your description which new functionality you provide.
+ Please note that there are several packages on CRAN dealing cluster analysis. 
+ Hence, please point out the benefits of your package.
+ 
+Thank you for this comment and pointing out this flaw.
+I have included a better description of the package. 
+I hope the reviewer will like this version more.
 
 ## Reverse dependencies
 
