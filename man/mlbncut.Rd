@@ -144,3 +144,7 @@ errorK <- sum((trial[[3]][,1]\%*\%t(trial[[3]][,1]) +
                  trial[[2]][,2]\%*\%t(trial[[2]][,2]))*W1)/(n)^2
 errorK
 }
+\references{
+Sebastian J. Teran Hidalgo and Shuangge Ma.
+Multilayer Biclustering of Omics Data using MLBNCut. (Work in progress.)
+}

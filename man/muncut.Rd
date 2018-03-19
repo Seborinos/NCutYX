@@ -129,3 +129,7 @@ errorK
 plot(clust[[1]],type='l')
 image.plot(A)
 }
+\references{
+Sebastian J. Teran Hidalgo and Shuangge Ma.
+Clustering Multilayer Omics Data using MuNCut. (Revise and resubmit.)
+}

@@ -63,3 +63,7 @@ Tune1         <- awncut.selection(X, Z, K, lambda, Tau, B = 20, L = 1000)
 awncut.result <- awncut(X, Z, 3, Tune1$lam, Tune1$tau, B = 20, L = 1000)
 ErrorRate(awncut.result[[1]]$Cs, n1, n2)
 }
+\references{
+Li, Yang; Bie, Ruofan; Teran Hidalgo, Sebastian; Qin, Yinchen; Wu, Mengyun; Ma, Shuangge.
+Assisted gene expression-based clustering with AWNCut. (Submitted.)
+}

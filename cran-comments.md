@@ -14,17 +14,13 @@ This is a new submission.
 
 ## Comments by CRAN
 
-* Thanks, please choose a more appropriate title.
+* Thanks, please add a reference for the method in the 'Description' field of your DESCRIPTION file in    the form
+  authors (year) <doi:...>
+  authors (year) <arXiv:...>
+  authors (year, ISBN:...)
+  with no space after 'doi:', 'arXiv:' and angle brackets for auto-linking.
 
-I have modified the title per your request.
-
-*Please elaborate in your description which new functionality you provide.
- Please note that there are several packages on CRAN dealing cluster analysis. 
- Hence, please point out the benefits of your package.
- 
-Thank you for this comment and pointing out this flaw.
-I have included a better description of the package. 
-I hope the reviewer will like this version more.
+I have added one of our published references in the DESCRIPTION as requested by the reviewer. We have other manuscripts related to this package that have been submitted but not yet published so they do not have dois. We talked among authors and decided not to submit anything to the arXiv. I hope it is acceptable to the reviewer only having one reference here. We will add more references in later versions of the package once they get published.
 
 ## Reverse dependencies
 

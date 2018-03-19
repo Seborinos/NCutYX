@@ -94,3 +94,7 @@ plot(trial[[1]], type='l')
 errorL <- sum(abs(A0-A1))/p^2
 errorL
 }
+\references{
+Sebastian J. Teran Hidalgo, Mengyun Wu and Shuangge Ma.
+Penalized and weighted clustering of gene expression data using PWNCut. (Submitted.)
+}

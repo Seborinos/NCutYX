@@ -3,12 +3,8 @@
 
 # The NCutYX Package
 
-[![Project Status: WIP – Initial development is in progress, but there
-has not yet been a stable, usable release suitable for the
-public.](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip)
+![downloads](https://cranlogs.r-pkg.org/badges/grand-total/NCutYX)
 [![Licence](https://img.shields.io/badge/licence-GPL--3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.en.html)
-[![minimal R
-version](https://img.shields.io/badge/R%3E%3D-NA-6666ff.svg)](https://cran.r-project.org/)
 [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/NCutYX)](https://cran.r-project.org/package=NCutYX)
 [![packageversion](https://img.shields.io/badge/Package%20version-0.1.0-orange.svg?style=flat-square)](commits/master)
 [![Last-changedate](https://img.shields.io/badge/last%20change-2018--02--08-yellowgreen.svg)](/commits/master)
@@ -78,8 +74,8 @@ of columns of Z, Y and X.
 
 ### References:
 
-  - Sebastian J. Teran Hidalgo and Shuangge Ma. “Clustering Multilayer
-    Omics Data using MuNCut.” *Revise and resubmit.*
+  - [Sebastian J. Teran Hidalgo and Shuangge Ma. “Clustering Multilayer
+    Omics Data using MuNCut.” *BMC genomics* 19 Suppl. 2 (2018): 198.](https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-018-4580-6)
 
 ## PWNCut
 

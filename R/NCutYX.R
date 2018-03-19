@@ -352,6 +352,8 @@ ancut <- function(Y,
 #' The algorithm minimizes a modified version of NCut through simulated annealing.
 #' The clusters correspond to partitions that minimize this objective function.
 #' The external information of X is incorporated by using ridge regression to predict Y.
+#' @references  Sebastian J. Teran Hidalgo and Shuangge Ma.
+#' Clustering Multilayer Omics Data using MuNCut. (Revise and resubmit.)
 #' @examples
 #' library(NCutYX)
 #' library(MASS)
@@ -801,6 +803,8 @@ muncut <- function(Z,
 #' @details
 #' The algorithm minimizes a modified version of NCut through simulated annealing.
 #' The clusters correspond to partitions that minimize this objective function.
+#' @references Sebastian J. Teran Hidalgo, Mengyun Wu and Shuangge Ma.
+#' Penalized and weighted clustering of gene expression data using PWNCut. (Submitted.)
 #' @examples
 #' # This sets up the initial parameters for the simulation.
 #' n <- 100 # Sample size
@@ -1019,6 +1023,8 @@ pwncut <- function(X,
 #' @details
 #' The algorithm minimizes the NCut through the cross entropy method.
 #' The clusters correspond to partitions that minimize this objective function.
+#' @references Sebastian J. Teran Hidalgo and Shuangge Ma.
+#' Multilayer Biclustering of Omics Data using MLBNCut. (Work in progress.)
 #' @examples
 #' #This sets up the initial parameters for the simulation.
 #' library(NCutYX)
@@ -1232,7 +1238,8 @@ mlbncut <- function(Z,
 #' is implemented by using the average correlation of each feature as a criterion.
 #' @author Ruofan Bie. Maintainer: Sebastian Jose Teran Hidalgo
 #' \url{sebastianteranhidalgo@gmail.com}.
-#'
+#' @references Li, Yang; Bie, Ruofan; Teran Hidalgo, Sebastian; Qin, Yinchen; Wu, Mengyun; Ma, Shuangge.
+#' Assisted gene expression-based clustering with AWNCut. (Submitted.)
 #' @examples
 #' set.seed(123456)
 #' #This sets up the initial parameters for the simulation.
@@ -1366,7 +1373,8 @@ awncut <- function(X,
 #' \item{tau}{is the best choice of tuning parameter lambda}
 #' \item{DBI}{is the max DBI}
 #' }
-#'
+#' @references Li, Yang; Bie, Ruofan; Teran Hidalgo, Sebastian; Qin, Yinchen; Wu, Mengyun; Ma, Shuangge.
+#' Assisted gene expression-based clustering with AWNCut. (Submitted.)
 #' @examples
 #' set.seed(123456)
 #' #This sets up the initial parameters for the simulation.
@@ -1439,7 +1447,8 @@ awncut.selection <- function(X,
 #' @param X is a clustering result in matrix format.
 #' @param n1 is the size of the first cluster.
 #' @param n2 is the size of the second cluster.
-#'
+#' @references Li, Yang; Bie, Ruofan; Teran Hidalgo, Sebastian; Qin, Yinchen; Wu, Mengyun; Ma, Shuangge.
+#' Assisted gene expression-based clustering with AWNCut. (Submitted.)
 #' @examples
 #' set.seed(123456)
 #' #This sets up the initial parameters for the simulation.
