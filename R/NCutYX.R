@@ -1174,16 +1174,16 @@ mlbncut <- function(Z,
 
       if (dist=='gaussian'){
         for (r in 1:R){
-          c1      <- which(Clusts[[k]][,r]==1)
-          Wr[[r]] <- w.gauss(Z[c1, ],Y[c1, ],X[c1, ],sigma=sigmac)
+          c1      <- which(Clusts[[k]][ , r]==1)
+          Wr[[r]] <- w.gauss(Z[c1, ], Y[c1, ], X[c1, ], sigma = sigmas)
         }
       }
       for (i in 1:K){
-        cz      <- which(Clustc[[k]][1:dimz,i]==1)
-        cy      <- which(Clustc[[k]][(dimz+1):(dimz+dimy),i]==1)
-        cx      <- which(Clustc[[k]][(dimz+dimy+1):m,i]==1)
-        A1      <- cbind(Z[ ,cz],Y[ ,cy],X[ ,cx])
-        Wk[[i]] <- exp((-sigmas)*as.matrix(stats::dist(A1,
+        cz      <- which(Clustc[[k]][1:dimz, i]==1)
+        cy      <- which(Clustc[[k]][(dimz+1):(dimz+dimy), i]==1)
+        cx      <- which(Clustc[[k]][(dimz+dimy+1):m, i]==1)
+        A1      <- cbind(Z[ ,cz], Y[ ,cy], X[ ,cx])
+        Wk[[i]] <- exp((-sigmac)*as.matrix(stats::dist(A1,
                                                        method = 'euclidean',
                                                        diag   = T,
                                                        upper  = T)))
