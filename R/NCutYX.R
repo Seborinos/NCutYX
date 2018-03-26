@@ -204,6 +204,7 @@ ancut <- function(Y,
                   K        = 2,
                   B        = 3000,
                   L        = 1000,
+                  scale    = FALSE,
                   alpha    = 0.5,
                   nlambdas = 100,
                   sampling = 'equal',
@@ -211,10 +212,10 @@ ancut <- function(Y,
                   dist     = 'correlation',
                   sigma    = 0.1){
   # This creates the weight matrix W
-  X <- scale(X)
-  Y <- scale(Y)
-  p <- dim(Y)[2]
-
+  if(scale==TRUE){
+    Y <- scale(Y)
+    X <- scale(X)
+  }
   p <- dim(Y)[2]
   if(dist=='euclidean'){
     Wyy <- as.matrix(stats::dist(t(Y),diag=T,upper=T)) + diag(p)
@@ -234,22 +235,22 @@ ancut <- function(Y,
                              alpha     = alpha,
                              nfolds    = ncv,
                              nlambda   = nlambdas,
-                             intercept = FALSE)
+                             intercept = TRUE)
 
   m1 <- glmnet::glmnet(X,
                        Y,
                        family    = c("mgaussian"),
                        alpha     = alpha,
                        lambda    = cv.m1$lambda.min,
-                       intercept = FALSE)
+                       intercept = TRUE)
 
-  Y2 <- predict(m1,newx=X)
-  Y2 <- scale(Y2[ , ,1])
+  Y2 <- predict(m1, newx=X)
+  Y2 <- scale(Y2[ , , 1])
   if(dist=='euclidean'){
-    Wxx <- as.matrix(stats::dist(t(Y2),diag=T,upper=T)) + diag(p)
+    Wxx <- as.matrix(stats::dist(t(Y2), diag = TRUE, upper = TRUE)) + diag(p)
     Wxx <- Wxx^(-1)
   }else if(dist=='gaussian'){
-    Wxx <- exp((-1)*as.matrix(stats::dist(t(Y2),diag=T,upper=T))/sigma)
+    Wxx <- exp((-1)*as.matrix(stats::dist(t(Y2), diag = TRUE, upper = TRUE))/sigma)
   }else if(dist=='correlation'){
     Wxx <- abs(stats::cor(Y2))
   }else{
@@ -257,10 +258,10 @@ ancut <- function(Y,
   }
 
   #This creates a random starting point in the split in the algorithm for K clusters
-  Cx <- matrix(0,p,K)
+  Cx <- matrix(0, p, K)
 
   for (i in 1:p){
-    Cx[i,sample(K,1)] <- 1
+    Cx[i, sample(K, 1)] <- 1
   }
 
   #Now, calculate the number of indices in each group.
