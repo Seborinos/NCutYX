@@ -4,7 +4,9 @@
 \name{brca.data.rppa}
 \alias{brca.data.rppa}
 \title{Data on protein measurements from breast cancer patients.}
-\format{A data frame with 873 patients and 164 gene names.}
+\format{
+A data frame with 873 patients and 164 gene names.
+}
 \source{
 \url{https://cancergenome.nih.gov/}
 }

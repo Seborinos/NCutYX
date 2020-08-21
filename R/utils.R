@@ -1,3 +1,24 @@
+similarity_matrix <- function(Y,
+                              dist  = 'correlation',
+                              sigma = 0.1,
+                              epsilon = 0) {
+  p <- dim(Y)[2]
+
+  if (dist == 'euclidean') {
+    Wyy <- as.matrix(stats::dist(t(Y), diag = T, upper = T)) + diag(p)
+    Wyy <- Wyy^(-1)
+  } else if (dist == 'gaussian') {
+    Wyy <- exp((-1)*as.matrix(stats::dist(t(Y), diag = T, upper = T)) / sigma)
+  } else if (dist == 'correlation') {
+    Wyy <- abs(stats::cor(Y))
+  } else {
+    stop('Distance Error')
+  }
+
+  Wyy[which(Wyy < epsilon)] <- 0
+  Wyy
+}
+
 
 w.gauss <- function(Z,Y,X,sigma=1){
   n <- dim(X)[1]
@@ -6,7 +27,7 @@ w.gauss <- function(Z,Y,X,sigma=1){
   r <- dim(X)[2]
   m <- q + p + r
   D <- matrix(0,m,m)
-  A <- exp((-sigma)*as.matrix(dist(t(cbind(Z,Y,X)),
+  A <- exp((-sigma)*as.matrix(stats::dist(t(cbind(Z,Y,X)),
                                    method='euclidean',
                                    diag=T,upper=T)))
 
@@ -30,9 +51,9 @@ w.cor <- function(Z,
   D <- matrix(0,m,m)
 
 
-  D[1:q,(q+1):(q+p)] <- abs(cor(Z,Y))
+  D[1:q,(q+1):(q+p)] <- abs(stats::cor(Z,Y))
   D[(q+1):(q+p),1:q] <- t(D[1:q,(q+1):(q+p)])
-  D[(q+1):(q+p),(q+p+1):(q+p+r)] <- abs(cor(Y,X))
+  D[(q+1):(q+p),(q+p+1):(q+p+r)] <- abs(stats::cor(Y,X))
   D[(q+p+1):(q+p+r),(q+1):(q+p)] <- t(D[(q+1):(q+p),(q+p+1):(q+p+r)] )
   return(D)
 }
@@ -51,10 +72,10 @@ AWNcut.W <- function(X, Z, ws){
   p1 <- ncol(X)
   p2 <- ncol(Z)
   #Calculate matrix W
-  DistX <- as.matrix(dist(t(t(X)*ws[1:p1]), upper=T, diag=T))
+  DistX <- as.matrix(stats::dist(t(t(X)*ws[1:p1]), upper=T, diag=T))
   diag(DistX) <- 1
   WX <- DistX^(-1)
-  DistZ <- as.matrix(dist(t(t(Z)*ws[(1+p1):(p1+p2)]), upper=T, diag=T))
+  DistZ <- as.matrix(stats::dist(t(t(Z)*ws[(1+p1):(p1+p2)]), upper=T, diag=T))
   diag(DistZ) <- 1
   WZ <- DistZ^(-1)
   return(list(WX, WZ))
@@ -89,7 +110,7 @@ AWNcut.OP <- function(X, Z, WX, WZ, Cs, tau)
   Cor.X <- 0
   Cor.Z <- 0
   for(i in 1:ncol(Cs)){
-    T <- cor(X[which(Cs[,i]==1),],Z[which(Cs[,i]==1),])
+    T <- stats::cor(X[which(Cs[,i]==1),],Z[which(Cs[,i]==1),])
     T[is.na(T)] <- 0
     Cor.X <- Cor.X+apply(abs(T),1,mean)
     Cor.Z <- Cor.Z+apply(abs(T),2,mean)
@@ -149,8 +170,8 @@ AWNcut.UpdateWs <- function(X, Z, K, WX, WZ, b, Cs, ws, tau)
   #Calculate the average correlation of each feature
   temp <- AWNcut.OP(X, Z, WX, WZ, Cs, tau)$Cor.perfeature
   #Use Kmeans method to cluster the average weight into 2 clusters in each dataset
-  temp1 <- kmeans(temp[1:p1],2)
-  temp2 <- kmeans(temp[(1+p1):(p1+p2)],2)
+  temp1 <- stats::kmeans(temp[1:p1],2)
+  temp2 <- stats::kmeans(temp[(1+p1):(p1+p2)],2)
   #For features in the cluster that has a higher level of average correlation, update their weight by adding the pace
   pace1[which(temp1$cluster==which.max(temp1$center))] <- 1
   pace2[which(temp2$cluster==which.max(temp2$center))] <- 1
@@ -167,7 +188,7 @@ DBI <- function(X, K, Cs, ws){
   X <- scale(X)
   p1 <- ncol(X)
   w1 <- ws[1:p1]/l2n(ws[1:p1])
-  WX <- as.matrix(dist(t(t(X)*w1), upper=T, diag=T))
+  WX <- as.matrix(stats::dist(t(t(X)*w1), upper=T, diag=T))
 
   #Calculate both cut and cuvol, cutvol is the diagonal of the matrix Cut, cut is the reat of the entries
   Cut <- matrix(0,K,K)

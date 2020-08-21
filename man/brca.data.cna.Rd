@@ -4,7 +4,9 @@
 \name{brca.data.cna}
 \alias{brca.data.cna}
 \title{Data on copy number aberrations from breast cancer patients.}
-\format{A data frame with 873 patients and 515 gene names.}
+\format{
+A data frame with 873 patients and 515 gene names.
+}
 \source{
 \url{https://cancergenome.nih.gov/}
 }

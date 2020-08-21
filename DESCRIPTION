@@ -15,11 +15,13 @@ Imports:
     glmnet (>= 2.0-5),
     MASS (>= 7.3-47),
     mvtnorm (>= 1.0-6),
-    fields (>= 9.0)
+    fields (>= 9.0),
+    stats (>= 4.0.2)
 LinkingTo: Rcpp, RcppEigen
-RoxygenNote: 6.0.1
+RoxygenNote: 7.1.1
 URL: https://github.com/Seborinos/NCutYX
 BugReports: https://github.com/Seborinos/NCutYX/issues
 Suggests: knitr,
     rmarkdown
 VignetteBuilder: knitr
+Encoding: UTF-8

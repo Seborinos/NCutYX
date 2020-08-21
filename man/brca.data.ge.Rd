@@ -4,7 +4,9 @@
 \name{brca.data.ge}
 \alias{brca.data.ge}
 \title{Data on gene expression from breast cancer patients.}
-\format{A data frame with 873 patients and 334 gene names.}
+\format{
+A data frame with 873 patients and 334 gene names.
+}
 \source{
 \url{https://cancergenome.nih.gov/}
 }

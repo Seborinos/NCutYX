@@ -2,54 +2,54 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 NCutY3V1 <- function(Cys, Cy2s, Wys, Wxs) {
-    .Call('_NCutYX_NCutY3V1', PACKAGE = 'NCutYX', Cys, Cy2s, Wys, Wxs)
+    .Call(`_NCutYX_NCutY3V1`, Cys, Cy2s, Wys, Wxs)
 }
 
 NCut <- function(Cys, Wys) {
-    .Call('_NCutYX_NCut', PACKAGE = 'NCutYX', Cys, Wys)
+    .Call(`_NCutYX_NCut`, Cys, Wys)
 }
 
 WNCut <- function(Cys, Cy2s, Wys) {
-    .Call('_NCutYX_WNCut', PACKAGE = 'NCutYX', Cys, Cy2s, Wys)
+    .Call(`_NCutYX_WNCut`, Cys, Cy2s, Wys)
 }
 
 NCutLayer3V1 <- function(Cys, Cy2s, Wzs, Wys, Wxs, Wzyxs) {
-    .Call('_NCutYX_NCutLayer3V1', PACKAGE = 'NCutYX', Cys, Cy2s, Wzs, Wys, Wxs, Wzyxs)
+    .Call(`_NCutYX_NCutLayer3V1`, Cys, Cy2s, Wzs, Wys, Wxs, Wzyxs)
 }
 
 Ranking <- function(C) {
-    .Call('_NCutYX_Ranking', PACKAGE = 'NCutYX', C)
+    .Call(`_NCutYX_Ranking`, C)
 }
 
 oneMultinomCalt <- function(probs) {
-    .Call('_NCutYX_oneMultinomCalt', PACKAGE = 'NCutYX', probs)
+    .Call(`_NCutYX_oneMultinomCalt`, probs)
 }
 
 RandomMatrix <- function(p, K, P) {
-    .Call('_NCutYX_RandomMatrix', PACKAGE = 'NCutYX', p, K, P)
+    .Call(`_NCutYX_RandomMatrix`, p, K, P)
 }
 
 RandomMatrix2 <- function(p, K, P) {
-    .Call('_NCutYX_RandomMatrix2', PACKAGE = 'NCutYX', p, K, P)
+    .Call(`_NCutYX_RandomMatrix2`, p, K, P)
 }
 
 samplingncut <- function(W, Prob, p, K, N) {
-    .Call('_NCutYX_samplingncut', PACKAGE = 'NCutYX', W, Prob, p, K, N)
+    .Call(`_NCutYX_samplingncut`, W, Prob, p, K, N)
 }
 
 cutoff <- function(loss, q0) {
-    .Call('_NCutYX_cutoff', PACKAGE = 'NCutYX', loss, q0)
+    .Call(`_NCutYX_cutoff`, loss, q0)
 }
 
 ProbAve <- function(Cs, Ind, p, K) {
-    .Call('_NCutYX_ProbAve', PACKAGE = 'NCutYX', Cs, Ind, p, K)
+    .Call(`_NCutYX_ProbAve`, Cs, Ind, p, K)
 }
 
 Indexing <- function(loss, qloss) {
-    .Call('_NCutYX_Indexing', PACKAGE = 'NCutYX', loss, qloss)
+    .Call(`_NCutYX_Indexing`, loss, qloss)
 }
 
 ncutcem <- function(W, p, K, N, B, q0, p0) {
-    .Call('_NCutYX_ncutcem', PACKAGE = 'NCutYX', W, p, K, N, B, q0, p0)
+    .Call(`_NCutYX_ncutcem`, W, p, K, N, B, q0, p0)
 }
 

@@ -4,7 +4,9 @@
 \name{cesc.data.rppa}
 \alias{cesc.data.rppa}
 \title{Data on protein measurements from cervical cancer patients.}
-\format{A data frame with 164 patients and 144 gene names.}
+\format{
+A data frame with 164 patients and 144 gene names.
+}
 \source{
 \url{https://cancergenome.nih.gov/}
 }

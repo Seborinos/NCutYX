@@ -4,7 +4,9 @@
 \name{cesc.data.ge}
 \alias{cesc.data.ge}
 \title{Data on gene expression from breast cancer patients.}
-\format{A data frame with 164 patients and 325 gene names.}
+\format{
+A data frame with 164 patients and 325 gene names.
+}
 \source{
 \url{https://cancergenome.nih.gov/}
 }
