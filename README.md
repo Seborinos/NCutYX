@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# The NCutYX Package
+# The NCutYX Package yay
 
 ![downloads](https://cranlogs.r-pkg.org/badges/grand-total/NCutYX)
 [![Licence](https://img.shields.io/badge/licence-GPL--3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.en.html)
